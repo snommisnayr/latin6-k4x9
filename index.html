@@ -1,0 +1,943 @@
+<title>Lily's Latin Quest</title>
+<style>
+:root{--bg:#faf6ee;--ink:#2b2a33;--card:#ffffff;--line:#e4dccb;--accent:#6b3fa0;--on-accent:#ffffff;--good:#2e7d4f;--goodbg:#e6f4ea;--bad:#b3261e;--badbg:#fdeceb;--warn:#8a5a00;--warnbg:#fff4d6;--c-warn:#d49a00;--muted:#5a5963;--soft:#f1ecf8;--softline:#d9cbee;--latin:#3a2a63;--tbg:#faf8ff;--tbg-imp:#f2faf5;--tbg-perf:#fff8ee;--tbg-pres:#f2f7fd;--c-pres:#2060a8;--c-perf:#b05a00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#17161d;--ink:#ece9f2;--card:#22212b;--line:#3a3847;--accent:#a98ae0;--on-accent:#17161d;--good:#6fcf97;--goodbg:#1c3326;--bad:#ff8a80;--badbg:#3a1f1d;--warn:#f2c14e;--warnbg:#3a301a;--c-warn:#f2c14e;--muted:#b3b0be;--soft:#2c2a3a;--softline:#463f5e;--latin:#c9b5f5;--tbg:#262432;--tbg-imp:#1c2b24;--tbg-perf:#32261b;--tbg-pres:#1b2733;--c-pres:#6fa8e8;--c-perf:#e39a4a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17161d;--ink:#ece9f2;--card:#22212b;--line:#3a3847;--accent:#a98ae0;--on-accent:#17161d;--good:#6fcf97;--goodbg:#1c3326;--bad:#ff8a80;--badbg:#3a1f1d;--warn:#f2c14e;--warnbg:#3a301a;--c-warn:#f2c14e;--muted:#b3b0be;--soft:#2c2a3a;--softline:#463f5e;--latin:#c9b5f5;--tbg:#262432;--tbg-imp:#1c2b24;--tbg-perf:#32261b;--tbg-pres:#1b2733;--c-pres:#6fa8e8;--c-perf:#e39a4a;color-scheme:dark}
+
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none;touch-action:manipulation;}
+#app{max-width:760px;margin:0 auto;padding:18px 16px 70px}
+h1{font-size:26px;margin:6px 0 4px;line-height:1.15}h3{margin:10px 0 6px}.sub{margin:0 0 12px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.levels{display:grid;gap:10px}.level{text-align:left;cursor:pointer;font:inherit;color:inherit;width:100%}.level:hover:not(.locked){border-color:var(--accent)}
+.level.locked{opacity:.5;cursor:not-allowed}.lnum{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700}.ltitle{font-size:21px;font-weight:700}.lsub{color:var(--muted);font-size:16px}.lbest{margin-top:4px;font-size:15px;color:var(--good);font-weight:600}
+.badge{display:inline-block;font-size:13px;border-radius:999px;padding:2px 10px;margin-top:6px;background:var(--soft);color:var(--latin);font-weight:600}
+button{font:inherit;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:12px 16px;cursor:pointer;color:inherit;min-height:44px}
+button.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}button:disabled{opacity:.5;cursor:not-allowed}
+button.link{border:0;background:none;color:var(--accent);padding:6px 0;margin-bottom:4px}
+.guidebtn{display:block;width:100%;text-align:left;background:var(--soft);border-color:var(--softline);font-weight:600;color:var(--latin)}
+.lat{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-weight:600;color:var(--latin)}.latq{font:italic 600 26px Georgia,serif;color:var(--latin);margin:10px 0 14px;word-break:break-word}
+.qtext{font-size:20px;margin-bottom:12px}.hint{color:var(--muted);font-size:16px}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px 16px;font-size:19px}.opt:hover{border-color:var(--accent)}
+.opt.right{background:var(--goodbg);border-color:var(--good)}.opt.wrong{background:var(--badbg);border-color:var(--bad)}
+.typed{width:100%;color:var(--ink);background:var(--card);font:inherit;font-size:20px;padding:12px;border:2px solid var(--line);border-radius:10px;margin:6px 0 10px}.typed.right{border-color:var(--good);background:var(--goodbg)}.typed.close{border-color:var(--c-warn);background:var(--warnbg)}.typed.wrong{border-color:var(--bad);background:var(--badbg)}
+.mac{display:flex;gap:6px;margin:0 0 8px;flex-wrap:wrap;align-items:center}.mac button{padding:6px 12px;min-height:40px;font-size:20px;font-family:Georgia,serif}.mac span{font-size:14px;color:var(--muted)}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}.bar div{height:100%;background:var(--accent);transition:width .3s}.meta{color:var(--muted);font-size:15px;margin-bottom:6px}
+.fb{border-radius:12px;padding:12px 14px;margin:10px 0}.fb.good{background:var(--goodbg);color:var(--good)}.fb.bad{background:var(--badbg)}.fb.close{background:var(--warnbg);color:var(--warn)}.why{margin-top:6px;color:var(--ink)}.pat{margin-top:4px;font-size:15px;color:var(--muted)}
+.retry{border-style:dashed}.rlabel{font-size:14px;color:var(--accent);font-weight:700;margin-bottom:6px}
+.teach ul{padding-left:20px}.teach li{margin:8px 0}
+.chart{border-collapse:collapse;width:100%;margin-bottom:8px;font-size:16px}.chart th,.chart td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}.chart th{background:var(--soft)}
+.wide{overflow-x:auto}
+.tense{border-left:6px solid var(--accent);padding:6px 12px;margin:10px 0;background:var(--tbg);border-radius:0 10px 10px 0}.tense.imp{border-color:var(--good);background:var(--tbg-imp)}.tense.perf{border-color:var(--c-perf);background:var(--tbg-perf)}.tense.pres{border-color:var(--c-pres);background:var(--tbg-pres)}
+.tense b.name{font-size:20px}
+.score .big{font-size:42px;font-weight:800;color:var(--accent)}.score.pass .big{color:var(--good)}.pct{font-size:22px;color:var(--muted)}.secs{padding-left:20px}
+.note,.tiny{color:var(--muted)}.tiny{font-size:14px}.parent{margin-top:24px;color:var(--muted);font-size:16px}
+details.bank{margin:8px 0 12px;font-size:15px}details.bank summary{cursor:pointer;color:var(--accent);font-weight:600}
+@media print{button{display:none}}
+
+
+.snd{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:8px;z-index:5;min-height:40px;min-width:40px;padding:6px 10px;font-size:20px;border-radius:999px;opacity:.9}
+.stars{display:flex;gap:4px;margin:8px 0 2px;flex-wrap:wrap;align-items:center}
+.stars .st{font-size:22px;line-height:1;color:var(--line);transition:color .2s}
+.stars .st.on{color:#e8a400}.stars .st.half{color:#e8a400;opacity:.55}.stars .st.miss{color:var(--bad);opacity:.5}
+.stars .st.pop{animation:pop .45s ease-out}
+.stars .passline{font-size:13px;color:var(--muted);margin-left:6px}
+@keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.5)}100%{transform:scale(1)}}
+.lstars{font-size:20px;letter-spacing:2px;color:#e8a400;margin-top:4px}.lstars .no{color:var(--line)}
+.bigstars{font-size:46px;letter-spacing:6px;color:#e8a400;text-align:center;margin:6px 0}.bigstars .no{color:var(--line)}
+.bigstars span.pop{display:inline-block;animation:pop .6s ease-out}
+.grp{margin:18px 0 4px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.newb{display:inline-block;background:var(--accent);color:var(--on-accent);border-radius:999px;font-size:12px;font-weight:700;padding:2px 10px;margin-left:8px;vertical-align:middle}
+.tslot{min-height:58px;border:2px dashed var(--line);border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;background:var(--card)}
+.tbank{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.tile{padding:8px 14px;min-height:44px;font-size:19px;border-radius:10px;background:var(--card)}
+.tile.gone{visibility:hidden}
+.tslot.right{border-color:var(--good);background:var(--goodbg)}.tslot.wrong{border-color:var(--bad);background:var(--badbg)}
+.two{display:inline-block;font-size:12px;background:var(--soft);color:var(--latin);border-radius:999px;padding:1px 8px;margin-left:6px;font-weight:700}
+@media (prefers-reduced-motion:reduce){.stars .st.pop,.bigstars span.pop{animation:none}}
+@media print{.snd{display:none}}
+#app{padding-top:54px}
+</style>
+
+<div id="app"><noscript>This game needs JavaScript. Open this page in Safari or Chrome.</noscript></div>
+<script>
+// ===== CONTENT: Stage 6 words and verb stems. The game engine below does not need to change. =====
+const CONTENT6 = {
+  title: "Lily's Latin Quest: Stage 6",
+  passScore: 18,
+  perTry: 20,
+  // [latin, kind, primary English, other accepted English, memory hook]
+  vocab: [
+    ["vituperat","verb","blames",["scolds","blame","scold"],"vituperat is like vituperate: harsh blame."],
+    ["abest","verb","is absent",["is away","absent"],"abest is like absent."],
+    ["tuus","adj","your",["yours"],"tu means you (Stage 4). tuus is the 'your' word."],
+    ["aberat","verb","was absent",["was away"],"aberat is abest in the past: he WAS absent."],
+    ["tum","little","then",[],"tum: 'then, tum, the next thing happened.'"],
+    ["avārus","adj","greedy",["miser"],"avārus is like avarice: greed."],
+    ["superat","verb","overpowers",["overcomes","overpower","overcome"],"superat is like superior or super: he is on top."],
+    ["bonus","adj","good",[],"bonus: something good that you get."],
+    ["subitō","little","suddenly",["sudden"],"subitō is like sudden."],
+    ["emit","verb","buys",["buy"],"emit: picture someone buying a baseball mitt (e-MIT)."],
+    ["scrībit","verb","writes",["write"],"scrībit is like scribe: a person who writes."],
+    ["erat","verb","was",[],"erat is est (is) moved into the past: WAS."],
+    ["rēs","noun","thing",["matter"],"rēs: a real thing."],
+    ["ferōciter","little","fiercely",["fierce"],"ferōciter is like ferocious: fiercely."],
+    ["quod","little","because",[],"quod: 'because quod I said so.'"],
+    ["festīnat","verb","hurries",["hurry"],"festīnat is like fast: he hurries."],
+    ["pulsat","verb","hits",["strikes","knocks","hit","strike","knock"],"pulsat is like pulse: a beat, a hit."],
+    ["fortis","adj","brave",["strong"],"fortis is like fort and fortify: strong and brave."],
+    ["postquam","little","after",[],"post = after (postpone, postscript)."],
+    ["fūr","noun","thief",["robber"],"fūr: the thief stole the fur coat."],
+    ["per","little","through",[],"per = through (permeate)."],
+    ["īnfāns","noun","baby",["infant","child"],"īnfāns is infant."],
+    ["parvus","adj","small",["little","tiny"],"parvus: a very small parcel."],
+    ["intentē","little","intently",["intent"],"intentē is like intent or intently."],
+    ["ōlim","little","once",["once upon a time","long ago","formerly"],"ōlim: 'old time': once, long ago."],
+    ["lībertus","noun","freedman",["freed slave","freed man"],"lībertus is like liberty: a freed slave."]
+  ],
+  // [stem with macron, English base, -ed form, -ing form, in the guided-notes stem bank?, allowed tenses]
+  stems: [
+    ["contendē","hurry","hurried","hurrying",1,["imp"]],
+    ["habitā","live in","lived in","living in",1,["imp","perf"]],
+    ["habē","have","had","having",1,["imp"]],
+    ["intrā","enter","entered","entering",1,["imp","perf"]],
+    ["circumspectā","look around","looked around","looking around",1,["imp","perf"]],
+    ["clāmā","shout","shouted","shouting",1,["imp","perf"]],
+    ["pugnā","fight","fought","fighting",1,["imp","perf"]],
+    ["superā","overpower","overpowered","overpowering",1,["imp","perf"]],
+    ["rogā","ask","asked","asking",1,["imp","perf"]],
+    ["petī","head for","headed for","heading for",1,["perf"]],
+    ["rīdē","laugh","laughed","laughing",1,["imp"]],
+    ["festīnā","hurry","hurried","hurrying",1,["imp","perf"]],
+    ["ambulā","walk","walked","walking",0,["imp","perf"]],
+    ["stā","stand","stood","standing",0,["imp"]],
+    ["vidē","see","saw","seeing",0,["imp"]],
+    ["vocā","call","called","calling",0,["imp","perf"]],
+    ["dormī","sleep","slept","sleeping",0,["imp","perf"]]
+  ],
+  guided: ["contendēbant","habitābat","habēbat","intrāvērunt","circumspectāvērunt","clāmāvit","pugnāvit","superāvērunt","rogāvit","petīvērunt","rīdēbat","festīnāvērunt"],
+  // study-guide words that are not built by the stem rule: [latin, tense, [accepted English], model]
+  study: [
+    ["erat","imp",["he was","she was","it was","he/she/it was"],"he/she/it was"],
+    ["stant","pres",["they stand","they are standing"],"they stand"],
+    ["scrībit","pres",["he writes","she writes","it writes","he/she/it writes","he is writing","she is writing","it is writing","he/she/it is writing"],"he/she/it writes"],
+    ["petis","pres",["you head for","you are heading for","you seek","you attack"],"you head for"],
+    ["vocat","pres",["he calls","she calls","it calls","he/she/it calls","he is calling","she is calling","it is calling","he/she/it is calling"],"he/she/it calls"],
+    ["superās","pres",["you overpower","you overcome","you are overpowering","you are overcoming"],"you overpower"],
+    ["dormit","pres",["he sleeps","she sleeps","it sleeps","he/she/it sleeps","he is sleeping","she is sleeping","it is sleeping","he/she/it is sleeping"],"he/she/it sleeps"],
+    ["ambulant","pres",["they walk","they are walking"],"they walk"],
+    ["videō","pres",["i see","i am seeing"],"I see"]
+  ],
+  studyList: ["ambulāvit","stant","scrībit","erat","vidēbant","petis","dormiēbant","vocat","vocāvērunt","stābat","superās","superāvērunt","dormit","ambulant","petīvit","videō"]
+};
+// ===== END CONTENT =====
+
+// ===== CONTENT: Stage 7. To add a later stage, add a CONTENT object and a build function, then list it in STAGES. =====
+const CONTENT7 = {
+  title: "Lily's Latin Quest: Stage 7",
+  passScore: 8,
+  perTry: 10,
+  // l Latin | k kind | s English meanings (each one is its own question) | x other accepted English | h memory hook
+  // verbs also have: p perfect he/she/it | pl perfect they | pe present English | pa past English
+  vocab: [
+    {l:"cēnat",k:"verb",p:"cēnāvit",pl:"cēnāvērunt",pe:"dines",pa:"dined",s:["eats dinner","dines"],x:["eat dinner","dine","has dinner","have dinner","is dining","is eating dinner"],h:"Stage 2 gave you cēna (dinner). cēnat = eats dinner."},
+    {l:"centuriō",k:"noun",s:["centurion"],x:[],h:"Like century: an army leader over about 100 men."},
+    {l:"cōnspicit",k:"verb",p:"cōnspexit",pl:"cōnspexērunt",pe:"catches sight of",pa:"caught sight of",s:["catches sight of"],x:["catch sight of","sees","notices","spots","see","notice","spot"],h:"Like conspicuous: easy to catch sight of."},
+    {l:"cum",k:"little",s:["with"],x:[],h:"'cum laude' means 'with praise'."},
+    {l:"facit",k:"verb",p:"fēcit",pl:"fēcērunt",pe:"makes",pa:"made",s:["makes","does"],x:["make","do","is making","is doing"],h:"Like factory: where things are made."},
+    {l:"heri",k:"little",s:["yesterday"],x:[],h:"Say 'HEH-ree'. Yesterday is already history."},
+    {l:"ingēns",k:"adj",s:["huge"],x:["enormous","giant","gigantic","immense"],h:"Think 'in-giant': huge."},
+    {l:"intellegit",k:"verb",p:"intellēxit",pl:"intellēxērunt",pe:"understands",pa:"understood",s:["understands"],x:["understand","is understanding"],h:"Like intelligent: someone who understands."},
+    {l:"lacrimat",k:"verb",p:"lacrimāvit",pl:"lacrimāvērunt",pe:"weeps",pa:"wept",s:["cries","weeps"],x:["cry","weep","is crying","is weeping"],h:"Like lachrymose: tearful."},
+    {l:"mortuus",k:"adj",s:["dead"],x:[],h:"Like mortuary and mortal."},
+    {l:"nārrat",k:"verb",p:"nārrāvit",pl:"nārrāvērunt",pe:"tells",pa:"told",s:["tells","relates"],x:["tell","relate","is telling","is relating"],h:"Like narrate."},
+    {l:"necat",k:"verb",p:"necāvit",pl:"necāvērunt",pe:"kills",pa:"killed",s:["kills"],x:["kill","is killing"],h:"Like necrotic: words about death."},
+    {l:"nihil",k:"little",s:["nothing"],x:[],h:"Like annihilate (turn into nothing) and nihilist."},
+    {l:"omnis",k:"adj",s:["all"],x:["every","each"],h:"Like omnivore (eats all things)."},
+    {l:"parat",k:"verb",p:"parāvit",pl:"parāvērunt",pe:"prepares",pa:"prepared",s:["prepares"],x:["prepare","is preparing","gets ready"],h:"Like prepare."},
+    {l:"pestis",k:"noun",s:["pest","rascal"],x:["plague","pests","rascals"],h:"Like pest and pesticide."},
+    {l:"pōculum",k:"noun",s:["cup"],x:["wine cup","cup for wine","cup of wine"],h:"Like potion: a cup for drinking."},
+    {l:"prōcēdit",k:"verb",p:"prōcessit",pl:"prōcessērunt",pe:"advances",pa:"advanced",s:["advances","proceeds"],x:["advance","proceed","is advancing","is proceeding","moves forward"],h:"Like proceed and procession."},
+    {l:"prope",k:"little",s:["near"],x:["close to","nearby"],h:"Like proximity."},
+    {l:"pulcher",k:"adj",s:["beautiful","handsome"],x:["pretty","good-looking","good looking"],h:"Like pulchritude, a fancy word for beauty."},
+    {l:"rogat",k:"verb",p:"rogāvit",pl:"rogāvērunt",pe:"asks",pa:"asked",s:["asks"],x:["ask","is asking"],h:"Like interrogate: to ask questions."},
+    {l:"tacitē",k:"little",s:["quietly","silently"],x:["quiet","silent"],h:"Like tacit and taciturn: quiet."},
+    {l:"tamen",k:"little",s:["however"],x:["but","yet","still"],h:"A little 'but': however."},
+    {l:"terret",k:"verb",p:"terruit",pl:"terruērunt",pe:"frightens",pa:"frightened",s:["frightens"],x:["frighten","scares","scare","terrifies","terrify","is frightening"],h:"Like terrify and terror."},
+    {l:"umbra",k:"noun",s:["ghost","shadow"],x:["ghosts","shadows","spirit"],h:"Like umbrella (it makes shade) and penumbra."},
+    {l:"valdē",k:"little",s:["very much","very"],x:["greatly","a lot","really"],h:"Like valid and valiant: very strong."}
+  ],
+  // verbs from the About the Language II chart that are not on the checklist
+  bookPairs: [
+    {l:"appāret",p:"appāruit",pl:"appāruērunt",pe:"appears",pa:"appeared"},
+    {l:"dīcit",p:"dīxit",pl:"dīxērunt",pe:"says",pa:"said"},
+    {l:"discēdit",p:"discessit",pl:"discessērunt",pe:"leaves",pa:"left"},
+    {l:"capit",p:"cēpit",pl:"cēpērunt",pe:"takes",pa:"took"},
+    {l:"venit",p:"vēnit",pl:"vēnērunt",pe:"comes",pa:"came"}
+  ],
+  // recall words from Stages 2 to 5: [latin, kind, English, other accepted English, stage]
+  recall: [
+    ["amīcus","noun","friend",[],2],["ancilla","noun","slave-girl",["slave girl","maid"],2],["dominus","noun","master",[],2],["cēna","noun","dinner",[],2],
+    ["laudat","verb","praises",["praise"],2],["mensa","noun","table",[],2],["mercātor","noun","merchant",[],2],["salūtat","verb","greets",["greet"],2],["cibus","noun","food",[],2],["laetus","adj","happy",[],2],
+    ["bibit","verb","drinks",["drink"],3],["clāmat","verb","shouts",["shout"],3],["iānua","noun","door",[],3],["īrātus","adj","angry",[],3],["leō","noun","lion",[],3],["magnus","adj","great",["big","large"],3],
+    ["nāvis","noun","ship",[],3],["portat","verb","carries",["carry"],3],["respondet","verb","replies",["reply","answers","answer"],3],["rīdet","verb","laughs",["smiles","laugh","smile"],3],
+    ["surgit","verb","gets up",["rises","get up","rise"],3],["taberna","noun","shop",["inn","tavern"],3],["videt","verb","sees",["see"],3],["vīlla","noun","house",["villa"],3],["vīnum","noun","wine",[],3],
+    ["aula","noun","hall",["palace"],4],["anulus","noun","ring",[],4],["coquit","verb","cooks",["cook"],4],["habet","verb","has",["have"],4],["pecūnia","noun","money",[],4],["poēta","noun","poet",[],4],
+    ["vendit","verb","sells",["sell"],4],["vocat","verb","calls",["call"],4],["mendāx","noun","liar",[],4],["perterritus","adj","terrified",[],4],
+    ["agricola","noun","farmer",[],5],["audit","verb","hears",["listens to","hear","listens"],5],["clāmor","noun","shout",["uproar","noise"],5],["currit","verb","runs",["run"],5],
+    ["fābula","noun","story",["play"],5],["fēmina","noun","woman",[],5],["hodiē","little","today",[],5],["iuvenis","noun","young man",[],5],["puella","noun","girl",[],5],["senex","noun","old man",[],5],
+    ["spectat","verb","looks at",["watches","look at","watch"],5],["stat","verb","stands",["stand"],5],["turba","noun","crowd",[],5],["urbs","noun","city",[],5],["venit","verb","comes",["come"],5],["optimus","adj","excellent",["best","very good"],5]
+  ]
+};
+
+</script>
+<script>
+(function(){
+"use strict";
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const SR = mulberry32(20261006);
+function shuffle(arr, r=Math.random){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const pick = (arr, r=Math.random) => arr[Math.floor(r()*arr.length)];
+const L = s => `<span class="lat">${esc(s)}</span>`;
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+
+// ---------- text helpers. Macrons are optional everywhere: they are stripped before comparing.
+function strip(s){return String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()}
+function norm(s){return strip(s).replace(/[^a-z' ]/g,' ').split(/\s+/).filter(t=>t&&!['the','a','an'].includes(t)).join(' ')}
+function osa(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=[i]}for(let j=1;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++){d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]) d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1)}return d[m][n]}
+function endingDiff(a,b){const s=a.length<b.length?a:b,l=a.length<b.length?b:a;return l.startsWith(s)&&['s','es','ed','d','ing'].includes(l.slice(s.length))}
+const PROT = new Set(['he','she','it','they','you','i','was','were','is','are','we']);
+// returns 'exact' | 'close' | 'wrong'. 'close' = one small spelling slip, same word and same ending.
+function judgeText(input, answers, opts){
+  opts = opts||{};
+  const n = norm(input); if(!n) return 'wrong';
+  let best='wrong';
+  for(const ans of answers){
+    const m = norm(ans); if(!m) continue;
+    if(n===m) return 'exact';
+    const ta=n.split(' '), tb=m.split(' '); if(ta.length!==tb.length) continue;
+    let diff=0, ok=true;
+    for(let i=0;i<ta.length;i++){
+      const x=ta[i], y=tb[i]; if(x===y) continue; diff++;
+      if(PROT.has(x)||PROT.has(y)){ok=false;break}
+      if(endingDiff(x,y)){ok=false;break}
+      if(y.length<4||x.length<3){ok=false;break}
+      if(osa(x,y)>(y.length>=9?2:1)){ok=false;break}
+      if(opts.form && ta.length===1 && x.slice(-3)!==y.slice(-3)){ok=false;break}
+    }
+    if(ok && diff===1) best='close';
+  }
+  return best;
+}
+
+let C, ITEMS=[], byId={}, LEVELS=[], bankHTML=()=>'', tenseGuideHTML=()=>'', KEY='', S=null;
+// ---------- levels
+const SPELL = {lenient:'Spelling: close counts (you fix it)', half:'Spelling: close = half credit', exact:'Spelling: exact for full credit', none:'Spelling: choices only'};
+function build6(){
+C = CONTENT6;
+const PERSON = {t:'he/she/it', nt:'they', s:'you'};
+const BANK12 = C.stems.filter(s=>s[4]);
+function bankHTML6(mode){
+  if(mode==='none') return '';
+  const rows = (mode==='notes'?BANK12:C.stems).map(s=>`<span class="lat">${esc(s[0])}-</span>: ${esc(s[1])}`);
+  return `<details class="bank" open><summary>Verb stem bank</summary><div>${rows.join(' &nbsp;|&nbsp; ')}</div></details>`;
+}
+
+// ---------- items
+ITEMS=[]; byId={};
+function add(it){ it.ckey=it.ckey||it.id; byId[it.id]=it; ITEMS.push(it); return it; }
+function mc(o){ return add(Object.assign({kind:'mc',section:'grammar',diff:2}, o)); }
+function ty(o){ return add(Object.assign({kind:'type',section:'translation',diff:2}, o)); }
+
+// --- vocabulary
+const VOC = C.vocab.map(([lat,kind,primary,extra,hook])=>{
+  const acc = new Set([primary, ...extra]);
+  if(kind==='verb'){ [primary,...extra].forEach(v=>['he','she','it','he/she/it'].forEach(s=>acc.add(s+' '+v))); }
+  return {lat, key:strip(lat), kind, primary, hook, answers:[...acc]};
+});
+VOC.forEach(w=>{
+  const same = VOC.filter(x=>x!==w && x.kind===w.kind);
+  const pool = same.length>=3? same : VOC.filter(x=>x!==w);
+  const why = `${w.lat} means "${w.primary}". Hook: ${w.hook}`;
+  const base = {why, ckey:'vocab:'+w.key, label:`${w.lat} (${w.primary})`};
+  mc(Object.assign({}, base, {id:`v:${w.key}:l2e`, tag:'v-l2e', lvls:[1,2], section:'vocab', diff:1, pattern:'vocab: Latin to English',
+    q:`What does ${L(w.lat)} mean?`, answer:w.primary, options:()=>[w.primary,...shuffle(pool).slice(0,3).map(x=>x.primary)]}));
+  mc(Object.assign({}, base, {id:`v:${w.key}:e2l`, tag:'v-e2l', lvls:[1,2], section:'vocab', diff:2, pattern:'vocab: English to Latin',
+    q:`Which Latin word means <b>${esc(w.primary)}</b>?`, answer:w.lat, options:()=>[w.lat,...shuffle(pool).slice(0,3).map(x=>x.lat)]}));
+  ty(Object.assign({}, base, {id:`v:${w.key}:type`, tag:'v-type', lvls:[4,5,6], section:'vocab', pattern:'vocab: type the English',
+    q:`Type the English for ${L(w.lat)}`, answers:w.answers, model:w.primary}));
+  ty(Object.assign({}, base, {id:`v:${w.key}:t2l`, tag:'v-t2l', lvls:[5,6], section:'vocab', pattern:'vocab: type the Latin', form:false,
+    q:`Type the Latin for <b>${esc(w.primary)}</b> <span class="hint">(macrons are optional)</span>`, answers:[w.lat], model:w.lat}));
+  // unscramble (Level 4 bridge between seeing a word and spelling it)
+  const letters = strip(w.lat).split('');
+  let sc = letters.slice(); let tries=0; do{ sc=shuffle(letters,SR); tries++ }while(sc.join('')===letters.join('') && tries<20);
+  ty(Object.assign({}, base, {id:`v:${w.key}:scr`, tag:'v-scr', lvls:[4], section:'vocab', pattern:'vocab: unscramble the Latin', form:false, diff:1,
+    q:`Unscramble the letters to spell the Latin word for <b>${esc(w.primary)}</b>:<div class="latq">${esc(sc.join(' '))}</div>`, answers:[w.lat], model:w.lat}));
+});
+
+// --- verb forms
+const STEMOBJ = C.stems.map(([s,base,ed,ing,bank,tenses])=>({s,base,ed,ing,bank,tenses}));
+function latForm(st,tense,p){
+  if(tense==='imp'){ const b = st.s.endsWith('ī') ? st.s.slice(0,-1)+'iē' : st.s; return b + (p==='t'?'bat':p==='nt'?'bant':'bās'); }
+  return st.s + (p==='t'?'vit':'vērunt');
+}
+function enModel(st,tense,p){
+  if(tense==='imp') return `${PERSON[p]} ${p==='t'?'was':'were'} ${st.ing}`;
+  return `${PERSON[p]} ${st.ed}`;
+}
+function enAnswers(st,tense,p){
+  const subs = p==='t'?['he','she','it','he/she/it']:[PERSON[p]];
+  return subs.map(s=> tense==='imp' ? `${s} ${p==='t'?'was':'were'} ${st.ing}` : `${s} ${st.ed}`);
+}
+const FORMS=[];
+STEMOBJ.forEach(st=>st.tenses.forEach(tense=>{
+  const persons = tense==='imp' ? ['t','nt','s'] : ['t','nt'];
+  persons.forEach(p=>FORMS.push({lat:latForm(st,tense,p), key:strip(latForm(st,tense,p)), st, tense, p, en:enAnswers(st,tense,p), model:enModel(st,tense,p)}));
+}));
+const FBYLAT = {}; FORMS.forEach(f=>FBYLAT[f.key]=f);
+// answer set for English-to-Latin: every Latin form that has the same English meaning
+function latAnswersFor(f){ return FORMS.filter(g=>g.tense===f.tense && g.p===f.p && g.st.base===f.st.base).map(g=>g.lat); }
+const TENSE_NAME = {imp:'Imperfect', perf:'Past-Perfect', pres:'Present'};
+const TENSE_MARK = {imp:'-ba- (was/were ___ing)', perf:'-vi- / -vēru- (___ed)', pres:'neither one (just a person ending)'};
+const GUIDED = new Set(C.guided.map(strip)), STUDY = new Set(C.studyList.map(strip));
+
+const PEOPLE = ['he/she/it','they','you'];
+FORMS.forEach(f=>{
+  const stemSame = FORMS.filter(g=>g!==f && g.tense===f.tense && g.p===f.p && g.st.base!==f.st.base);
+  const base = {ckey:'verb:'+f.key, label:`${f.lat} (${f.model})`, form:true};
+  const whyAll = `Right to left: ${f.lat} ends in -${f.p==='t'?'t':f.p==='nt'?'nt':'s'} = ${PERSON[f.p]}. Next comes ${f.tense==='imp'?'-ba-':'-vi-/-vēru-'} = ${f.tense==='imp'?'was/were ___ing':'___ed'}. The stem ${f.st.s}- = ${f.st.base}. So: ${f.model}.`;
+  mc(Object.assign({}, base, {id:`f:${f.key}:person`, tag:'f-person', lvls:[3], section:'grammar', diff:1, pattern:'verb: who is doing it (person ending)',
+    q:`Start at the END of ${L(f.lat)}. Who is doing the action?`, answer:PERSON[f.p], options:()=>PEOPLE, why:whyAll}));
+  mc(Object.assign({}, base, {id:`f:${f.key}:tense`, tag:'f-tense', lvls:[3], section:'grammar', diff:2, pattern:'verb: which tense marker',
+    q:`Next, look just before the person ending in ${L(f.lat)}. Which tense marker is it?`, answer:TENSE_MARK[f.tense],
+    options:()=>[TENSE_MARK.imp,TENSE_MARK.perf,TENSE_MARK.pres], why:whyAll}));
+  mc(Object.assign({}, base, {id:`f:${f.key}:stem`, tag:'f-stem', lvls:[3], section:'grammar', diff:2, pattern:'verb: what the stem means',
+    q:`In ${L(f.lat)}, the verb stem is ${L(f.st.s+'-')}. What does the stem mean?`, answer:f.st.base,
+    options:()=>[f.st.base,...shuffle(STEMOBJ.filter(s=>s.base!==f.st.base)).slice(0,3).map(s=>s.base)], why:whyAll}));
+  const otherP = ['t','nt','s'].filter(p=>p!==f.p && (f.tense==='imp'||p!=='s'));
+  const otherT = f.tense==='imp'?'perf':'imp';
+  mc(Object.assign({}, base, {id:`f:${f.key}:trmc`, tag:'f-trans', lvls:[3], section:'translation', diff:2, pattern:'verb: translate (choose)',
+    q:`Translate ${L(f.lat)}`, answer:f.model, why:whyAll,
+    options:()=>{ const o=[f.model, enModel(f.st,f.tense,pick(otherP)), enModel(f.st,otherT,f.p), stemSame.length?enModel(pick(stemSame).st,f.tense,f.p):enModel(f.st,otherT,otherP[0]||'t')]; return o; }}));
+  const bankMode = lv => lv<=5 ? 'all' : (GUIDED.has(f.key)?'notes':'none');
+  const l6 = GUIDED.has(f.key) || STUDY.has(f.key);
+  ty(Object.assign({}, base, {id:`f:${f.key}:type`, tag:'f-trans', lvls:l6?[4,5,6]:[4,5], section:'translation', pattern:'verb: type the translation', bankMode,
+    q:`Translate into English:<div class="latq">${esc(f.lat)}</div>`, answers:f.en, model:f.model, why:whyAll}));
+  ty(Object.assign({}, base, {id:`f:${f.key}:build`, tag:'f-build', lvls:[4], section:'translation', diff:2, pattern:'verb: build it from parts', bankMode:()=>'none',
+    q:`Build the Latin verb:<div class="qtext">Stem <span class="lat">${esc(f.st.s)}-</span> + tense <span class="lat">${f.tense==='imp'?'-ba-':'-vi- / -vēru-'}</span> + person <b>${PERSON[f.p]}</b></div><div class="hint">Remember the order: stem, then tense, then person. (${esc(f.model)})</div>`,
+    answers:[f.lat], model:f.lat, why:whyAll}));
+  ty(Object.assign({}, base, {id:`f:${f.key}:e2l`, tag:'f-e2l', lvls:f.st.bank?[5,6]:[5], section:'translation', diff:3, pattern:'verb: write the Latin', bankMode:lv=>lv<=5?'all':'notes',
+    q:`Write in Latin: <b>${esc(f.model)}</b> <span class="hint">(macrons are optional)</span>`, answers:latAnswersFor(f), model:f.lat, why:whyAll}));
+  if(GUIDED.has(f.key)||STUDY.has(f.key)||f.tense==='imp'||f.tense==='perf'){
+    mc(Object.assign({}, base, {id:`f:${f.key}:sort`, tag:'f-sort', lvls:[2,3,6], section:'grammar', diff:1, pattern:'sort the verb by tense',
+      q:`Which tense is ${L(f.lat)}?`, answer:TENSE_NAME[f.tense], options:()=>['Imperfect','Past-Perfect','Present'],
+      why:`Look for the marker before the person ending. ${f.tense==='imp'?'-ba- = Imperfect (was/were ___ing).':'-vi- or -vēru- = Past-Perfect (___ed).'}`}));
+  }
+});
+// study-guide words with irregular or present forms
+C.study.forEach(([lat,tense,en,model])=>{
+  const key=strip(lat);
+  const base={ckey:'verb:'+key, label:`${lat} (${model})`, form:true};
+  const why = tense==='pres' ? `${lat} has no -ba- and no -vi-/-vēru-, so it is Present. Translate it as "${model}".` : `${lat} is erat: WAS. It is the Imperfect of "to be", like aberat (was absent).`;
+  ty(Object.assign({}, base, {id:`f:${key}:type`, tag:'f-trans', lvls:[4,5,6], section:'translation', pattern:'verb: type the translation', bankMode:lv=>lv<=5?'all':'none',
+    q:`Translate into English:<div class="latq">${esc(lat)}</div>`, answers:en, model, why}));
+  mc(Object.assign({}, base, {id:`f:${key}:sort`, tag:'f-sort', lvls:[2,3,6], section:'grammar', diff:1, pattern:'sort the verb by tense',
+    q:`Which tense is ${L(lat)}?`, answer:TENSE_NAME[tense], options:()=>['Imperfect','Past-Perfect','Present'], why}));
+});
+
+// --- endings
+const E_MC = [
+  ["e:mc:t","What does the ending -t tell you?","he/she/it",["he/she/it","they","you"],"-t = he/she/it (one doer)."],
+  ["e:mc:nt","What does the ending -nt tell you?","they",["he/she/it","they","you"],"-nt = they (more than one doer)."],
+  ["e:mc:s","What does the ending -s tell you?","you",["he/she/it","they","you"],"-s = you."],
+  ["e:mc:ba","What does -ba- tell you?","was/were ___ing",["was/were ___ing","___ed","right now"],"-ba- = was/were ___ing. This is the Imperfect."],
+  ["e:mc:vi","What does -vi- (or -vēru-) tell you?","___ed",["was/were ___ing","___ed","right now"],"-vi- / -vēru- = ___ed. This is the Past-Perfect."],
+  ["e:mc:imp","Which tense uses -ba-?","Imperfect",["Imperfect","Past-Perfect","Present"],"-ba- is the Imperfect marker."],
+  ["e:mc:perf","Which tense uses -vi- / -vēru-?","Past-Perfect",["Imperfect","Past-Perfect","Present"],"-vi- / -vēru- is the Past-Perfect marker."],
+  ["e:mc:pres","A verb with NO -ba- and NO -vi-/-vēru- is in which tense?","Present",["Imperfect","Past-Perfect","Present"],"No tense marker means Present: stant = they stand."]
+];
+E_MC.forEach(([id,q,a,o,why])=>mc({id, tag:'e-mc', lvls:[2], section:'grammar', diff:1, pattern:'what the endings mean', label:q, q:esc(q), answer:a, options:()=>o, why}));
+mc({id:'e:order', tag:'e-mc', lvls:[2], section:'grammar', diff:2, pattern:'the order inside a Latin verb', label:'order of a verb', q:'What order do the pieces of a Latin verb go in?', answer:'Verb stem, then Tense, then Person',
+  options:()=>['Verb stem, then Tense, then Person','Person, then Tense, then Verb stem','Tense, then Verb stem, then Person'], why:'Stem - Tense - Person. Translate from right to left: person, tense, then stem.'});
+mc({id:'e:rtl', tag:'e-mc', lvls:[2], section:'grammar', diff:1, pattern:'the order inside a Latin verb', label:'where to start', q:'When you translate a Latin verb, where do you START looking?', answer:'At the end (the person)',
+  options:()=>['At the end (the person)','At the beginning (the stem)','In the middle'], why:'Start at the end with the person (-s, -t, -nt), then the tense, then look up the stem.'});
+// tense concepts (imperfect vs past-perfect vs present)
+const CONCEPT = [
+  ["c:1","In a story, which tense shows something that was IN PROGRESS, 'was ___ing'?","Imperfect",["Imperfect","Past-Perfect","Present"],"The Imperfect is an action that was going on (was walking, were shouting)."],
+  ["c:2","In a story, which tense shows a finished action, '___ed'?","Past-Perfect",["Imperfect","Past-Perfect","Present"],"The Past-Perfect is an action that happened and was completed (walked, shouted)."],
+  ["c:3","Which English sentence matches the IMPERFECT?","The girl was walking.",["The girl was walking.","The girl walked.","The girl walks."],"Imperfect = was/were ___ing."],
+  ["c:4","Which English sentence matches the PAST-PERFECT?","The girl walked.",["The girl was walking.","The girl walked.","The girl walks."],"Past-Perfect = ___ed."],
+  ["c:5","Which English sentence matches the PRESENT?","The girl walks.",["The girl was walking.","The girl walked.","The girl walks."],"Present = happening now: walks or is walking."],
+  ["c:6","ambulābat and ambulāvit are the same verb. What is the difference?","ambulābat = was walking; ambulāvit = walked",["ambulābat = was walking; ambulāvit = walked","ambulābat = walked; ambulāvit = was walking","They mean the same thing","ambulābat = they walk; ambulāvit = he walks"],"-ba- means was ___ing (still going). -vi- means ___ed (done)."],
+  ["c:7","Which tense tells you the action is happening right now?","Present",["Imperfect","Past-Perfect","Present"],"Present tense, with no -ba- and no -vi-."],
+  ["c:8","Both Imperfect and Past-Perfect are about the...","past",["past","future","present"],"Both are past tenses. They show two different ways the action happened."]
+];
+CONCEPT.forEach(([id,q,a,o,why])=>mc({id, tag:'e-mc', lvls:[2,3], section:'grammar', diff:id==='c:6'?3:1, pattern:'imperfect vs past-perfect vs present', label:q, q:esc(q), answer:a, options:()=>o, why}));
+// typed endings
+const E_TY = [
+  ["e:ty:t","Type the PERSON ending that means <b>he/she/it</b>",["t","-t"],"t","-t = he/she/it."],
+  ["e:ty:nt","Type the PERSON ending that means <b>they</b>",["nt","-nt"],"nt","-nt = they."],
+  ["e:ty:s","Type the PERSON ending that means <b>you</b>",["s","-s"],"s","-s = you."],
+  ["e:ty:imp","Imperfect chart: type the tense marker (the little piece in the middle) for <b>was/were ___ing</b>",["ba","-ba-"],"-ba-","The Imperfect marker is -ba-."],
+  ["e:ty:perf","Past-Perfect chart: type the tense marker for <b>___ed</b> (either one is fine)",["vi","veru","-vi-","-veru-","vi veru","vi/veru"],"-vi- or -vēru-","The Past-Perfect marker is -vi- or -vēru-."]
+];
+E_TY.forEach(([id,q,ans,model,why])=>ty({id, tag:'e-ty', lvls:[4,6], section:'grammar', diff:1, pattern:'type the ending or marker', label:q.replace(/<[^>]+>/g,''), q, answers:ans, model, why, form:false, ckey:id}));
+
+// ---------- level config
+LEVELS = [
+  { id:1, title:"Meet the words", sub:"Stage 6 vocabulary: pick the meaning, pick the Latin", spell:'none', quota:{'v-l2e':10,'v-e2l':10},
+    teach:()=>`<p>These are the 26 Stage 6 words. Read each one out loud, then look at the hook. After this you will pick the right answer from choices.</p>
+      <div class="wide"><table class="chart"><tr><th>Latin</th><th>English</th><th>Hook</th></tr>${VOC.map(w=>`<tr><td class="lat">${esc(w.lat)}</td><td>${esc(w.primary)}</td><td>${esc(w.hook)}</td></tr>`).join('')}</table></div>` },
+  { id:2, title:"Endings and tenses", sub:"What -t, -nt, -s, -ba-, and -vi- tell you, and imperfect vs. the others", spell:'none', quota:{'e-mc':9,'f-sort':6,'v-l2e':3,'v-e2l':2},
+    teach:()=>tenseGuideHTML() },
+  { id:3, title:"Take the verb apart", sub:"Right to left: person, then tense, then stem", spell:'none', quota:{'f-person':4,'f-tense':4,'f-stem':3,'f-trans':6,'f-sort':3},
+    teach:()=>`<div class="tense"><b>Every verb has 3 parts, in this order:</b> <span class="lat">stem</span> + <span class="lat">tense</span> + <span class="lat">person</span>.<br>Translate from <b>right to left</b>.</div>
+      <p><b>Example: <span class="lat">audiēbat</span></b></p>
+      <ul><li><b>Step 1, person (the very end):</b> -t = he/she/it</li><li><b>Step 2, tense (next to it):</b> -ba- = was/were ___ing</li><li><b>Step 3, stem:</b> audiē- = listen</li></ul>
+      <p>Put it together: <b>he/she/it was listening.</b></p>
+      <p><b>Another:</b> <span class="lat">clāmāvērunt</span>: -nt = they, -vēru- = ___ed, clāmā- = shout. <b>They shouted.</b></p>
+      ${bankHTML('notes')}` },
+  { id:4, title:"Build it and type it", sub:"Your first typing. Close spelling still counts, and we show you the fix", spell:'lenient', quota:{'e-ty':3,'v-scr':5,'f-build':5,'f-trans':4,'v-type':3},
+    teach:()=>`<ul><li>Now you <b>type</b> the answers. This is the step between knowing it when you see it and knowing it on your own.</li>
+      <li><b>Spelling rule at this level:</b> if you are one small letter off, you still get the point. We show you the right spelling and you type it once to lock it in.</li>
+      <li><b>Macrons are optional.</b> Type <span class="lat">a</span> for <span class="lat">ā</span>. The tap-buttons above the box are there if you want them.</li>
+      <li>Keep the order: <b>stem, tense, person</b>.</li></ul>${bankHTML('all')}` },
+  { id:5, title:"Type it right", sub:"Say it from memory. A spelling slip now costs half a point", spell:'half', quota:{'v-type':5,'v-t2l':5,'f-trans':5,'f-e2l':5},
+    teach:()=>`<ul><li>Typing in <b>both directions</b>: Latin to English, and English to Latin.</li>
+      <li><b>Spelling rule at this level:</b> exact spelling = 1 point. One small slip = half a point, and you type the right spelling once.</li>
+      <li>A wrong ending is not a spelling slip. <span class="lat">contendēbat</span> and <span class="lat">contendēbant</span> are different words (he vs. they).</li>
+      <li>Macrons stay optional.</li></ul>${bankHTML('all')}` },
+  { id:6, title:"Test mirror", sub:"Like the real test: exact spelling for full credit", spell:'exact', quota:{'v-type':6,'e-ty':2,'f-sort':3,'f-trans':7,'f-e2l':2},
+    teach:()=>`<ul><li>This copies the Stage 6 study guide: <b>vocabulary</b>, <b>the endings chart</b>, <b>sorting verbs by tense</b>, and <b>translating verbs</b>.</li>
+      <li><b>Spelling rule at this level:</b> it must be spelled right for the point. A near miss shows the right spelling, you type it once, and it does not count. This is how the real grade will work.</li>
+      <li>Macrons are still optional.</li>
+      <li>The stem bank only shows for the guided-notes style verbs. For the study guide verbs (like <span class="lat">stant</span>, <span class="lat">petis</span>), use your memory, just like the test.</li>
+      <li>You need <b>18 of 20</b> to clear this one.</li></ul>${bankHTML('notes')}` }
+];
+
+function tenseGuide6(){
+  return `<div class="tense"><b>Big idea:</b> a verb's <b>tense</b> tells you <b>when</b> and <b>what kind</b> of action. You can spot the tense by the little marker just before the person ending.</div>
+  <div class="tense pres"><b class="name">Present</b> (happening now)<br>No marker. Just the person ending.<br><span class="lat">ambulat</span> = he/she/it walks. <span class="lat">ambulant</span> = they walk.</div>
+  <div class="tense imp"><b class="name">Imperfect</b> (was/were ___ing)<br>Marker: <b>-ba-</b>. This is an action that <b>was going on</b> in the past. Think of a movie that is still rolling.<br><span class="lat">ambulābat</span> = he/she/it <b>was walking</b>. <span class="lat">ambulābant</span> = they <b>were walking</b>.</div>
+  <div class="tense perf"><b class="name">Past-Perfect</b> (___ed)<br>Marker: <b>-vi-</b> or <b>-vēru-</b>. This is an action that <b>happened and is done</b>. Think of a photo, one finished moment.<br><span class="lat">ambulāvit</span> = he/she/it <b>walked</b>. <span class="lat">ambulāvērunt</span> = they <b>walked</b>.</div>
+  <div class="wide"><table class="chart"><tr><th>Tense</th><th>Marker</th><th>English</th><th>Example</th></tr>
+    <tr><td>Present</td><td>none</td><td>walks</td><td class="lat">ambulat</td></tr>
+    <tr><td>Imperfect</td><td>-ba-</td><td>was/were ___ing</td><td class="lat">ambulābat</td></tr>
+    <tr><td>Past-Perfect</td><td>-vi- / -vēru-</td><td>___ed</td><td class="lat">ambulāvit</td></tr></table></div>
+  <p><b>Imperfect vs. Past-Perfect in plain English:</b> "I <b>was walking</b> to school" (the walking is in progress, not finished) is Imperfect. "I <b>walked</b> to school" (done) is Past-Perfect. Both are in the past. They just show the action in two different ways.</p>
+  <p><b>Person endings</b> (the very end, same in every tense): <b>-s</b> you, <b>-t</b> he/she/it, <b>-nt</b> they.</p>
+  <p><b>Spot it:</b> <span class="lat">vidēbant</span> has -ba- and -nt, so <b>they were seeing</b>. <span class="lat">superāvērunt</span> has -vēru- and -nt, so <b>they overpowered</b>. <span class="lat">stant</span> has no marker, so <b>they stand</b>.</p>
+  <p class="tiny">Your class guide calls the -vi- tense "Past-Perfect." Some books call it just "Perfect." Use your teacher's word on the test. The odd one in the sort list is <span class="lat">erat</span>: it is "was," so it goes with the Imperfect.</p>`;
+}
+bankHTML=bankHTML6; tenseGuideHTML=tenseGuide6;
+}
+
+// ---------- Stage 7 sentences. ex() builds every combination of the alternatives, joined by spaces.
+const ex = (...parts) => parts.reduce((acc,p)=>acc.flatMap(a=>p.map(b=>a?a+' '+b:b)),['']);
+// two-sentence items: the second sentence has no subject word. rest uses {be} for was/were.
+const PAIRS7 = [
+  {id:'p1',l1:'Grumiō in culīnā labōrābat.',l2:'cēnam parābat.',en1:['Grumio was working in the kitchen'],noun:'Grumio',pron:'he',rest:['{be} preparing dinner','{be} getting dinner ready'],gloss:'labōrābat = was working, culīna = kitchen'},
+  {id:'p2',l1:'āctōrēs in theātrō clāmābant.',l2:'fābulam agēbant.',en1:['The actors were shouting in the theater','The actors were shouting in the theatre'],noun:'the actors',pron:'they',rest:['{be} acting in a play','{be} performing a play','{be} acting out a play','{be} putting on a play'],gloss:'āctōrēs = actors, fābulam agit = acts in a play'},
+  {id:'p3',l1:'Metella nōn erat in vīllā.',l2:'in hortō ambulābat.',en1:['Metella was not in the house','Metella was not in the villa',"Metella wasn't in the house","Metella wasn't in the villa"],noun:'Metella',pron:'she',rest:['{be} walking in the garden'],gloss:'hortus = garden, nōn = not'},
+  {id:'p4',l1:'lībertī in tabernā bibēbant.',l2:'Grumiōnem salūtāvērunt.',en1:ex(['The freedmen','The freed slaves'],['were drinking'],['in the inn','in the shop','in the tavern']),noun:'the freedmen',pron:'they',rest:['greeted Grumio','said hello to Grumio'],gloss:'lībertī = freedmen (freed slaves)'},
+  {id:'p5',l1:'iuvenis pōculum hausit.',l2:'vīnum laudāvit.',en1:ex(['The young man'],['drained','drank up','emptied','drank'],['the cup']),noun:'the young man',pron:'he',rest:['praised the wine'],gloss:'hausit = drained, drank up'},
+  {id:'p6',l1:'mercātor Caecilium vīsitābat.',l2:'vīllam intrāvit.',en1:['A merchant was visiting Caecilius','The merchant was visiting Caecilius'],noun:'the merchant',pron:'he',rest:['entered the house','entered the villa'],gloss:'vīsitābat = was visiting, intrāvit = entered'},
+  {id:'p7',l1:'amīcī cum Caeciliō cēnābant.',l2:'coquum laudāvērunt.',en1:ex(['Friends','The friends'],['were dining','were eating dinner','were having dinner'],['with Caecilius']),noun:'the friends',pron:'they',rest:['praised the cook'],gloss:'coquus = cook'},
+  {id:'p8',l1:'ancilla in ātriō stābat.',l2:'dominum salūtāvit.',en1:ex(['The slave-girl','The slave girl','The maid'],['was standing'],['in the hall','in the atrium']),noun:'the slave-girl',pron:'she',rest:['greeted the master','said hello to the master'],gloss:'ātrium = hall'},
+  {id:'p9',l1:'centuriō ingēns erat.',l2:'servum cōnspexit.',en1:ex(['The centurion was'],['huge','enormous','giant','gigantic']),noun:'the centurion',pron:'he',rest:['caught sight of the slave','saw the slave','spotted the slave','noticed the slave'],gloss:'servus = slave'},
+  {id:'p10',l1:'puella lacrimāvit.',l2:'nihil intellēxit.',en1:['The girl cried','The girl wept'],noun:'the girl',pron:'she',rest:['understood nothing','did not understand anything',"didn't understand anything"],gloss:'nihil = nothing'}
+];
+PAIRS7.forEach(p=>{ p.mainRest=p.rest[0]; p.distract=['he','she','they'].filter(x=>x!==p.pron).map(cap); });
+// single sentences: model English first, then accepted alternatives
+const SING7 = [
+  {id:'s1',l:'mercātor ē vīllā discessit.',en:ex(['The merchant'],['left','departed from','went out of'],['the house','the villa']),gloss:'ē = out of, discessit = left',d:['were','leaving','they']},
+  {id:'s2',l:'ancillae in vīllā dormīvērunt.',en:ex(['The slave-girls','The slave girls','The maids'],['slept'],['in the house','in the villa']),gloss:'dormīvērunt = slept',d:['was','sleeping','she']},
+  {id:'s3',l:'leōnēs gladiātōrem cōnspexērunt.',en:ex(['The lions'],['caught sight of','saw','spotted','noticed'],['the gladiator']),gloss:'gladiātor = gladiator',d:['lion','was','him']},
+  {id:'s4',l:'lībertī ad portum festīnāvērunt.',en:ex(['The freedmen','The freed slaves'],['hurried','rushed','hastened'],['to the harbor','to the harbour','to the port']),gloss:'portus = harbor',d:['freedman','hurrying','from']},
+  {id:'s5',l:'centuriō fābulam audīvit.',en:ex(['The centurion'],['heard','listened to'],['the story','the play','the tale']),gloss:'fābula = story, play',d:['were','centurions','hearing']},
+  {id:'s6',l:'fūr per urbem ruit.',en:ex(['The thief'],['rushed','ran','raced','dashed','hurried','rushes','runs','dashes','is rushing','is running'],['through the city']),gloss:'ruit = rushed, per = through',d:['thieves','were','by']},
+  {id:'s7',l:'Caecilius et amīcus portum petīvērunt.',en:ex(['Caecilius and a friend'],['headed for','headed to','made for','went to','sought'],['the harbor','the harbour']),gloss:'petit = heads for',d:['he','was','friends']},
+  {id:'s8',l:'Clēmēns dominum excitāvit.',en:ex(['Clemens'],['woke up','woke','awakened','roused'],['the master']),gloss:'excitāvit = woke up',d:['was','waking','they']},
+  {id:'s9',l:'lībertus fābulam nārrāvit.',en:ex(['The freedman','The freed slave'],['told','related'],['the story','a story','the tale']),gloss:'nārrat = tells',d:['were','telling','freedmen']},
+  {id:'s10',l:'agricolae ad forum festīnāvērunt.',en:ex(['The farmers'],['hurried','rushed','hastened'],['to the forum']),gloss:'agricola = farmer',d:['farmer','was','from']},
+  {id:'s11',l:'ancilla iānuam aperuit.',en:ex(['The slave-girl','The slave girl','The maid'],['opened'],['the door']),gloss:'aperuit = opened',d:['were','opening','slave-girls']},
+  {id:'s12',l:'puella clāmōrem fēcit.',en:ex(['The girl'],['made','raised','let out'],['a shout','a noise','an uproar','a commotion','a racket']).concat(['The girl shouted']),gloss:'clāmor = shout, uproar',d:['girls','was','making']},
+  {id:'s13',l:'spectātōrēs cibum ad theātrum portāvērunt.',en:ex(['The spectators'],['carried','brought','took'],['food','the food'],['to the theater','to the theatre']),gloss:'spectātor = spectator, cibus = food',d:['spectator','was','from']},
+  {id:'s14',l:'senex ē vīllā discessit.',en:ex(['The old man'],['left','departed from','went out of'],['the house','the villa']),gloss:'senex = old man',d:['men','were','into']},
+  {id:'s15',l:'centuriō ingēns erat.',en:ex(['The centurion was'],['huge','enormous','giant','gigantic','immense','very big']),gloss:'erat = was',d:['were','is','tiny']},
+  {id:'s16',l:'puella lacrimāvit.',en:['The girl wept','The girl cried','The girl burst into tears'],gloss:'lacrimāvit = wept',d:['girls','was','weeping']},
+  {id:'s17',l:'pestis nihil intellēxit.',en:ex(['The rascal','The pest'],['understood nothing','did not understand anything',"didn't understand anything"]),gloss:'pestis = pest, rascal',d:['rascals','something','was']},
+  {id:'s18',l:'umbra prope iānuam stābat.',en:ex(['The ghost','The shadow'],['was standing','stood'],['near the door']),gloss:'prope = near',d:['were','they','at']},
+  {id:'s19',l:'mercātor pōculum parāvit.',en:ex(['The merchant'],['prepared','got ready'],['the cup']),gloss:'pōculum = cup',d:['merchants','was','preparing']},
+  {id:'s20',l:'senex tacitē prōcessit.',en:ex(['The old man'],['advanced','proceeded','moved forward'],['quietly','silently']),gloss:'tacitē = quietly, prōcessit = advanced',d:['men','were','very']},
+  {id:'s21',l:'centuriō iuvenem terruit.',en:ex(['The centurion'],['frightened','scared','terrified'],['the young man']),gloss:'iuvenis = young man',d:['centurions','was','frightening']},
+  {id:'s22',l:'senex mortuus erat.',en:['The old man was dead'],gloss:'mortuus = dead',d:['were','is','dying']},
+  {id:'s23',l:'mercātor cum amīcō cēnāvit.',en:ex(['The merchant'],['dined','ate dinner','had dinner'],['with a friend']),gloss:'cum = with, cēnat = dines',d:['merchants','was','dining']},
+  {id:'s24',l:'iuvenis pulcher erat.',en:ex(['The young man was'],['handsome','beautiful','good-looking']),gloss:'pulcher = handsome, beautiful',d:['were','is','ugly']},
+  {id:'s25',l:'heri centuriō in vīllā cēnāvit.',en:ex(['Yesterday the centurion'],['dined','ate dinner','had dinner'],['in the house','in the villa']).concat(ex(['The centurion'],['dined','ate dinner','had dinner'],['in the house','in the villa'],['yesterday'])),gloss:'heri = yesterday',d:['today','was','dining']},
+  {id:'s26',l:'servus tamen nihil fēcit.',en:['The slave, however, did nothing','However, the slave did nothing','The slave did nothing, however','The slave however made nothing'],gloss:'tamen = however, fēcit = did',d:['was','something','they']},
+  {id:'s27',l:'umbra servum valdē terruit.',en:ex(['The ghost','The shadow'],['frightened','scared','terrified'],['the slave'],['very much','a lot','greatly']),gloss:'valdē = very much',d:['were','slaves','little']},
+  {id:'s28',l:'Metella nihil rogāvit.',en:['Metella asked nothing','Metella did not ask anything',"Metella didn't ask anything"],gloss:'rogat = asks',d:['was','something','they']},
+  {id:'s29',l:'omnēs servī tacitē stābant.',en:ex(['All the slaves'],['were standing','stood'],['quietly','silently']),gloss:'omnēs = all (from omnis)',d:['was','every','loudly']},
+  {id:'s30',l:'gladiātor leōnem necāvit.',en:ex(['The gladiator'],['killed'],['the lion']),gloss:'necat = kills',d:['gladiators','was','killing']}
+];
+const stripP = s => s.replace(/[.,;!?]/g,'').replace(/\s+/g,' ').trim();
+
+function build7(){
+  C = CONTENT7;
+  ITEMS=[]; byId={};
+  function add(it){ it.ckey=it.ckey||it.id; byId[it.id]=it; ITEMS.push(it); return it; }
+  const mc = o => add(Object.assign({kind:'mc',section:'grammar',diff:2}, o));
+  const ty = o => add(Object.assign({kind:'type',section:'translation',diff:2}, o));
+  const tl = o => add(Object.assign({kind:'tiles',section:'translation',diff:2}, o));
+  const fill = (s,pron) => s.replace('{be}', pron==='they'?'were':'was');
+
+  // ----- vocabulary model
+  const V = C.vocab.map(o=>{
+    const base=[...o.s,...(o.x||[])]; const acc=new Set(base);
+    if(o.k==='verb'){ base.forEach(v=>{ ['he','she','it','he/she/it'].forEach(p=>acc.add(p+' '+v)); acc.add('to '+v); }); }
+    return Object.assign({key:strip(o.l), answers:[...acc]}, o);
+  });
+  const R = C.recall.map(([l,k,e,x,st])=>({l,k,e,x,st,key:strip(l)}))
+    .concat(CONTENT6.vocab.map(([l,k,e,x])=>({l,k:k==='little'?'little':k,e,x,st:6,key:strip(l)})));
+  const R_ENG = R.map(r=>({k:r.k,e:r.e}));
+  const ENG_POOL = V.flatMap(w=>w.s.map(e=>({k:w.k,e}))).concat(R_ENG);
+  const LAT_POOL = V.map(w=>({k:w.k,e:w.l})).concat(R.map(r=>({k:r.k,e:r.l})));
+  function opts(correct, kind, pool, exclude, n=3){
+    const ok = p=>!exclude.has(p.e) && p.e!==correct;
+    const same=shuffle(pool.filter(p=>p.k===kind && ok(p))), rest=shuffle(pool.filter(p=>p.k!==kind && ok(p)));
+    const out=[]; for(const p of same.concat(rest)){ if(out.length>=n) break; if(!out.includes(p.e)) out.push(p.e); }
+    return [correct,...out];
+  }
+  function scramble(word){
+    const letters=strip(word).split(''); let sc=letters.slice(), t=0;
+    do{ sc=shuffle(letters,SR); t++ }while(sc.join('')===letters.join('') && t<20);
+    return sc.join(' ');
+  }
+
+  V.forEach(w=>{
+    const multi=w.s.length>1;
+    const sensesTxt=w.s.map(s=>`"${s}"`).join(' or ');
+    const whyW=`${w.l} means ${sensesTxt}.${multi?' One Latin word, two English words.':''} Hook: ${w.h}`;
+    const exclude=new Set(w.s);
+    w.s.forEach((sense,i)=>{
+      mc({id:`v7:${w.key}:l2e:${i}`, tag:'v-l2e', lvls:[1], section:'vocab', diff:1, pattern:'vocab: Latin to English', ckey:'vocab:'+w.key, label:`${w.l} (${w.s.join(' / ')})`, why:whyW,
+        q:`What does ${L(w.l)} mean?`, answer:sense, options:()=>opts(sense,w.k,ENG_POOL,exclude)});
+      mc({id:`v7:${w.key}:e2l:${i}`, tag:'v-e2l', lvls:[2], section:'vocab', diff:2, pattern:'vocab: English to Latin', ckey:'vocab:'+w.key+':'+i, label:`${sense} = ${w.l}`, why:whyW,
+        q:`Which Latin word means <b>${esc(sense)}</b>?`, answer:w.l, options:()=>opts(w.l,w.k,LAT_POOL,new Set([w.l]))});
+      ty({id:`v7:${w.key}:t2l:${i}`, tag:'v-t2l', lvls:[4,5], section:'vocab', pattern:'vocab: type the Latin', ckey:'vocab:'+w.key+':'+i, label:`${sense} = ${w.l}`, why:whyW, form:false,
+        q:`Type the Latin for <b>${esc(sense)}</b> <span class="hint">(macrons are optional)</span>`, answers:[w.l], model:w.l});
+    });
+    ty({id:`v7:${w.key}:type`, tag:'v-type', lvls:[3,5], section:'vocab', pattern:'vocab: type the English', ckey:'vocab:'+w.key, label:`${w.l} (${w.s.join(' / ')})`, why:whyW,
+      q:`Type the English for ${L(w.l)}${multi?' <span class="hint">(it has two meanings. Either one is fine.)</span>':''}`, answers:w.answers, model:w.s.join(' or ')});
+    if(strip(w.l).length>=4){
+      ty({id:`v7:${w.key}:scr`, tag:'v-scr', lvls:[4], section:'vocab', pattern:'vocab: unscramble the Latin', ckey:'vocab:'+w.key+':0', label:`${w.s[0]} = ${w.l}`, why:whyW, form:false, diff:1,
+        q:`Unscramble the letters to spell the Latin word for <b>${esc(w.s[0])}</b>:<div class="latq">${esc(scramble(w.l))}</div>`, answers:[w.l], model:w.l});
+    }
+    if(multi){
+      mc({id:`v7:${w.key}:mean`, tag:'v-mean', lvls:[2], section:'vocab', diff:2, pattern:'vocab: two meanings', ckey:'vocab:'+w.key, label:`${w.l} has two meanings`, why:whyW,
+        q:`${L(w.l)} is ONE Latin word with TWO English meanings. Which pair is right?`, answer:w.s.join(' or '),
+        options:()=>{ const others=shuffle(V.filter(x=>x!==w && x.s.length>1)); const o=others.slice(0,2).map(x=>x.s.join(' or '));
+          o.push(w.s[0]+' or '+others[2].s[1]); return [w.s.join(' or '),...o]; }});
+    }
+    if(w.p && strip(w.p)!==strip(w.l)){
+      mc({id:`v7:${w.key}:pair`, tag:'v-pair', lvls:[2], section:'vocab', diff:2, pattern:'vocab: the perfect form on the checklist', ckey:'pair7:'+w.key, label:`${w.l}: ${w.p}`, why:`The checklist lists two forms. ${w.l} (${w.pe}) goes with ${w.p} (${w.pa}).`,
+        q:`The checklist pairs ${L(w.l)} with a second form for the finished action (${esc(w.pa)}). Which one?`, answer:w.p,
+        options:()=>{ const oth=shuffle(V.filter(x=>x.p && x!==w)); return [w.p,w.pl,oth[0].p,oth[1].p]; }});
+      ty({id:`v7:${w.key}:pairt`, tag:'v-pairt', lvls:[5], section:'vocab', pattern:'vocab: type the perfect form', ckey:'pair7:'+w.key, label:`${w.l}: ${w.p}`, why:`${w.l} (${w.pe}) goes with ${w.p} (${w.pa}).`, form:false,
+        q:`Type the second form on the checklist for ${L(w.l)} (he/she/it ${esc(w.pa)}) <span class="hint">(macrons are optional)</span>`, answers:[w.p], model:w.p});
+    }
+  });
+
+  // recall words from earlier stages
+  R.forEach(r=>{
+    const acc=new Set([r.e,...r.x]); if(r.k==='verb'){ [r.e,...r.x].forEach(v=>['he','she','it','he/she/it'].forEach(p=>acc.add(p+' '+v))); }
+    const why=`${r.l} means "${r.e}". (Stage ${r.st} word)`;
+    const base={ckey:'recall:'+r.key, label:`${r.l} (${r.e}) from Stage ${r.st}`, why};
+    mc(Object.assign({}, base, {id:`r7:${r.key}:l2e`, tag:'r-l2e', lvls:[1], section:'vocab', diff:1, pattern:'recall: Latin to English',
+      q:`<span class="two">Review, Stage ${r.st}</span><br>What does ${L(r.l)} mean?`, answer:r.e, options:()=>opts(r.e,r.k,ENG_POOL,new Set([r.e,...r.x]))}));
+    mc(Object.assign({}, base, {id:`r7:${r.key}:e2l`, tag:'r-e2l', lvls:[2], section:'vocab', diff:2, pattern:'recall: English to Latin',
+      q:`<span class="two">Review, Stage ${r.st}</span><br>Which Latin word means <b>${esc(r.e)}</b>?`, answer:r.l, options:()=>opts(r.l,r.k,LAT_POOL,new Set([r.l]))}));
+    ty(Object.assign({}, base, {id:`r7:${r.key}:type`, tag:'r-type', lvls:[3,5], section:'vocab', pattern:'recall: type the English', form:false,
+      q:`<span class="two">Review, Stage ${r.st}</span><br>Type the English for ${L(r.l)}`, answers:[...acc], model:r.e}));
+    ty(Object.assign({}, base, {id:`r7:${r.key}:t2l`, tag:'r-t2l', lvls:[4,5], section:'vocab', pattern:'recall: type the Latin', form:false,
+      q:`<span class="two">Review, Stage ${r.st}</span><br>Type the Latin for <b>${esc(r.e)}</b> <span class="hint">(macrons are optional)</span>`, answers:[r.l], model:r.l}));
+  });
+
+  // ----- grammar: present and perfect pairs
+  const PAIRS = V.filter(w=>w.p).map(w=>({l:w.l,p:w.p,pl:w.pl,pe:w.pe,pa:w.pa})).concat(C.bookPairs);
+  PAIRS.forEach((pr,idx)=>{
+    const irregular = pr.p !== pr.l.slice(0,-2)+'āvit' && pr.p !== pr.l.slice(0,-2)+'vit';
+    const fake = pr.l.slice(0,-2)+'āvit';
+    const others = ()=>shuffle(PAIRS.filter(x=>x!==pr));
+    const macronOnly = strip(pr.l)===strip(pr.p);
+    mc({id:`g7:pair:${idx}`, tag:'g-pair', lvls:[6], section:'grammar', diff:2, pattern:'perfect: match the present to its perfect', ckey:'gpair:'+idx, label:`${pr.l} / ${pr.p}`,
+      q:`Which is the PERFECT form (he/she/it ${esc(pr.pa)}) that goes with ${L(pr.l)} (${esc(pr.pe)})?`, answer:pr.p,
+      options:()=>{ const o=others(); const arr=[pr.p,pr.pl,o[0].p]; arr.push(irregular && strip(fake)!==strip(pr.p) ? fake : o[1].p); return arr; },
+      why:`${pr.l} (${pr.pe}) goes with ${pr.p} (${pr.pa}).${irregular?' This perfect changes the stem, so you have to learn it.':''}${macronOnly?' Only the macron tells venit (comes) from vēnit (came).':''}`});
+    mc({id:`g7:plural:${idx}`, tag:'g-plural', lvls:[6], section:'grammar', diff:2, pattern:'perfect: one or many', ckey:'gplur:'+idx, label:`${pr.pl} (they ${pr.pa})`,
+      q:`Which one means <b>they ${esc(pr.pa)}</b>?`, answer:pr.pl,
+      options:()=>[pr.pl,pr.p,pr.l,others()[0].pl],
+      why:`-ērunt at the end means THEY (more than one). ${pr.p} is just one (he/she/it ${pr.pa}), and ${pr.l} is the present (${pr.pe}).`});
+    [['pres',pr.l],['sing',pr.p],['plur',pr.pl]].forEach(([w,form])=>{
+      const isPres = w==='pres';
+      mc({id:`g7:tense:${idx}:${w}`, tag:'g-tense', lvls:[6], section:'grammar', diff:1, pattern:'perfect: present or perfect', ckey:`gten:${idx}:${w}`, label:`${form}: ${isPres?'present':'perfect'}`,
+        q:`Is ${L(form)} Present or Perfect?${macronOnly?' <span class="hint">(look at the macron)</span>':''}`, answer:isPres?'Present (happening now)':'Perfect (finished)',
+        options:()=>['Present (happening now)','Perfect (finished)'],
+        why:isPres?`${form} is the Present: ${pr.pe}. It is the first form on the checklist.`:`${form} is the Perfect: ${w==='plur'?'they ':'he/she/it '}${pr.pa}. It is a finished action.${macronOnly?' The macron in vēnit is the clue.':''}`});
+    });
+  });
+
+  // ----- grammar: missing subjects (pairs) and translation
+  PAIRS7.forEach(p=>{
+    const ans = [...new Set(p.en1.flatMap(e1=>p.rest.flatMap(r=>[`${e1} ${p.pron} ${fill(r,p.pron)}`, `${e1} ${p.noun} ${fill(r,p.pron)}`])))];
+    const model = `${p.en1[0]}. ${cap(p.pron)} ${fill(p.mainRest,p.pron)}.`;
+    const tokens = stripP(model).split(' ');
+    const lat = `<div class="latq">${esc(p.l1)} ${esc(p.l2)}</div>`;
+    const whoWhy = `The second sentence has no subject word. The first sentence is about ${p.noun}, so the doer is "${p.pron}". ${p.pron==='they'?'The verb ends in -nt, which also says it is more than one.':'The verb ends in -t, which says it is just one.'}`;
+    mc({id:`g7:who:${p.id}`, tag:'g-who', lvls:[7], section:'grammar', diff:1, pattern:'missing subject: who is it', ckey:'sent:'+p.id, label:`${p.l2} (${p.pron})`, why:whoWhy,
+      q:`${lat}The SECOND sentence has no subject word. Who is doing it?`, answer:p.pron, options:()=>['he','she','they']});
+    mc({id:`g7:pick:${p.id}`, tag:'g-pick', lvls:[7], section:'grammar', diff:2, pattern:'missing subject: pick the English', ckey:'sent:'+p.id, label:`${p.l2}`, why:whoWhy+` So: ${cap(p.pron)} ${fill(p.mainRest,p.pron)}.`,
+      q:`${lat}Which English matches the SECOND sentence?`, answer:`${cap(p.pron)} ${fill(p.mainRest,p.pron)}.`,
+      options:()=>['he','she','they'].map(x=>`${cap(x)} ${fill(p.mainRest,x)}.`)});
+    tl({id:`g7:tilesP:${p.id}`, tag:'g-tiles', lvls:[7], pattern:'translate: build the sentences', ckey:'sent:'+p.id, label:model, why:whoWhy,
+      q:`Build the English:${lat}<div class="hint">Helpful words: ${esc(p.gloss)}</div>`, tokens, bank:tokens.concat(p.distract), answers:ans, model});
+    ty({id:`g7:typedP:${p.id}`, tag:'g-typed', lvls:[8], pattern:'translate: type the sentences', ckey:'sent:'+p.id, label:model, why:whoWhy, form:false,
+      q:`Translate into English:${lat}<div class="hint">Helpful words: ${esc(p.gloss)}</div>`, answers:ans, model});
+  });
+  SING7.forEach(s=>{
+    const model = s.en[0]+'.';
+    const tokens = stripP(s.en[0]).split(' ');
+    const lat = `<div class="latq">${esc(s.l)}</div>`;
+    const why = `Read the verb from the right: the ending shows who (one or many), then the tense, then the meaning. Model answer: ${model}`;
+    tl({id:`g7:tiles:${s.id}`, tag:'g-tiles', lvls:[8], pattern:'translate: build the sentence', ckey:'sent:'+s.id, label:model, why,
+      q:`Build the English:${lat}<div class="hint">Helpful words: ${esc(s.gloss)}</div>`, tokens, bank:tokens.concat(s.d), answers:s.en, model});
+    ty({id:`g7:typed:${s.id}`, tag:'g-typed', lvls:[8], pattern:'translate: type the sentence', ckey:'sent:'+s.id, label:model, why, form:false,
+      q:`Translate into English:${lat}<div class="hint">Helpful words: ${esc(s.gloss)}</div>`, answers:s.en, model});
+  });
+
+  // ----- levels
+  const vtable = ()=>`<div class="wide"><table class="chart"><tr><th>Latin</th><th>English</th><th>Hook</th></tr>${C.vocab.map(w=>`<tr><td class="lat">${esc(w.l)}${w.p?`<br><span class="tiny">${esc(w.p)}</span>`:''}</td><td>${esc(w.s.join(' or '))}${w.s.length>1?'<span class="two">2 meanings</span>':''}</td><td>${esc(w.h)}</td></tr>`).join('')}</table></div>`;
+  LEVELS = [
+    {id:1,group:'Part 1: Vocabulary',title:'Meet the words',sub:'Stage 7 words: pick the English meaning',spell:'none',quota:{'v-l2e':8,'r-l2e':2},
+      teach:()=>`<p>These are the 26 Stage 7 words. Read each one out loud. Verbs show a second form under the Latin. That is the finished-action (perfect) form, and you will use it later.</p>
+        <p><b>Some English words share one Latin word.</b> <span class="lat">umbra</span> is the Latin for <b>ghost</b> AND for <b>shadow</b>. In the questions, you will see each English meaning on its own.</p>${vtable()}
+        <p class="tiny">About 2 of the 10 questions are review words from Stages 2 to 6.</p>`},
+    {id:2,group:'Part 1: Vocabulary',title:'Say it in Latin',sub:'English to Latin, one meaning at a time',spell:'none',quota:{'v-e2l':5,'v-mean':2,'v-pair':1,'r-e2l':2},
+      teach:()=>`<p>Now go the other direction: you see the English and pick the Latin.</p>
+        <p><b>Ghost</b> is one question and <b>shadow</b> is another question. The answer to both is <span class="lat">umbra</span>. Same idea for these:</p>
+        <ul>${C.vocab.filter(w=>w.s.length>1).map(w=>`<li><span class="lat">${esc(w.l)}</span> = ${esc(w.s.join(' AND '))}</li>`).join('')}</ul>
+        <p>There will also be a question about the <b>second form</b> that goes with each verb on the checklist.</p>`},
+    {id:3,group:'Part 1: Vocabulary',title:'Type the English',sub:'Your first typing. Close spelling still counts',spell:'lenient',quota:{'v-type':8,'r-type':2},
+      teach:()=>`<ul><li>You see the Latin word and <b>type the English</b>.</li><li>Words with two meanings: either one is right.</li><li><b>Spelling rule:</b> one small slip still earns the point, and you type the right spelling once to lock it in.</li><li>Macrons are optional in your typing.</li></ul>`},
+    {id:4,group:'Part 1: Vocabulary',title:'Spell the Latin',sub:'Unscramble it, then type it from memory',spell:'half',quota:{'v-scr':3,'v-t2l':5,'r-t2l':2},
+      teach:()=>`<ul><li>First you unscramble letters, then you <b>type the Latin</b> for an English word.</li><li><b>Spelling rule:</b> exact spelling = 1 point. One small slip = half a point, and you type the right spelling once.</li><li>Two English meanings can lead to the same Latin word. Ghost and shadow are both <span class="lat">umbra</span>.</li><li>Macrons are optional.</li></ul>`},
+    {id:5,group:'Part 1: Vocabulary',title:'Vocabulary test mirror',sub:'Like a real quiz: exact spelling for full credit',spell:'exact',quota:{'v-type':3,'v-t2l':3,'v-pairt':2,'r-type':1,'r-t2l':1},
+      teach:()=>`<ul><li>A mix of English to Latin, Latin to English, and the second form of each verb.</li><li><b>Spelling rule:</b> it has to be spelled right for the point. A near miss shows the spelling, you type it once, and it does not count.</li><li>Macrons are optional.</li><li>Clear this level and the grammar levels open.</li></ul>`},
+    {id:6,group:'Part 2: Grammar and sentences',title:'Present and perfect',sub:'Finished actions: fēcit, dīxit, vēnērunt',spell:'none',quota:{'g-pair':4,'g-plural':3,'g-tense':3},
+      teach:()=>guide7()},
+    {id:7,group:'Part 2: Grammar and sentences',title:'No subject word',sub:'Who is doing it? Read the sentence before',spell:'none',quota:{'g-who':4,'g-pick':3,'g-tiles':3},
+      teach:()=>noSubject7()},
+    {id:8,group:'Part 2: Grammar and sentences',title:'Translate it',sub:'Build sentences, then type them',spell:'half',quota:{'g-tiles':3,'g-typed':7},
+      teach:()=>`<ul><li>Translate whole Latin sentences. Some are from your book, and some use the new Stage 7 words.</li><li><b>Plan:</b> (1) find the verb and read its ending: -t = one, -nt = many. (2) Is it present, was/were ___ing, or finished? (3) Who is the subject, and what is the object (the -m word)? (4) Put it into English.</li><li>If a sentence has no subject word, look at the sentence before it.</li><li>Typing: small spelling slips earn half a point. Words like <i>the</i> and <i>a</i> do not matter.</li></ul>`}
+  ];
+  bankHTML = ()=>'';
+  tenseGuideHTML = ()=>guide7()+noSubject7();
+}
+function guide7(){
+  return `<div class="tense"><b>The perfect tense</b> tells about a <b>finished action</b>: he <b>said</b>, they <b>came</b>. In your Stage 6 guide this was called the "Past-Perfect." Your Stage 7 book calls it the <b>perfect</b>. It is the same tense.</div>
+  <p>In Stage 6 you met the regular kind: <span class="lat">ambulāvit</span> (-vit) and <span class="lat">ambulāvērunt</span> (-vērunt). Some verbs <b>change inside</b> instead:</p>
+  <div class="wide"><table class="chart"><tr><th>Present</th><th>Perfect (one)</th><th>Perfect (they)</th><th>English</th></tr>
+  ${[['appāret','appāruit','appāruērunt','appeared'],['dīcit','dīxit','dīxērunt','said'],['discēdit','discessit','discessērunt','left'],['facit','fēcit','fēcērunt','made'],['capit','cēpit','cēpērunt','took'],['venit','vēnit','vēnērunt','came']].map(r=>`<tr><td class="lat">${r[0]}</td><td class="lat">${r[1]}</td><td class="lat">${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</table></div>
+  <ul><li><b>One doer</b> ends in -it. <b>Many doers</b> end in -ērunt.</li><li>English does this too: send / sent, give / gave, run / ran, come / came, read / read.</li><li>Careful: <span class="lat">venit</span> (comes) and <span class="lat">vēnit</span> (came) differ only by the macron.</li><li>Your checklist now lists each verb in <b>two forms</b>: present, then perfect (<span class="lat">cēnat: cēnāvit</span>).</li></ul>`;
+}
+function noSubject7(){
+  return `<div class="tense pres"><b>Latin does not need a word for he, she, or they.</b><br>The verb already says who: -t = one doer, -nt = many doers.</div>
+  <p><span class="lat">mercātor Caecilium vīsitābat. vīllam intrāvit.</span><br><i>A merchant was visiting Caecilius. <b>He</b> entered the house.</i></p>
+  <p><span class="lat">amīcī cum Caeciliō cēnābant. coquum laudāvērunt.</span><br><i>Friends were dining with Caecilius. <b>They</b> praised the cook.</i></p>
+  <ul><li>When the second sentence has no subject, <b>look back at the first sentence</b> to find who.</li><li><span class="lat">intrāvit</span> can mean he entered OR she entered. The story tells you which.</li></ul>`;
+}
+
+// ---------- sound (made with the browser, no files). Muted with the speaker button.
+const Snd=(()=>{
+  let ctx=null, muted=false;
+  try{ muted=localStorage.getItem('lily-latin-mute')==='1' }catch(e){}
+  function ensure(){ if(muted) return null; try{ if(!ctx){ const A=window.AudioContext||window.webkitAudioContext; if(!A) return null; ctx=new A(); } if(ctx.state==='suspended') ctx.resume(); return ctx }catch(e){ return null } }
+  function tone(f,t0,dur,type,vol){ const c=ctx; if(!c) return; try{ const o=c.createOscillator(), g=c.createGain(); const t=c.currentTime+t0; o.type=type||'sine'; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol||.18,t+.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+dur+.05) }catch(e){} }
+  const api={
+    unlock(){ ensure() },
+    isMuted(){ return muted },
+    toggle(){ muted=!muted; try{ localStorage.setItem('lily-latin-mute',muted?'1':'0') }catch(e){} if(!muted){ api.ok(1) } return muted },
+    ok(streak){ if(!ensure()) return; const f=523.25*Math.pow(2,Math.min(Math.max(streak||1,1)-1,5)*2/12); tone(f,0,.16,'sine',.2); tone(f*1.5,.09,.26,'sine',.2) },
+    close(){ if(!ensure()) return; tone(440,0,.15,'triangle',.16); tone(494,.1,.22,'triangle',.16) },
+    bad(){ if(!ensure()) return; tone(220,0,.18,'triangle',.18); tone(165,.12,.3,'triangle',.18) },
+    star(i){ if(!ensure()) return; const f=784*Math.pow(1.122,i||0); tone(f,0,.24,'sine',.16); tone(f*2,.05,.2,'sine',.07) },
+    win(){ if(!ensure()) return; [523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(f,i*.12,.3,'sine',.2)) },
+    soft(){ if(!ensure()) return; tone(392,0,.2,'sine',.14); tone(330,.16,.32,'sine',.14) }
+  };
+  return api;
+})();
+
+// ---------- stages. To add Stage 8 later: write CONTENT8 and build8(), then add one entry here (newest first).
+const STAGES = [
+  {id:7,title:'Stage 7',blurb:'Vocabulary first, then the perfect tense, missing subjects, and translating sentences',key:'lily-latin-stage7-v1',build:build7,perTry:10,pass:8,levels:8,isNew:true,
+   intro:'Eight levels. Levels 1 to 5 are <b>vocabulary</b> and levels 6 to 8 are <b>grammar and sentences</b>. Each try is 10 questions. Get <b>8 right (80%)</b> to pass and open the next level. Earn up to 3 stars on every level.',
+   guideTitle:'Perfect tense and missing subjects', guideLabel:'Perfect tense and missing subjects (read this if it feels mixed up)'},
+  {id:6,title:'Stage 6',blurb:'Imperfect, past-perfect, and present verbs',key:'lily-latin-stage6-v1',build:build6,perTry:20,pass:18,levels:6,
+   intro:'Six levels. Each try is about 10 to 15 minutes, 20 questions. Get <b>18 of 20</b> to unlock the next level. You start by <b>recognizing</b> words and finish by <b>writing them yourself</b>, spelled right. Earn up to 3 stars on every level.',
+   guideTitle:'Tense guide', guideLabel:'Tense guide: imperfect, past-perfect, present (read this first if it feels mixed up)'}
+];
+const starsFor=(score,n,pass)=> score>=n?3 : (score>=n-1 && score>=pass)?2 : score>=pass?1 : 0;
+const starRow=k=>'&#9733;'.repeat(k)+(k<3?`<span class="no">${'&#9733;'.repeat(3-k)}</span>`:'');
+function peekStars(d){ try{ const s=JSON.parse(localStorage.getItem(d.key)||'null'); if(!s||!s.best) return 0; return Object.keys(s.best).reduce((a,k)=>a+starsFor(s.best[k],d.perTry,d.pass),0) }catch(e){ return 0 } }
+
+// ---------- state
+let save=null;
+const freshSave=()=>({unlocked:1,best:{},carry:{},recent:{},history:[],parent:false});
+function load(){ save=freshSave(); try{ const s=localStorage.getItem(KEY); if(s) save=Object.assign(save,JSON.parse(s)) }catch(e){} }
+function persist(){ try{ localStorage.setItem(KEY,JSON.stringify(save)) }catch(e){} }
+function resetAll(){ save=freshSave(); persist() }
+
+// ---------- selecting an attempt
+// ---------- selecting an attempt
+function selectAttempt(lvlId){
+  const cfg = LEVELS.find(l=>l.id===lvlId);
+  const recent = new Set([].concat(...(save.recent[lvlId]||[])));
+  const chosen=[], ids=new Set(), ck=new Set(); const taken={};
+  const lvlItems = ITEMS.filter(it=>it.lvls.includes(lvlId) && cfg.quota[it.tag]!=null);
+  const take = (it, strict) => { if(!it||ids.has(it.id)) return false; if(strict && ck.has(it.ckey)) return false; ids.add(it.id); ck.add(it.ckey); chosen.push(it); taken[it.tag]=(taken[it.tag]||0)+1; return true };
+  // up to 3 review items from words missed earlier
+  let rev=0;
+  for(const k of shuffle(Object.keys(save.carry))){
+    if(rev>=3) break;
+    const c = lvlItems.filter(it=>it.ckey===k && !ids.has(it.id) && (taken[it.tag]||0)<cfg.quota[it.tag]);
+    if(c.length && take(pick(c),true)) rev++;
+  }
+  Object.keys(cfg.quota).forEach(tag=>{
+    const need = cfg.quota[tag]-(taken[tag]||0); if(need<=0) return;
+    const cands = shuffle(lvlItems.filter(it=>it.tag===tag && !ids.has(it.id)));
+    const order = cands.filter(it=>!recent.has(it.id)).concat(cands.filter(it=>recent.has(it.id)));
+    let n=0; for(const it of order){ if(n>=need) break; if(take(it,true)) n++; }
+    for(const it of order){ if(n>=need) break; if(take(it,false)) n++; }
+  });
+  let list = shuffle(chosen);
+  const fi = list.findIndex(it=>it.diff===1); if(fi>0){ const [e]=list.splice(fi,1); list.unshift(e) }
+  return list.slice(0,C.perTry);
+}
+function retryFor(it, usedIds){
+  let c = ITEMS.filter(x=>x.kind==='mc' && x.pattern===it.pattern && x.id!==it.id && !usedIds.has(x.id));
+  return c.length? pick(c) : null;
+}
+
+
+// ---------- UI
+const app = $('#app');
+let run=null;
+function bar(i,n){return `<div class="bar"><div style="width:${Math.round(i/n*100)}%"></div></div>`}
+function fmt(x){return Number.isInteger(x)?String(x):x.toFixed(1)}
+function useStage(d){ S=d; KEY=d.key; d.build(); load(); home(); }
+function stages(){
+  run=null; S=null;
+  const cards=STAGES.map(d=>{ const got=peekStars(d), max=d.levels*3;
+    return `<button class="card level" data-st="${d.id}"><div class="lnum">${esc(d.title)}${d.isNew?'<span class="newb">NEW</span>':''}</div><div class="ltitle">${esc(d.blurb)}</div><div class="lbest">&#9733; ${got} of ${max} stars</div></button>`}).join('');
+  app.innerHTML=`<header><h1>Lily's Latin Quest</h1><p class="sub">Pick a stage. Your stars and progress are saved for each stage on this device. New stages get added to this same page.</p></header><div class="levels">${cards}</div>
+    <details class="parent"><summary>Parent corner</summary><p class="tiny">Sound: the speaker button in the top right turns it on and off. If an iPhone makes no sound, check the ring/silent switch and the volume.</p></details>`;
+  app.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>useStage(STAGES.find(x=>x.id===+b.dataset.st)));
+  window.scrollTo(0,0);
+}
+function home(){
+  run=null;
+  let prevGroup=null;
+  const cards = LEVELS.map(l=>{
+    const open = l.id<=save.unlocked || save.parent;
+    const best = save.best[l.id];
+    const head = (l.group && l.group!==prevGroup)? `<div class="grp">${esc(l.group)}</div>` : ''; prevGroup=l.group||prevGroup;
+    return head+`<button class="card level ${open?'':'locked'}" data-lvl="${l.id}" ${open?'':'disabled'}>
+      <div class="lnum">Level ${l.id}${open?'':' (locked)'}</div><div class="ltitle">${esc(l.title)}</div>
+      <div class="lsub">${esc(l.sub)}</div><span class="badge">${esc(SPELL[l.spell])}</span>${best!=null?`<div class="lstars" aria-label="${starsFor(best,C.perTry,C.passScore)} of 3 stars">${starRow(starsFor(best,C.perTry,C.passScore))}</div><div class="lbest">Best: ${fmt(best)} / ${C.perTry}${best>=C.passScore?' &#10003;':''}</div>`:''}</button>`}).join('');
+  const carry = Object.keys(save.carry);
+  app.innerHTML = `<header><button class="link" id="allst">&larr; All stages</button><h1>${esc(C.title)}</h1><p class="sub">${S.intro}</p></header>
+    <button class="guidebtn card" id="tg">&#128214; ${esc(S.guideLabel)}</button>
+    <div class="levels">${cards}</div>
+    <p class="note">${carry.length?`<b>${carry.length}</b> word${carry.length>1?'s':''} to review. They come back in your next tries until you get each one right twice.`:'No words waiting for review. Nice.'}</p>
+    <details class="parent"><summary>Parent corner</summary>
+      <p><button id="unl">${save.parent?'Re-lock levels':'Unlock all levels'}</button> <button id="rst">Reset this stage</button> <button id="lst">Show words to review</button></p><div id="plist"></div>
+      <p class="tiny"><b>Keep her in the game on a phone:</b> iPhone: Settings, Accessibility, Guided Access (turn on, set a passcode). Open this page, triple-press the side button, tap Start. Android: Settings, Security, App pinning (name varies), then pin the browser from the recent apps view. For a cleaner full screen on iPhone: Share, Add to Home Screen, then open it from the icon before starting Guided Access.</p>
+      <p class="tiny">Progress is saved in this browser on this device only. Sound: use the speaker button at the top right. On iPhone, check the ring/silent switch too.</p></details>`;
+  app.querySelectorAll('.level:not(.locked)').forEach(b=>b.onclick=()=>teach(+b.dataset.lvl));
+  $('#allst').onclick=stages; $('#tg').onclick=guide;
+  $('#unl').onclick=()=>{save.parent=!save.parent;persist();home()};
+  $('#rst').onclick=()=>ask('Reset all progress and review words for this stage?','Reset',()=>{resetAll();home()});
+  $('#lst').onclick=()=>{ const keys=Object.keys(save.carry); $('#plist').innerHTML = keys.length? '<ul>'+keys.map(k=>{const it=ITEMS.find(x=>x.ckey===k);return `<li>${esc(it?it.label:k)} (needs ${save.carry[k]} more right)</li>`}).join('')+'</ul>':'<p>None.</p>' };
+  window.scrollTo(0,0);
+}
+function ask(msg,yes,fn){
+  const old=$('#askbox'); if(old) old.remove();
+  const d=document.createElement('div'); d.id='askbox'; d.className='fb bad';
+  d.innerHTML=`<b>${esc(msg)}</b><p><button class="primary" id="ay">${esc(yes)}</button> <button id="an">Stay</button></p>`;
+  app.insertBefore(d, app.firstChild); window.scrollTo(0,0);
+  $('#ay').onclick=fn; $('#an').onclick=()=>d.remove();
+}
+
+function guide(){
+  app.innerHTML = `<header><button class="link" id="back">&larr; Levels</button><h1>${esc(S.guideTitle)}</h1></header><div class="card teach">${tenseGuideHTML()}${bankHTML('all')}</div><p><button id="back2">Back to levels</button></p>`;
+  $('#back').onclick=home; $('#back2').onclick=home; window.scrollTo(0,0);
+}
+function teach(lvlId){
+  const l=LEVELS.find(x=>x.id===lvlId);
+  app.innerHTML = `<header><button class="link" id="back">&larr; Levels</button><h1>Level ${l.id}: ${esc(l.title)}</h1><span class="badge">${esc(SPELL[l.spell])}</span></header><div class="card teach">${l.teach()}</div>
+    <p><button class="primary" id="go">I'm ready. Start the ${C.perTry} questions</button></p>`;
+  $('#back').onclick=home; $('#go').onclick=()=>start(lvlId); window.scrollTo(0,0);
+}
+function start(lvlId){
+  const items = selectAttempt(lvlId);
+  run={lvl:lvlId, items, i:0, score:0, sec:{}, missed:[], close:[], used:new Set(items.map(x=>x.id)), marks:[], streak:0};
+  question();
+}
+function optionsOf(it){ return shuffle(Array.from(new Set(it.options()))) }
+function starsHTML(popIdx){
+  const n=run.items.length;
+  let h=''; for(let k=0;k<n;k++){ const m=run.marks[k]; h+=`<span class="st ${m||''}${k===popIdx?' pop':''}" aria-hidden="true">&#9733;</span>`; }
+  return h+`<span class="passline">${C.passScore} of ${n} to pass</span>`;
+}
+function question(){
+  const it = run.items[run.i], n=run.items.length;
+  run.cur = {it, answered:false};
+  const bm = it.bankMode ? it.bankMode(run.lvl) : 'none';
+  app.innerHTML = `<header><button class="link" id="back">&larr; Levels</button><div class="meta">Level ${run.lvl} &middot; Question ${run.i+1} of ${n}</div>${bar(run.i,n)}<div class="stars" id="stars" role="img" aria-label="${run.marks.filter(m=>m==='on').length} stars so far">${starsHTML()}</div></header>
+    <div class="card q"><div class="qtext">${it.q}</div>${bankHTML(bm)}<div id="ans"></div></div><div id="fb"></div>`;
+  $('#back').onclick=()=>ask('Leave this try? Your answers so far will not count.','Leave',home);
+  renderAnswer(it, $('#ans'), res=>grade(res));
+  window.scrollTo(0,0);
+}
+function macroBar(inp){
+  const d=document.createElement('div'); d.className='mac';
+  d.innerHTML='<span>Tap to add:</span>'+['ā','ē','ī','ō','ū'].map(c=>`<button type="button" data-c="${c}">${c}</button>`).join('');
+  d.querySelectorAll('button').forEach(b=>b.addEventListener('mousedown',e=>e.preventDefault()));
+  d.querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=inp.selectionStart??inp.value.length,e=inp.selectionEnd??s;inp.value=inp.value.slice(0,s)+b.dataset.c+inp.value.slice(e);inp.focus();const p=s+1;try{inp.setSelectionRange(p,p)}catch(x){}});
+  return d;
+}
+function typedInput(box, onGo, btnLabel){
+  box.innerHTML = `<input type="text" class="typed" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done" placeholder="Type your answer"><button class="primary" type="button" id="chk">${btnLabel||'Check'}</button>`;
+  const inp=$('.typed',box); box.insertBefore(macroBar(inp), inp);
+  const go=()=>{ if(box.dataset.done) return; if(!inp.value.trim()) return; onGo(inp,box) };
+  $('#chk',box).onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+  return inp;
+}
+
+function renderAnswer(it, box, done){
+  if(it.kind==='mc'){
+    const opts=optionsOf(it);
+    box.innerHTML = opts.map((o,i)=>`<button class="opt" data-i="${i}">${esc(o)}</button>`).join('');
+    box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      if(box.dataset.done) return; box.dataset.done=1;
+      const ok = opts[+b.dataset.i]===it.answer;
+      box.querySelectorAll('.opt').forEach(x=>{ if(opts[+x.dataset.i]===it.answer) x.classList.add('right'); });
+      if(!ok) b.classList.add('wrong');
+      done(ok?'exact':'wrong', opts[+b.dataset.i]);
+    });
+  } else if(it.kind==='tiles'){
+    const bank=shuffle(it.bank.map((t,i)=>({t,i,used:false})));
+    let chosen=[];
+    box.innerHTML=`<div class="tslot" aria-label="your sentence"></div><div class="tbank"></div><button class="primary" type="button" id="chk">Check</button>`;
+    const slot=$('.tslot',box), bk=$('.tbank',box);
+    const draw=()=>{
+      slot.innerHTML=''; bk.innerHTML='';
+      chosen.forEach(o=>{ const b=document.createElement('button'); b.type='button'; b.className='tile'; b.textContent=o.t; b.onclick=()=>{ if(box.dataset.done) return; o.used=false; chosen=chosen.filter(x=>x!==o); draw() }; slot.appendChild(b) });
+      bank.forEach(o=>{ const b=document.createElement('button'); b.type='button'; b.className='tile'+(o.used?' gone':''); b.textContent=o.t; b.disabled=o.used; b.onclick=()=>{ if(box.dataset.done||o.used) return; o.used=true; chosen.push(o); draw() }; bk.appendChild(b) });
+    };
+    draw();
+    $('#chk',box).onclick=()=>{ if(box.dataset.done||!chosen.length) return; box.dataset.done=1;
+      const txt=chosen.map(o=>o.t).join(' '); const ok=it.answers.some(a=>norm(a)===norm(txt));
+      slot.classList.add(ok?'right':'wrong'); box.querySelectorAll('.tile').forEach(b=>b.disabled=true); done(ok?'exact':'wrong', txt) };
+  } else {
+    const inp = typedInput(box,(inp,bx)=>{ bx.dataset.done=1; inp.disabled=true; const res=judgeText(inp.value,it.answers,{form:it.form}); inp.classList.add(res==='exact'?'right':res==='close'?'close':'wrong'); done(res, inp.value) });
+    setTimeout(()=>{try{inp.focus()}catch(e){}},50);
+  }
+}
+function correctText(it){ return it.kind==='mc'? it.answer : it.model }
+function points(res, spell){ if(res==='exact') return 1; if(res==='close') return spell==='lenient'?1:spell==='half'?.5:0; return 0 }
+function grade(res){
+  const it=run.cur.it; run.cur.answered=true;
+  const lvl=LEVELS.find(l=>l.id===run.lvl);
+  const pts = points(res, lvl.spell);
+  const s=run.sec[it.section]=run.sec[it.section]||{r:0,n:0}; s.n++; s.r+=pts; run.score+=pts;
+  // stars and sound
+  run.marks[run.i] = res==='exact' ? 'on' : (pts>0 ? 'half' : 'miss');
+  if(res==='exact'){ run.streak++; Snd.ok(run.streak) } else if(res==='close'){ run.streak=0; Snd.close() } else { run.streak=0; Snd.bad() }
+  const sb=$('#stars'); if(sb) sb.innerHTML=starsHTML(run.i);
+  const fb=$('#fb'); const last = run.i===run.items.length-1; const nextLbl = last?'See my score':'Next';
+  if(res==='exact'){
+    if(save.carry[it.ckey]!=null){ save.carry[it.ckey]--; if(save.carry[it.ckey]<=0) delete save.carry[it.ckey]; }
+    fb.innerHTML=`<div class="fb good"><b>Correct!</b>${it.kind==='type'&&it.form?` <span class="tiny">With macrons: ${esc(it.model)}</span>`:''}</div><p><button class="primary" id="next">${nextLbl}</button></p>`;
+    $('#next').onclick=next; setTimeout(()=>{const n=$('#next'); if(n) n.focus()},250);
+  } else if(it.kind==='type'){
+    // near miss or wrong on a typed item: show the answer, then type it once to lock it in
+    if(res==='close'){ run.close.push(it); save.carry[it.ckey]=Math.max(save.carry[it.ckey]||0,1) } else { run.missed.push(it); save.carry[it.ckey]=2 }
+    const msg = res==='close'
+      ? `<div class="fb close"><b>So close!</b> Check the spelling: <b>${esc(correctText(it))}</b><div class="why">${pts===1?'You get the point at this level.':pts===.5?'Half a point at this level. Exact spelling earns the full point.':'At this level it has to be spelled exactly. No point this time, but now you know the spelling.'}</div></div>`
+      : `<div class="fb bad"><b>Not quite.</b> Answer: <b>${esc(correctText(it))}</b><div class="why">${esc(it.why||'')}</div><div class="pat">Pattern: ${esc(it.pattern)}</div></div>`;
+    fb.innerHTML = msg + `<div class="card retry"><div class="rlabel">Type it correctly once to lock it in (this does not count):</div><div id="rans"></div><div id="rfb"></div></div><p><button class="primary" id="next" disabled>${nextLbl}</button></p>`;
+    $('#next').onclick=next;
+    const rbox=$('#rans');
+    const inp = typedInput(rbox,(inp,bx)=>{ const r2=judgeText(inp.value,[it.model,...(it.kind==='type'&&it.form===false?[]:[])],{}); const r3 = (r2==='exact') ? 'exact' : judgeText(inp.value,it.answers.slice(0,1),{});
+      if(r2==='exact'||r3==='exact'){ bx.dataset.done=1; inp.disabled=true; inp.classList.add('right'); $('#rfb').innerHTML=`<div class="fb good"><b>Yes!</b> That is how it is spelled.</div>`; const n=$('#next'); n.disabled=false; setTimeout(()=>n.focus(),250) }
+      else { inp.classList.remove('right'); $('#rfb').innerHTML=`<div class="fb close">Not quite. Look at it once more: <b>${esc(correctText(it))}</b></div>`; inp.select&&inp.select() } }, 'Check spelling');
+  } else {
+    save.carry[it.ckey]=2; run.missed.push(it);
+    const rt = retryFor(it, run.used);
+    fb.innerHTML=`<div class="fb bad"><b>Not quite.</b> Answer: <b>${esc(correctText(it))}</b>
+      <div class="why">${esc(it.why||'')}</div><div class="pat">Pattern: ${esc(it.pattern)}</div></div>
+      ${rt?`<div class="card retry"><div class="rlabel">Try it again (this one does not count):</div><div class="qtext">${rt.q}</div><div id="rans"></div><div id="rfb"></div></div>`:''}
+      <p><button class="primary" id="next" ${rt?'disabled':''}>${nextLbl}</button></p>`;
+    $('#next').onclick=next;
+    if(rt){ run.used.add(rt.id); renderAnswer(rt, $('#rans'), (r2)=>{ $('#rfb').innerHTML = r2==='exact'?`<div class="fb good"><b>Yes!</b> That is the pattern.</div>`:`<div class="fb bad">Answer: <b>${esc(correctText(rt))}</b><div class="why">${esc(rt.why||'')}</div></div>`; const n=$('#next'); n.disabled=false; setTimeout(()=>n.focus(),250); }); }
+  }
+  persist();
+}
+function next(){ run.i++; if(run.i>=run.items.length) finish(); else question() }
+function finish(){
+  const n=run.items.length, score=run.score, pass=score>=C.passScore;
+  const earned=starsFor(score,n,C.passScore), prev=starsFor(save.best[run.lvl]||0,n,C.passScore);
+  save.best[run.lvl]=Math.max(save.best[run.lvl]||0,score);
+  if(pass && run.lvl>=save.unlocked && run.lvl<LEVELS.length) save.unlocked=run.lvl+1;
+  save.history.push({lvl:run.lvl,score,date:new Date().toISOString().slice(0,10)});
+  save.recent[run.lvl]=(save.recent[run.lvl]||[]).concat([run.items.map(x=>x.id)]).slice(-2);
+  persist();
+  const secName={vocab:'Vocabulary',grammar:'Grammar',translation:'Translation'};
+  const secs = Object.keys(run.sec).map(k=>`<li>${secName[k]||k}: <b>${fmt(run.sec[k].r)}</b> of ${run.sec[k].n}</li>`).join('');
+  const pct=Math.round(score/n*100);
+  const last = run.lvl===LEVELS.length;
+  const msg = pass ? (last?`Last level cleared! ${fmt(score)} of ${n}. Keep practicing to earn 3 stars on every level.`:`Level ${run.lvl} cleared! Level ${run.lvl+1} is open.`) : `${fmt(score)} of ${n}. You need ${C.passScore} to move on. Next try is a fresh mix with your missed words mixed in.`;
+  const more = (pass && earned<3) ? ` ${3-earned===1?'One more star':'More stars'} are waiting: ${earned===1?`${n-1} or ${n} right earns more`:`all ${n} right earns the third`}.` : '';
+  const missed = run.missed.length? `<h3>To remember</h3><ul>${run.missed.map(m=>`<li>${esc(m.label)}: <b>${esc(correctText(m))}</b></li>`).join('')}</ul>`:'<p>No misses. Wow.</p>';
+  const close = run.close.length? `<h3>Spelling to fix</h3><ul>${run.close.map(m=>`<li><b>${esc(correctText(m))}</b></li>`).join('')}</ul>`:'';
+  const big = [0,1,2].map(k=>`<span class="${k<earned?'on':'no'}" id="bs${k}">&#9733;</span>`).join('');
+  app.innerHTML=`<header><h1>${pass?'Nice work!':'Good try!'}</h1></header><div class="card score ${pass?'pass':''}"><div class="bigstars" role="img" aria-label="${earned} of 3 stars">${big}</div><div class="big">${fmt(score)} / ${n} <span class="pct">(${pct}%)</span></div><p>${esc(msg+more)}</p>
+    <ul class="secs">${secs}</ul></div>
+    <div class="card">${missed}${close}</div>
+    <p>${pass&&!last?`<button class="primary" id="nl">Go to Level ${run.lvl+1}</button> `:''}<button class="${pass?'':'primary'}" id="again">${pass?'Practice this level again':'Try a fresh mix'}</button> <button id="hm">Levels</button></p>`;
+  const nl=$('#nl'); if(nl) nl.onclick=()=>teach(run.lvl+1);
+  $('#again').onclick=()=>teach(run.lvl); $('#hm').onclick=home; window.scrollTo(0,0);
+  // celebrate
+  if(pass){ Snd.win() } else { Snd.soft() }
+  for(let k=0;k<earned;k++){ setTimeout(()=>{ const el=document.getElementById('bs'+k); if(el){ el.classList.add('pop'); } Snd.star(k) }, 500+k*420); }
+}
+
+// keep a try from being lost by an accidental swipe-back or refresh
+window.addEventListener('beforeunload',e=>{ if(run && run.i>0 && run.i<run.items.length){ e.preventDefault(); e.returnValue=''; } });
+document.addEventListener('pointerdown',()=>Snd.unlock(),{passive:true});
+(function(){ const b=document.createElement('button'); b.className='snd'; b.id='snd'; b.type='button';
+  const paint=()=>{ b.innerHTML=Snd.isMuted()?'&#128263;':'&#128266;'; b.setAttribute('aria-label',Snd.isMuted()?'Sound is off. Tap to turn on.':'Sound is on. Tap to turn off.') };
+  paint(); b.onclick=()=>{ Snd.toggle(); paint() }; document.body.appendChild(b); })();
+stages();
+window.__LQ={get ITEMS(){return ITEMS},get LEVELS(){return LEVELS},get C(){return C},run:()=>run,save:()=>save,judgeText,selectAttempt,useStage,STAGES,Snd};
+
+})();
+</script>
