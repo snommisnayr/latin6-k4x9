@@ -556,10 +556,12 @@ function build7(){
     }
     if(w.p && strip(w.p)!==strip(w.l)){
       mc({id:`v7:${w.key}:pair`, tag:'v-pair', lvls:[2], section:'vocab', diff:2, pattern:'vocab: the perfect form on the checklist', ckey:'pair7:'+w.key, label:`${w.l}: ${w.p}`, why:`The checklist lists two forms. ${w.l} (${w.pe}) goes with ${w.p} (${w.pa}).`,
-        q:`The checklist pairs ${L(w.l)} with a second form for the finished action (${esc(w.pa)}). Which one?`, answer:w.p,
+        q:`${L(w.l)} means <b>${esc(w.pe)}</b>. Which word is its <b>perfect tense</b> (the past action, he/she/it <b>${esc(w.pa)}</b>)?`, answer:w.p,
         options:()=>{ const oth=shuffle(V.filter(x=>x.p && x!==w)); return [w.p,w.pl,oth[0].p,oth[1].p]; }});
       ty({id:`v7:${w.key}:pairt`, tag:'v-pairt', lvls:[5], section:'vocab', pattern:'vocab: type the perfect form', ckey:'pair7:'+w.key, label:`${w.l}: ${w.p}`, why:`${w.l} (${w.pe}) goes with ${w.p} (${w.pa}).`, form:false,
-        q:`Type the second form on the checklist for ${L(w.l)} (he/she/it ${esc(w.pa)}) <span class="hint">(macrons are optional)</span>`, answers:[w.p], model:w.p});
+        q:`Type the <b>perfect tense</b> of ${L(w.l)} (the past action: he/she/it <b>${esc(w.pa)}</b>) <span class="hint">(macrons are optional)</span>`, answers:[w.p], model:w.p});
+      ty({id:`v7:${w.key}:pairm`, tag:'v-pairm', lvls:[5], section:'vocab', pattern:'vocab: what the perfect form means', ckey:'pair7:'+w.key, label:`${w.p}: ${w.pa}`, why:`${w.p} is the perfect tense of ${w.l}. It means ${w.pa} (he/she/it ${w.pa}).`, form:false,
+        q:`${L(w.p)} is the <b>perfect tense</b> of ${L(w.l)}. What does ${L(w.p)} mean in English?`, answers:[w.pa,'he '+w.pa,'she '+w.pa,'it '+w.pa], model:'he/she/it '+w.pa});
     }
   });
 
@@ -634,20 +636,20 @@ function build7(){
   const vtable = ()=>`<div class="wide"><table class="chart"><tr><th>Latin</th><th>English</th><th>Hook</th></tr>${C.vocab.map(w=>`<tr><td class="lat">${esc(w.l)}${w.p?`<br><span class="tiny">${esc(w.p)}</span>`:''}</td><td>${esc(w.s.join(' or '))}${w.s.length>1?'<span class="two">2 meanings</span>':''}</td><td>${esc(w.h)}</td></tr>`).join('')}</table></div>`;
   LEVELS = [
     {id:1,group:'Part 1: Vocabulary',title:'Meet the words',sub:'Stage 7 words: pick the English meaning',spell:'none',quota:{'v-l2e':8,'r-l2e':2},
-      teach:()=>`<p>These are the 26 Stage 7 words. Read each one out loud. Verbs show a second form under the Latin. That is the finished-action (perfect) form, and you will use it later.</p>
+      teach:()=>`<p>These are the 26 Stage 7 words. Read each one out loud. Verbs show a second word under the Latin. That second word is the <b>perfect tense</b>, the past action (he/she/it did it), and you will use it later.</p>
         <p><b>Some English words share one Latin word.</b> <span class="lat">umbra</span> is the Latin for <b>ghost</b> AND for <b>shadow</b>. In the questions, you will see each English meaning on its own.</p>${vtable()}
         <p class="tiny">About 2 of the 10 questions are review words from Stages 2 to 6.</p>`},
     {id:2,group:'Part 1: Vocabulary',title:'Say it in Latin',sub:'English to Latin, one meaning at a time',spell:'none',quota:{'v-e2l':5,'v-mean':2,'v-pair':1,'r-e2l':2},
       teach:()=>`<p>Now go the other direction: you see the English and pick the Latin.</p>
         <p><b>Ghost</b> is one question and <b>shadow</b> is another question. The answer to both is <span class="lat">umbra</span>. Same idea for these:</p>
         <ul>${C.vocab.filter(w=>w.s.length>1).map(w=>`<li><span class="lat">${esc(w.l)}</span> = ${esc(w.s.join(' AND '))}</li>`).join('')}</ul>
-        <p>There will also be a question about the <b>second form</b> that goes with each verb on the checklist.</p>`},
+        <p>There will also be a question about the <b>perfect tense</b> of a verb. That is the past-action form listed next to it on the checklist, like <span class="lat">cēnat</span> (dines) and <span class="lat">cēnāvit</span> (dined).</p>`},
     {id:3,group:'Part 1: Vocabulary',title:'Type the English',sub:'Your first typing. Close spelling still counts',spell:'lenient',quota:{'v-type':8,'r-type':2},
       teach:()=>`<ul><li>You see the Latin word and <b>type the English</b>.</li><li>Words with two meanings: either one is right.</li><li><b>Spelling rule:</b> one small slip still earns the point, and you type the right spelling once to lock it in.</li><li>Macrons are optional in your typing.</li></ul>`},
     {id:4,group:'Part 1: Vocabulary',title:'Spell the Latin',sub:'Unscramble it, then type it from memory',spell:'half',quota:{'v-scr':3,'v-t2l':5,'r-t2l':2},
       teach:()=>`<ul><li>First you unscramble letters, then you <b>type the Latin</b> for an English word.</li><li><b>Spelling rule:</b> exact spelling = 1 point. One small slip = half a point, and you type the right spelling once.</li><li>Two English meanings can lead to the same Latin word. Ghost and shadow are both <span class="lat">umbra</span>.</li><li>Macrons are optional.</li></ul>`},
-    {id:5,group:'Part 1: Vocabulary',title:'Vocabulary test mirror',sub:'Like a real quiz: exact spelling for full credit',spell:'exact',quota:{'v-type':3,'v-t2l':3,'v-pairt':2,'r-type':1,'r-t2l':1},
-      teach:()=>`<ul><li>A mix of English to Latin, Latin to English, and the second form of each verb.</li><li><b>Spelling rule:</b> it has to be spelled right for the point. A near miss shows the spelling, you type it once, and it does not count.</li><li>Macrons are optional.</li><li>Clear this level and the grammar levels open.</li></ul>`},
+    {id:5,group:'Part 1: Vocabulary',title:'Vocabulary test mirror',sub:'Like a real quiz: exact spelling for full credit',spell:'exact',quota:{'v-type':3,'v-t2l':3,'v-pairt':1,'v-pairm':1,'r-type':1,'r-t2l':1},
+      teach:()=>`<ul><li>A mix of English to Latin, Latin to English, and the perfect tense of each verb (what it is, and what it means).</li><li><b>Spelling rule:</b> it has to be spelled right for the point. A near miss shows the spelling, you type it once, and it does not count.</li><li>Macrons are optional.</li><li>Clear this level and the grammar levels open.</li></ul>`},
     {id:6,group:'Part 2: Grammar and sentences',title:'Present and perfect',sub:'Finished actions: fēcit, dīxit, vēnērunt',spell:'none',quota:{'g-pair':4,'g-plural':3,'g-tense':3},
       teach:()=>guide7()},
     {id:7,group:'Part 2: Grammar and sentences',title:'No subject word',sub:'Who is doing it? Read the sentence before',spell:'none',quota:{'g-who':4,'g-pick':3,'g-tiles':3},
@@ -691,7 +693,7 @@ const Snd=(()=>{
     return 'data:audio/wav;base64,'+btoa(bin);
   }
   const defs={
-    ok:s=>{ const f=523.25*Math.pow(2,Math.min(Math.max(s||1,1)-1,5)*2/12); return [[f,0,.16,'sine',.3],[f*1.5,.09,.26,'sine',.3]] },
+    ok:s=>{ const n=Math.max(s||1,1), f=523.25*Math.pow(2,Math.min(n-1,14)*2/12), v=n>=12?.2:.3; const a=[[f,0,.16,'sine',v],[f*1.5,.09,.26,'sine',v]]; if(n>=4) a.push([f*2,.18,.3,'sine',v*.7]); if(n>=7) a.push([f*3,.27,.34,'sine',v*.5]); return a },
     close:()=>[[440,0,.15,'triangle',.25],[494,.1,.22,'triangle',.25]],
     bad:()=>[[220,0,.18,'triangle',.28],[165,.12,.3,'triangle',.28]],
     star:i=>{ const f=784*Math.pow(1.122,i||0); return [[f,0,.24,'sine',.24],[f*2,.05,.2,'sine',.1]] },
