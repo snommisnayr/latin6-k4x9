@@ -632,6 +632,36 @@ function build7(){
       q:`Translate into English:${lat}<div class="hint">Helpful words: ${esc(s.gloss)}</div>`, answers:s.en, model});
   });
 
+  // ----- English to Latin sentences. ch = chunks before the verb (they can swap places; a preposition stays with its noun). v = the verb, last.
+  const ESENT7 = [
+    {id:'e1',en:'The merchant dined yesterday.',ch:['mercātor','heri'],v:'cēnāvit',help:'merchant = mercātor, yesterday = heri, dined = cēnāvit',d:['cēnat','mercātōrem']},
+    {id:'e2',en:'The centurion caught sight of the ghost.',ch:['centuriō','umbram'],v:'cōnspexit',help:'centurion = centuriō, ghost = umbra, caught sight of = cōnspexit',d:['umbra','cōnspicit']},
+    {id:'e3',en:'The slave-girl prepared the cup.',ch:['ancilla','pōculum'],v:'parāvit',help:'slave-girl = ancilla, cup = pōculum, prepared = parāvit',d:['parat','pōculī']},
+    {id:'e4',en:'The master asked the slave-girl.',ch:['dominus','ancillam'],v:'rogāvit',help:'master = dominus, slave-girl = ancilla, asked = rogāvit',d:['rogat','ancilla']},
+    {id:'e5',en:'The girl wept quietly.',ch:['puella','tacitē'],v:'lacrimāvit',help:'girl = puella, quietly = tacitē, wept = lacrimāvit',d:['lacrimat','puellam']},
+    {id:'e6',en:'The shadow frightened the merchant.',ch:['umbra','mercātōrem'],v:'terruit',help:'shadow = umbra, merchant = mercātor, frightened = terruit',d:['terret','mercātor']},
+    {id:'e7',en:'The old man understood nothing.',ch:['senex','nihil'],v:'intellēxit',help:'old man = senex, nothing = nihil, understood = intellēxit',d:['intellegit','senem']},
+    {id:'e8',en:'The young man told the story.',ch:['iuvenis','fābulam'],v:'nārrāvit',help:'young man = iuvenis, story = fābula, told = nārrāvit',d:['nārrat','fābula']},
+    {id:'e9',en:'The centurion killed the lion.',ch:['centuriō','leōnem'],v:'necāvit',help:'centurion = centuriō, lion = leō, killed = necāvit',d:['necat','leō']},
+    {id:'e10',en:'The merchants dined.',ch:['mercātōrēs'],v:'cēnāvērunt',help:'merchant = mercātor (many: -ēs), dined = cēnāvit (many: -ērunt)',d:['cēnāvit','mercātor']},
+    {id:'e11',en:'The slave-girls greeted the master.',ch:['ancillae','dominum'],v:'salūtāvērunt',help:'slave-girl = ancilla, master = dominus, greeted = salūtāvit',d:['salūtāvit','ancilla']},
+    {id:'e12',en:'The friends prepared dinner.',ch:['amīcī','cēnam'],v:'parāvērunt',help:'friend = amīcus, dinner = cēna, prepared = parāvit',d:['parāvit','amīcus']},
+    {id:'e13',en:'Grumio dined with the cook.',ch:['Grumiō','cum coquō'],v:'cēnāvit',help:'cook = coquus, with = cum (the noun after it ends in -ō)',d:['coquus','cēnat']},
+    {id:'e14',en:'The ghost was near the house.',ch:['umbra','prope vīllam'],v:'erat',help:'near = prope (the noun after it ends in -m), house = vīlla, was = erat',d:['vīlla','est']}
+  ];
+  const perms = a => a.length<=1?[a]:a.flatMap((x,i)=>perms(a.slice(0,i).concat(a.slice(i+1))).map(r=>[x,...r]));
+  ESENT7.forEach(s=>{
+    const ans = perms(s.ch).map(c=>c.join(' ')+' '+s.v);
+    const model = s.ch.join(' ')+' '+s.v+'.';
+    const tokens = (s.ch.join(' ')+' '+s.v).split(' ');
+    const prompt = `<div class="latq" style="font-style:normal;font-family:inherit">${esc(s.en)}</div>`;
+    const why = `Subject first, verb last. The doer takes the plain form, the thing it acts on takes the -m form, and the verb ending shows one (-t) or many (-nt). Model answer: ${model}`;
+    tl({id:`g7:e2lt:${s.id}`, tag:'g-lat-tiles', lvls:[9], pattern:'English to Latin: build the sentence', ckey:'sentE:'+s.id, label:model, why,
+      q:`Build the Latin:${prompt}<div class="hint">Helpful words: ${esc(s.help)}</div>`, tokens, bank:tokens.concat(s.d), answers:ans, model});
+    ty({id:`g7:e2ly:${s.id}`, tag:'g-lat-typed', lvls:[9], pattern:'English to Latin: type the sentence', ckey:'sentE:'+s.id, label:model, why, form:false,
+      q:`Write it in Latin:${prompt}<div class="hint">Helpful words: ${esc(s.help)}. Macrons are optional. Latin usually puts the verb last.</div>`, answers:ans, model});
+  });
+
   // ----- levels
   const vtable = ()=>`<div class="wide"><table class="chart"><tr><th>Latin</th><th>English</th><th>Hook</th></tr>${C.vocab.map(w=>`<tr><td class="lat">${esc(w.l)}${w.p?`<br><span class="tiny">${esc(w.p)}</span>`:''}</td><td>${esc(w.s.join(' or '))}${w.s.length>1?'<span class="two">2 meanings</span>':''}</td><td>${esc(w.h)}</td></tr>`).join('')}</table></div>`;
   LEVELS = [
@@ -655,7 +685,9 @@ function build7(){
     {id:7,group:'Part 2: Grammar and sentences',title:'No subject word',sub:'Who is doing it? Read the sentence before',spell:'none',quota:{'g-who':4,'g-pick':3,'g-tiles':3},
       teach:()=>noSubject7()},
     {id:8,group:'Part 2: Grammar and sentences',title:'Translate it',sub:'Build sentences, then type them',spell:'half',quota:{'g-tiles':3,'g-typed':7},
-      teach:()=>`<ul><li>Translate whole Latin sentences. Some are from your book, and some use the new Stage 7 words.</li><li><b>Plan:</b> (1) find the verb and read its ending: -t = one, -nt = many. (2) Is it present, was/were ___ing, or finished? (3) Who is the subject, and what is the object (the -m word)? (4) Put it into English.</li><li>If a sentence has no subject word, look at the sentence before it.</li><li>Typing: small spelling slips earn half a point. Words like <i>the</i> and <i>a</i> do not matter.</li></ul>`}
+      teach:()=>`<ul><li>Translate whole Latin sentences. Some are from your book, and some use the new Stage 7 words.</li><li><b>Plan:</b> (1) find the verb and read its ending: -t = one, -nt = many. (2) Is it present, was/were ___ing, or finished? (3) Who is the subject, and what is the object (the -m word)? (4) Put it into English.</li><li>If a sentence has no subject word, look at the sentence before it.</li><li>Typing: small spelling slips earn half a point. Words like <i>the</i> and <i>a</i> do not matter.</li></ul>`},
+    {id:9,group:'Part 2: Grammar and sentences',title:'Say it in Latin',sub:'English sentences into Latin, one at a time',spell:'exact',quota:{'g-lat-tiles':4,'g-lat-typed':6},
+      teach:()=>`<ul><li>Now you go the other way. You see an <b>English sentence</b> and write it in <b>Latin</b>.</li><li><b>Plan:</b> (1) Find the doer and the verb. (2) The doer is the plain word (<span class="lat">mercātor</span>). (3) The thing it acts on gets an <b>-m</b> ending (<span class="lat">umbram</span>, <span class="lat">leōnem</span>). (4) The verb goes last: <b>-t</b> for one doer, <b>-nt</b> for many, and the perfect form for a finished action.</li><li>Example: <i>The centurion killed the lion.</i> = <span class="lat">centuriō leōnem necāvit.</span></li><li>"Helpful words" show the dictionary form. You still have to add the right ending.</li><li>Spelling counts here, because the ending is the grammar. Macrons are optional.</li></ul>`}
   ];
   bankHTML = ()=>'';
   tenseGuideHTML = ()=>guide7()+noSubject7();
@@ -729,8 +761,8 @@ const Snd=(()=>{
 
 // ---------- stages. To add Stage 8 later: write CONTENT8 and build8(), then add one entry here (newest first).
 const STAGES = [
-  {id:7,flash:true,title:'Stage 7',blurb:'Vocabulary first, then the perfect tense, missing subjects, and translating sentences',key:'lily-latin-stage7-v1',build:build7,perTry:10,pass:8,levels:8,isNew:true,
-   intro:'Eight levels. Levels 1 to 5 are <b>vocabulary</b> and levels 6 to 8 are <b>grammar and sentences</b>. Each try is 10 questions. Get <b>8 right (80%)</b> to pass and open the next level. Earn up to 3 stars on every level.',
+  {id:7,flash:true,title:'Stage 7',blurb:'Vocabulary first, then the perfect tense, missing subjects, and translating sentences',key:'lily-latin-stage7-v1',build:build7,perTry:10,pass:8,levels:9,isNew:true,
+   intro:'Nine levels. Levels 1 to 5 are <b>vocabulary</b> and levels 6 to 9 are <b>grammar and sentences</b>. Each try is 10 questions. Get <b>8 right (80%)</b> to pass and open the next level. Earn up to 3 stars on every level.',
    guideTitle:'Perfect tense and missing subjects', guideLabel:'Perfect tense and missing subjects (read this if it feels mixed up)'},
   {id:6,title:'Stage 6',blurb:'Imperfect, past-perfect, and present verbs',key:'lily-latin-stage6-v1',build:build6,perTry:20,pass:18,levels:6,
    intro:'Six levels. Each try is about 10 to 15 minutes, 20 questions. Get <b>18 of 20</b> to unlock the next level. You start by <b>recognizing</b> words and finish by <b>writing them yourself</b>, spelled right. Earn up to 3 stars on every level.',
