@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Lily's Latin Quest</title>
 <style>
 :root{--bg:#faf6ee;--ink:#2b2a33;--card:#ffffff;--line:#e4dccb;--accent:#6b3fa0;--on-accent:#ffffff;--good:#2e7d4f;--goodbg:#e6f4ea;--bad:#b3261e;--badbg:#fdeceb;--warn:#8a5a00;--warnbg:#fff4d6;--c-warn:#d49a00;--muted:#5a5963;--soft:#f1ecf8;--softline:#d9cbee;--latin:#3a2a63;--tbg:#faf8ff;--tbg-imp:#f2faf5;--tbg-perf:#fff8ee;--tbg-pres:#f2f7fd;--c-pres:#2060a8;--c-perf:#b05a00}
@@ -67,6 +68,13 @@ details.bank{margin:8px 0 12px;font-size:17px}details.bank summary{cursor:pointe
 .fcbtns{display:flex;gap:10px}.fcbtns button{flex:1;padding:16px 10px;font-size:20px}
 @media print{.snd{display:none}}
 #app{padding-top:54px}
+.bsent{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
+.btile{font:italic 600 24px Georgia,serif;color:var(--latin);border-width:2px;text-align:center;min-width:64px}
+.btile:disabled{opacity:1;cursor:default}
+.btile.V{border-color:var(--good);background:var(--goodbg)}.btile.S{border-color:var(--c-pres);background:var(--tbg-pres)}.btile.O{border-color:var(--c-perf);background:var(--tbg-perf)}
+.rtag{display:block;font:700 12px -apple-system,BlinkMacSystemFont,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:2px}
+.rv{display:flex;gap:10px;align-items:flex-start;margin:8px 0}.rv .ic{font-weight:800;min-width:22px}.rv.ok .ic{color:var(--good)}.rv.tip .ic{color:var(--warn)}
+.bdots{display:flex;gap:6px;margin:6px 0}.bdots span{width:14px;height:14px;border-radius:50%;background:var(--line)}.bdots span.on{background:var(--accent)}
 </style>
 
 </head><body><div id="app"><noscript>This game needs JavaScript. Open this page in Safari or Chrome.</noscript></div>
@@ -835,20 +843,22 @@ function home(){
     const head = (l.group && l.group!==prevGroup)? `<div class="grp">${esc(l.group)}</div>` : ''; prevGroup=l.group||prevGroup;
     return head+`<button class="card level ${open?'':'locked'}" data-lvl="${l.id}" ${open?'':'disabled'}>
       <div class="lnum">Level ${l.id}${open?'':' (locked)'}</div><div class="ltitle">${esc(l.title)}</div>
-      <div class="lsub">${esc(l.sub)}</div><span class="badge">${esc(SPELL[l.spell])}</span>${best!=null?`<div class="lstars" aria-label="${starsFor(best,C.perTry,C.passScore)} of 3 stars">${starRow(starsFor(best,C.perTry,C.passScore))}</div><div class="lbest">Best: ${fmt(best)} / ${C.perTry}${best>=C.passScore?' &#10003;':''}</div>`:''}</button>`}).join('');
+      <div class="lsub">${esc(l.sub)}</div><span class="badge">${esc(SPELL[l.spell])}</span>${best!=null?`<div class="lstars" aria-label="${starsFor(best,C.perTry,C.passScore)} of 3 stars">${starRow(starsFor(best,C.perTry,C.passScore))}</div><div class="lbest">Best: ${fmt(best)} / ${C.perTry}${best>=C.passScore?' &#10003;':''}</div>`:''}${save.bonus&&save.bonus.best[l.id]?`<div class="tiny">&#11088; Bonus best: ${save.bonus.best[l.id].p} / ${save.bonus.best[l.id].m}</div>`:''}</button>`}).join('');
   const carry = Object.keys(save.carry);
   app.innerHTML = `<header><button class="link" id="allst">&larr; All stages</button><h1>${esc(C.title)}</h1><p class="sub">${S.intro}</p></header>
     ${S.flash?'<button class="guidebtn card fcbtn" id="fcb">&#127183; Flashcards: practice the words</button>':''}<button class="guidebtn card" id="tg">&#128214; ${esc(S.guideLabel)}</button>
     <div class="levels">${cards}</div>
     <p class="note">${carry.length?`<b>${carry.length}</b> word${carry.length>1?'s':''} to review. They come back in your next tries until you get each one right twice.`:'No words waiting for review. Nice.'}</p>
     <details class="parent"><summary>Parent corner</summary>
-      <p><button id="unl">${save.parent?'Re-lock levels':'Unlock all levels'}</button> <button id="rst">Reset this stage</button> <button id="lst">Show words to review</button></p><div id="plist"></div>
+      <p><button id="unl">${save.parent?'Re-lock levels':'Unlock all levels'}</button> <button id="rst">Reset this stage</button> <button id="lst">Show words to review</button> <button id="blog">Show bonus translations</button></p><div id="plist"></div>
+      <p class="tiny"><b>Bonus translations:</b> the checker looks for the subject, verb, and object separately and gives tips, so it is forgiving but not perfect. Use "Show bonus translations" to read what she wrote and talk through any tips together.</p>
       <p class="tiny"><b>Keep her in the game on a phone:</b> iPhone: Settings, Accessibility, Guided Access (turn on, set a passcode). Open this page, triple-press the side button, tap Start. Android: Settings, Security, App pinning (name varies), then pin the browser from the recent apps view. For a cleaner full screen on iPhone: Share, Add to Home Screen, then open it from the icon before starting Guided Access.</p>
       <p class="tiny">Progress is saved in this browser on this device only. Sound: use the speaker button at the top right. On iPhone, check the ring/silent switch too.</p></details>`;
   app.querySelectorAll('.level:not(.locked)').forEach(b=>b.onclick=()=>teach(+b.dataset.lvl));
   $('#allst').onclick=stages; $('#tg').onclick=guide; if($('#fcb')) $('#fcb').onclick=flash;
   $('#unl').onclick=()=>{save.parent=!save.parent;persist();home()};
   $('#rst').onclick=()=>ask('Reset all progress and review words for this stage?','Reset',()=>{resetAll();home()});
+  $('#blog').onclick=()=>{ const lg=(save.bonus&&save.bonus.log)||[]; $('#plist').innerHTML = lg.length? '<ul>'+lg.map(e=>`<li>${esc(e.d)}, Level ${e.lvl}: <span class="lat">${esc(e.l)}</span><br>She wrote: <b>${esc(e.a)}</b><br>Model: ${esc(e.m)} (${e.got} of ${e.of} parts)${e.tips&&e.tips.length?`<br>Tips shown: ${e.tips.map(esc).join(' ')}`:''}</li>`).join('')+'</ul>':'<p>No bonus translations yet.</p>' };
   $('#lst').onclick=()=>{ const keys=Object.keys(save.carry); $('#plist').innerHTML = keys.length? '<ul>'+keys.map(k=>{const it=ITEMS.find(x=>x.ckey===k);return `<li>${esc(it?it.label:k)} (needs ${save.carry[k]} more right)</li>`}).join('')+'</ul>':'<p>None.</p>' };
   window.scrollTo(0,0);
 }
@@ -1060,13 +1070,178 @@ function finish(){
   const big = [0,1,2].map(k=>`<span class="${k<earned?'on':'no'}" id="bs${k}">&#9733;</span>`).join('');
   app.innerHTML=`<header><h1>${pass?'Nice work!':'Good try!'}</h1></header><div class="card score ${pass?'pass':''}"><div class="bigstars" role="img" aria-label="${earned} of 3 stars">${big}</div><div class="big">${fmt(score)} / ${n} <span class="pct">(${pct}%)</span></div><p>${esc(msg+more)}</p>
     <ul class="secs">${secs}</ul></div>
+    ${BONUS[S.id]?`<button class="guidebtn card" id="bon">&#11088; Bonus: one short sentence. Label the subject, verb, and object, then translate.</button>`:''}
     <div class="card">${missed}${close}</div>
     <p>${pass&&!last?`<button class="primary" id="nl">Go to Level ${run.lvl+1}</button> `:''}<button class="${pass?'':'primary'}" id="again">${pass?'Practice this level again':'Try a fresh mix'}</button> <button id="hm">Levels</button></p>`;
   const nl=$('#nl'); if(nl) nl.onclick=()=>teach(run.lvl+1);
+  const bon=$('#bon'), blv=run.lvl; if(bon) bon.onclick=()=>bonusStart(blv);
   $('#again').onclick=()=>teach(run.lvl); $('#hm').onclick=home; window.scrollTo(0,0);
   // celebrate
   if(pass){ Snd.win() } else { Snd.soft() }
   for(let k=0;k<earned;k++){ setTimeout(()=>{ const el=document.getElementById('bs'+k); if(el){ el.classList.add('pop'); } Snd.star(k) }, 500+k*420); }
+}
+
+// ---------- bonus: after a level, label the subject, verb, and object, then translate 3 short sentences.
+// r: one letter per Latin word. S subject, V verb, O direct object, - anything else.
+// S, V, O: accepted English. Sx, Vx, Ox: common slips (wrong number or tense) that get their own tip.
+// t: which levels use it (p present, i imperfect, f finished past, z no subject word, x tricky object). tn: tense of the verb.
+// g: helpful words for anything outside the level's list. n.O: a note when a word looks like an object but is not (or is).
+const SLAVEGIRL=['slave girl','maid','servant'], FREEDMAN=['freedman','freed slave','freed man'], THIEF=['thief','robber'];
+const BONUS = {
+  6:{ levels:{1:'p',2:'p',3:'if',4:'pif',5:'pif',6:'pif'}, list:[
+    {l:'lībertus fūrem vituperat.',r:'SOV',t:'p',tn:'pres',S:FREEDMAN,Sx:['freedmen','freed slaves'],V:['blames','scolds','is blaming','is scolding'],Vx:['blamed','scolded','was blaming'],O:THIEF,Ox:['thieves','robbers'],m:'The freedman blames the thief.',g:'fūrem = thief (the -m form of fūr)'},
+    {l:'dominus servum ferōciter pulsat.',r:'SO-V',t:'p',tn:'pres',S:['master'],Sx:['masters'],V:['hits','strikes','knocks','is hitting','is striking'],Vx:['struck','was hitting'],O:['slave'],Ox:['slaves'],m:'The master hits the slave fiercely.',g:'dominus = master, servum = slave'},
+    {l:'lībertus fābulam scrībit.',r:'SOV',t:'p',tn:'pres',S:FREEDMAN,Sx:['freedmen'],V:['writes','is writing'],Vx:['wrote','was writing'],O:['story','tale','play'],Ox:['stories','plays'],m:'The freedman writes a story.',g:'fābula = story'},
+    {l:'fēmina togam emit.',r:'SOV',t:'p',tn:'pres',S:['woman'],Sx:['women'],V:['buys','is buying'],Vx:['bought','was buying'],O:['toga'],Ox:['togas'],m:'The woman buys a toga.',g:'fēmina = woman'},
+    {l:'agricola vīnum emit.',r:'SOV',t:'p',tn:'pres',S:['farmer'],Sx:['farmers'],V:['buys','is buying'],Vx:['bought','was buying'],O:['wine'],m:'The farmer buys wine.',g:'agricola = farmer, vīnum = wine',n:{O:'vīnum ends in -um. That -m makes it the Accusative: the direct object.'}},
+    {l:'mercātor fortis fūrem superat.',r:'S-OV',t:'p',tn:'pres',S:['merchant'],Sx:['merchants'],V:['overpowers','overcomes','is overpowering','beats','defeats'],Vx:['overpowered','overcame','beat'],O:THIEF,Ox:['thieves'],m:'The brave merchant overpowers the thief.',g:'mercātor = merchant, fūrem = thief'},
+    {l:'īnfāns parvus subitō clāmābat.',r:'S--V',t:'i',tn:'imp',S:['baby','infant','child'],Sx:['babies','infants'],V:['was shouting','was crying out','was yelling','was screaming'],Vx:['shouted','shouts','is shouting','were shouting'],O:null,m:'The small baby was suddenly shouting.',g:'clāmat = shouts'},
+    {l:'puella leōnem intentē spectābat.',r:'SO-V',t:'i',tn:'imp',S:['girl'],Sx:['girls'],V:['was watching','was looking at'],Vx:['watched','watches','is watching','were watching','looked at'],O:['lion'],Ox:['lions'],m:'The girl was watching the lion intently.',g:'leōnem = lion, spectat = watches'},
+    {l:'senex avārus pecūniam habēbat.',r:'S-OV',t:'i',tn:'imp',S:['old man'],Sx:['old men'],V:['had','was having','used to have'],Vx:['has'],O:['money'],m:'The greedy old man had money.',g:'senex = old man, pecūnia = money'},
+    {l:'ōlim mercātor in urbe habitābat.',r:'-S--V',t:'i',tn:'imp',S:['merchant'],Sx:['merchants'],V:['was living','lived','used to live'],Vx:['lives','is living','were living'],O:null,m:'Once a merchant was living in the city.',g:'in urbe = in the city',n:{O:'urbe comes after in, so it is part of "in the city". It is not the direct object.'}},
+    {l:'Caecilius aberat.',r:'SV',t:'i',tn:'imp',S:['caecilius'],V:['was absent','was away','was not there',"wasn't there"],Vx:['is absent','is away'],O:null,m:'Caecilius was absent.'},
+    {l:'fūr vīllam intrāvit.',r:'SOV',t:'f',tn:'perf',S:THIEF,Sx:['thieves','robbers'],V:['entered','went into'],Vx:['enters','was entering','is entering'],O:['house','villa'],Ox:['houses','villas'],m:'The thief entered the house.',g:'vīlla = house'},
+    {l:'agricola fortis leōnem pulsāvit.',r:'S-OV',t:'f',tn:'perf',S:['farmer'],Sx:['farmers'],V:['hit','struck','knocked'],Vx:['hits','strikes','was hitting'],O:['lion'],Ox:['lions'],m:'The brave farmer hit the lion.',g:'agricola = farmer, leōnem = lion'},
+    {l:'servī ad forum festīnāvērunt.',r:'S--V',t:'f',tn:'perf',S:['slaves'],Sx:['slave'],V:['hurried','rushed','hastened'],Vx:['hurries','hurry','were hurrying','was hurrying'],O:null,m:'The slaves hurried to the forum.',g:'servī = slaves, ad = to',n:{O:'forum comes after ad (to), so it is part of "to the forum". It is not the direct object.'}},
+    {l:'Metella ancillam vocāvit.',r:'SOV',t:'f',tn:'perf',S:['metella'],V:['called','summoned'],Vx:['calls','was calling'],O:SLAVEGIRL,Ox:['slave girls','maids'],m:'Metella called the slave-girl.',g:'ancilla = slave-girl'},
+    {l:'iuvenēs fūrem superāvērunt.',r:'SOV',t:'f',tn:'perf',S:['young men','youths'],Sx:['young man','youth'],V:['overpowered','overcame','beat','defeated'],Vx:['overpower','overpowers','were overpowering'],O:THIEF,Ox:['thieves'],m:'The young men overpowered the thief.',g:'iuvenēs = young men, fūrem = thief'}
+  ]},
+  7:{ levels:{1:'p',2:'p',3:'pf',4:'pf',5:'pf',6:'f',7:'z',8:'fzx',9:'pf'}, list:[
+    {l:'ancilla cēnam parat.',r:'SOV',t:'p',tn:'pres',S:SLAVEGIRL,Sx:['slave girls','maids'],V:['prepares','is preparing','gets ready','is getting ready','makes','is making'],Vx:['prepared','was preparing'],O:['dinner','meal'],Ox:['dinners'],m:'The slave-girl prepares dinner.',g:'ancilla = slave-girl, cēna = dinner'},
+    {l:'umbra puellam terret.',r:'SOV',t:'p',tn:'pres',S:['ghost','shadow','spirit'],Sx:['ghosts','shadows'],V:['frightens','scares','terrifies','is frightening','is scaring'],Vx:['frightened','scared'],O:['girl'],Ox:['girls'],m:'The ghost frightens the girl.',g:'puellam = girl'},
+    {l:'centuriō servum cōnspicit.',r:'SOV',t:'p',tn:'pres',S:['centurion'],Sx:['centurions'],V:['catches sight of','sees','notices','spots','is catching sight of'],Vx:['caught sight of','saw','noticed','spotted'],O:['slave'],Ox:['slaves'],m:'The centurion catches sight of the slave.',g:'servum = slave'},
+    {l:'senex fābulam nārrat.',r:'SOV',t:'p',tn:'pres',S:['old man'],Sx:['old men'],V:['tells','relates','is telling'],Vx:['told','related','was telling'],O:['story','tale','play'],Ox:['stories'],m:'The old man tells a story.',g:'senex = old man, fābula = story'},
+    {l:'gladiātor leōnem necat.',r:'SOV',t:'p',tn:'pres',S:['gladiator'],Sx:['gladiators'],V:['kills','is killing'],Vx:['killed','was killing'],O:['lion'],Ox:['lions'],m:'The gladiator kills the lion.',g:'gladiātor = gladiator, leōnem = lion'},
+    {l:'puella tacitē lacrimat.',r:'S-V',t:'p',tn:'pres',S:['girl'],Sx:['girls'],V:['cries','weeps','is crying','is weeping'],Vx:['cried','wept','was crying'],O:null,m:'The girl cries quietly.'},
+    {l:'centuriō servum cōnspexit.',r:'SOV',t:'f',tn:'perf',S:['centurion'],Sx:['centurions'],V:['caught sight of','saw','noticed','spotted'],Vx:['catches sight of','sees','notices','spots'],O:['slave'],Ox:['slaves'],m:'The centurion caught sight of the slave.',g:'servum = slave'},
+    {l:'umbra puellam terruit.',r:'SOV',t:'f',tn:'perf',S:['ghost','shadow','spirit'],Sx:['ghosts','shadows'],V:['frightened','scared','terrified'],Vx:['frightens','scares','terrifies'],O:['girl'],Ox:['girls'],m:'The ghost frightened the girl.',g:'puellam = girl'},
+    {l:'senex fābulam nārrāvit.',r:'SOV',t:'f',tn:'perf',S:['old man'],Sx:['old men'],V:['told','related'],Vx:['tells','relates','was telling'],O:['story','tale','play'],Ox:['stories'],m:'The old man told a story.',g:'senex = old man, fābula = story'},
+    {l:'gladiātor leōnem necāvit.',r:'SOV',t:'f',tn:'perf',S:['gladiator'],Sx:['gladiators'],V:['killed'],Vx:['kills','was killing'],O:['lion'],Ox:['lions'],m:'The gladiator killed the lion.',g:'gladiātor = gladiator, leōnem = lion'},
+    {l:'servus pōculum fēcit.',r:'SOV',t:'f',tn:'perf',S:['slave'],Sx:['slaves'],V:['made'],Vx:['makes','was making'],O:['cup','wine cup'],Ox:['cups'],m:'The slave made a cup.',g:'servus = slave',n:{O:'pōculum ends in -um. That -m makes it the Accusative: the direct object.'}},
+    {l:'mercātor cum amīcō cēnāvit.',r:'S--V',t:'f',tn:'perf',S:['merchant'],Sx:['merchants'],V:['dined','ate dinner','had dinner','ate'],Vx:['dines','eats dinner','was dining'],O:null,m:'The merchant dined with a friend.',g:'mercātor = merchant, amīcō = friend',n:{O:'amīcō comes after cum (with), so it is part of "with a friend". It is not the direct object.'}},
+    {l:'heri centuriō ingēns prōcessit.',r:'-S-V',t:'f',tn:'perf',S:['centurion'],Sx:['centurions'],V:['advanced','proceeded','moved forward','went forward'],Vx:['advances','proceeds','was advancing'],O:null,m:'Yesterday the huge centurion advanced.'},
+    {l:'fūr pecūniam cēpit.',r:'SOV',t:'f',tn:'perf',S:THIEF,Sx:['thieves'],V:['took','stole','seized','grabbed'],Vx:['takes','was taking'],O:['money'],m:'The thief took the money.',g:'fūr = thief, pecūnia = money, cēpit = took'},
+    {l:'iuvenis pulcher puellam rogāvit.',r:'S-OV',t:'f',tn:'perf',S:['young man','youth'],Sx:['young men'],V:['asked'],Vx:['asks','was asking'],O:['girl'],Ox:['girls'],m:'The handsome young man asked the girl.',g:'iuvenis = young man'},
+    {l:'fābulam nārrāvit.',r:'OV',t:'z',tn:'perf',S:['he','she','it'],Sx:['they'],V:['told','related'],Vx:['tells','was telling'],O:['story','tale','play'],Ox:['stories'],m:'He told a story. (She told a story is right too.)',g:'fābula = story'},
+    {l:'pōculum parāvērunt.',r:'OV',t:'z',tn:'perf',S:['they'],Sx:['he','she','it'],V:['prepared','got ready','made'],Vx:['prepare','prepares','were preparing'],O:['cup','wine cup'],Ox:['cups'],m:'They prepared the cup.'},
+    {l:'centuriōnem cōnspexit.',r:'OV',t:'z',tn:'perf',S:['he','she','it'],Sx:['they'],V:['caught sight of','saw','noticed','spotted'],Vx:['catches sight of','sees'],O:['centurion'],Ox:['centurions'],m:'He caught sight of the centurion. (She is right too.)'},
+    {l:'valdē lacrimāvit.',r:'-V',t:'z',tn:'perf',S:['he','she','it'],Sx:['they'],V:['cried','wept'],Vx:['cries','weeps','was crying'],O:null,m:'She cried very much. (He cried is right too.)'},
+    {l:'tacitē prōcessērunt.',r:'-V',t:'z',tn:'perf',S:['they'],Sx:['he','she','it'],V:['advanced','proceeded','moved forward','went forward'],Vx:['advance','advances','were advancing'],O:null,m:'They advanced quietly.'},
+    {l:'pestis nihil intellēxit.',r:'SOV',t:'x',tn:'perf',S:['rascal','pest'],Sx:['rascals','pests'],V:['understood','did not understand',"didn't understand"],Vx:['understands','was understanding'],O:['nothing','anything'],m:'The rascal understood nothing.',n:{O:'nihil (nothing) is what was understood, so it is the direct object, even with no -m.'}},
+    {l:'umbra prope iānuam stābat.',r:'S--V',t:'x',tn:'imp',S:['ghost','shadow','spirit'],Sx:['ghosts','shadows'],V:['was standing','stood'],Vx:['stands','is standing','were standing'],O:null,m:'The ghost was standing near the door.',g:'iānua = door',n:{O:'iānuam comes after prope (near), so it is part of "near the door". It is not the direct object.'}},
+    {l:'fēmina nihil dīxit.',r:'SOV',t:'x',tn:'perf',S:['woman'],Sx:['women'],V:['said','did not say',"didn't say"],Vx:['says','was saying'],O:['nothing','anything'],m:'The woman said nothing.',g:'fēmina = woman, dīxit = said',n:{O:'nihil (nothing) is what was said, so it is the direct object, even with no -m.'}},
+    {l:'lībertī ad vīllam vēnērunt.',r:'S--V',t:'x',tn:'perf',S:['freedmen','freed slaves'],Sx:['freedman'],V:['came','arrived','went'],Vx:['come','comes','were coming'],O:null,m:'The freedmen came to the house.',g:'lībertī = freedmen, vēnērunt = came',n:{O:'vīllam ends in -m, but it comes after ad (to), so it is part of "to the house". Words after ad, in, per, prope, and cum are not the direct object.'}}
+  ]}
+};
+const ROLE={S:'Subject',V:'Verb',O:'Object'}, BSTEPS=['V','S','O'];
+let bz=null;
+function bsave(){ return (save.bonus=save.bonus||{best:{},recent:{},log:[]}) }
+const bwords = s => s.l.replace(/[.,;!?]/g,'').split(/\s+/);
+function bonusStart(lvl){
+  const b=BONUS[S.id], tags=b.levels[lvl]||'';
+  let pool=b.list.filter(s=>tags.includes(s.t)); if(pool.length<3) pool=b.list.slice();
+  const recent=new Set(bsave().recent[lvl]||[]);
+  const items=shuffle(pool.filter(s=>!recent.has(s.l))).concat(shuffle(pool.filter(s=>recent.has(s.l)))).slice(0,1);
+  bz={lvl, items, i:0, lp:0, lm:0, tp:0, tm:0, done:[]};
+  bonusLabel();
+}
+function bdots(){ return `<div class="bdots">${bz.items.map((_,k)=>`<span class="${k<=bz.i?'on':''}"></span>`).join('')}</div>` }
+function btiles(c, live){
+  return `<div class="bsent">${c.w.map((x,k)=>`<button type="button" class="tile btile ${c.tags[k]||''}" data-k="${k}" ${live?'':'disabled'}>${esc(x)}${c.tags[k]?`<span class="rtag">${ROLE[c.tags[k]]}</span>`:''}</button>`).join('')}</div>`;
+}
+function bonusLabel(){ bz.cur={s:bz.items[bz.i], w:bwords(bz.items[bz.i]), step:0, tags:{}, answered:false, fb:''}; bonusLabelDraw(); }
+function bonusLabelDraw(){
+  const c=bz.cur, step=BSTEPS[c.step];
+  const prompt = step==='V' ? '<b>Tap the VERB</b>, the action word. <span class="hint">It is usually last.</span>'
+    : step==='S' ? '<b>Tap the SUBJECT</b>, the doer (Nominative).'
+    : '<b>Tap the DIRECT OBJECT</b>, the one the action happens to (Accusative).';
+  const none = c.answered ? '' : step==='S' ? '<button type="button" class="opt" id="bnone">No subject word (the verb ending tells who)</button>' : step==='O' ? '<button type="button" class="opt" id="bnone">No direct object</button>' : '';
+  app.innerHTML = `<header><button class="link" id="back">&larr; Levels</button><div class="meta">Bonus after Level ${bz.lvl} &middot; ${bz.items.length>1?`Sentence ${bz.i+1} of ${bz.items.length} &middot; `:''}Step ${c.step+1} of 4: label it</div>${bdots()}</header>
+    <div class="card q"><div class="qtext">${prompt}</div>${btiles(c,!c.answered)}${none}</div>${c.fb}
+    ${c.answered?`<p><button class="primary" id="bnext">${c.step<2?'Next':'Now translate it'}</button></p>`:''}`;
+  $('#back').onclick=()=>ask('Leave the bonus? It does not change your level score.','Leave',home);
+  app.querySelectorAll('.btile:not([disabled])').forEach(b=>b.onclick=()=>bonusPick(+b.dataset.k));
+  if($('#bnone')) $('#bnone').onclick=()=>bonusPick(-1);
+  if($('#bnext')) { const n=$('#bnext'); n.onclick=()=>{ c.step++; c.answered=false; c.fb=''; if(c.step>2) bonusType(); else bonusLabelDraw() }; setTimeout(()=>n.focus(),250) }
+  window.scrollTo(0,0);
+}
+function bonusPick(k){
+  const c=bz.cur, s=c.s, step=BSTEPS[c.step]; if(c.answered) return; c.answered=true;
+  const ri=s.r.indexOf(step), ok=k===ri;
+  bz.lm++; if(ok){ bz.lp++; Snd.ok(1) } else Snd.bad();
+  if(ri>=0) c.tags[ri]=step;
+  const vw=c.w[s.r.indexOf('V')], pl=/nt$/.test(strip(vw));
+  let why;
+  if(step==='V') why=`${vw} is the verb. Latin verbs end in -t (one doer) or -nt (they), and the verb usually comes last.`;
+  else if(step==='S') why = ri>=0 ? `${c.w[ri]} is the subject. It is in the plain (Nominative) form, and ${vw} ends in ${pl?'-nt, so the doers are more than one':'-t, so the doer is just one'}.`
+    : `There is no subject word. ${vw} ends in ${pl?'-nt, so the doer is "they"':'-t, so the doer is he, she, or it'}.`;
+  else why = (s.n&&s.n.O) ? s.n.O : ri>=0 ? `${c.w[ri]} ends in -m: it is the Accusative, the direct object.` : (k>=0?`${c.w[k]} is not receiving the action. `:'')+'Nothing receives the action here, so there is no direct object.';
+  c.fb=`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Yes!':'Not quite.'}</b><div class="why">${esc(why)}</div></div>`;
+  bonusLabelDraw();
+}
+function bonusType(){
+  const c=bz.cur, s=c.s;
+  app.innerHTML = `<header><button class="link" id="back">&larr; Levels</button><div class="meta">Bonus after Level ${bz.lvl} &middot; ${bz.items.length>1?`Sentence ${bz.i+1} of ${bz.items.length} &middot; `:''}Step 4 of 4: translate it</div>${bdots()}</header>
+    <div class="card q"><div class="qtext">Now put it into English. Start with the subject, then the verb, then the object.</div>${btiles(c,false)}
+    ${s.g?`<div class="hint">Helpful words: ${esc(s.g)}</div>`:''}<div id="bans"></div></div><div id="bfb"></div>`;
+  $('#back').onclick=()=>ask('Leave the bonus? It does not change your level score.','Leave',home);
+  const inp=typedInput($('#bans'),(inp,bx)=>{ bx.dataset.done=1; inp.disabled=true; bonusReview(inp.value) },'Check my translation');
+  setTimeout(()=>{try{inp.focus()}catch(e){}},50); window.scrollTo(0,0);
+}
+// The translation check looks for each part (subject, verb, object) on its own, so word order and small extras
+// do not sink a good answer. It cannot judge everything, so it gives tips and the model answer instead of a strict mark.
+const btoks = x => norm(x).split(' ').filter(Boolean);
+// one extra word may sit inside a phrase ("was suddenly shouting")
+function bfind(T,phrase,fuzzy){ const P=btoks(phrase); if(!P.length) return -1;
+  const same=(x,y)=>x===y || (fuzzy && y.length>=5 && x.length>=4 && !endingDiff(x,y) && osa(x,y)<=1);
+  for(let i=0;i<T.length;i++){ if(!same(T[i],P[0])) continue; let t=i+1, gap=0, ok=true;
+    for(let j=1;j<P.length;j++){ if(t<T.length && same(T[t],P[j])){ t++; continue } if(!gap && t+1<T.length && same(T[t+1],P[j])){ gap=1; t+=2; continue } ok=false; break }
+    if(ok) return i } return -1 }
+function bpart(T,ok,slip){ const f=(l,z)=>{ for(const p of l||[]){ const i=bfind(T,p,z); if(i>=0) return i } return -1 };
+  let i=f(ok,false); if(i>=0) return {st:'ok',i}; i=f(slip,false); if(i>=0) return {st:'slip',i}; i=f(ok,true); if(i>=0) return {st:'spell',i}; return {st:'miss',i:-1} }
+function bonusReview(text){
+  const c=bz.cur, s=c.s, T=btoks(text);
+  const at=r=>s.r.indexOf(r)>=0?c.w[s.r.indexOf(r)]:null, vw=at('V'), sw=at('S'), ow=at('O'), pl=/nt$/.test(strip(vw));
+  const pS=bpart(T,s.S,s.Sx), pV=bpart(T,s.V,s.Vx), pO=s.O?bpart(T,s.O,s.Ox):null;
+  const good=p=>p.st==='ok'||p.st==='spell';
+  let tS=null, tV=null, tO=null;
+  if(!good(pS)){
+    if(!sw) tS = pS.st==='slip' ? `${vw} ends in ${pl?'-nt, so the doer is "they"':'-t, so the doer is one person: he, she, or it'}.` : `There is no subject word, so start with ${pl?'"they"':'he, she, or it'}. The ${pl?'-nt':'-t'} ending on ${vw} tells you.`;
+    else tS = pS.st==='slip' ? `${sw} means ${pl?'more than one':'just one'}. Try "${s.S[0]}".` : `Who is doing it? ${sw} means "${s.S[0]}".`;
+  } else if(sw && pO && good(pO) && pS.i>pO.i){
+    tS = `Check who does what. ${sw} is the subject (no -m), so "${s.S[0]}" comes first. ${ow} is the one it happens to.`;
+  }
+  if(!good(pV)) tV = pV.st==='slip'
+    ? {pres:`${vw} is happening now, so use a present form like "${s.V[0]}".`, imp:`${vw} has -ba-, so it was going on: use was/were ___ing, like "${s.V[0]}".`, perf:`${vw} is a finished action, so use the past form, like "${s.V[0]}".`}[s.tn]
+    : `I could not find the verb. ${vw} means "${s.V[0]}".`;
+  if(pO && !good(pO)) tO = pO.st==='slip' ? `${ow} is just one. Try "${s.O[0]}".` : `What does it happen to? ${ow} means "${s.O[0]}".`;
+  const parts=[['Subject',tS,pS],['Verb',tV,pV]].concat(pO?[['Object',tO,pO]]:[]);
+  const got=parts.filter(p=>!p[1]).length, spell=parts.filter(p=>!p[1]&&p[2].st==='spell').length;
+  bz.tp+=got; bz.tm+=parts.length;
+  bz.done.push({l:s.l, a:text, m:s.m, got, of:parts.length});
+  const b=bsave(); b.log.unshift({d:new Date().toISOString().slice(0,10), lvl:bz.lvl, l:s.l, a:text, m:s.m, got, of:parts.length, tips:parts.filter(p=>p[1]).map(p=>p[1])}); b.log=b.log.slice(0,40); persist();
+  if(got===parts.length) Snd.ok(3); else Snd.close();
+  const rows=parts.map(([name,tip])=>`<div class="rv ${tip?'tip':'ok'}"><span class="ic">${tip?'!':'&#10003;'}</span><span><b>${name}:</b> ${tip?esc(tip):'found it.'}</span></div>`).join('');
+  const last=bz.i===bz.items.length-1;
+  $('#bfb').innerHTML=`<div class="card"><h3>${got===parts.length?'Great translation!':'Check-up'}</h3>${rows}
+    ${spell?'<p class="tiny">Close spelling counts here. Look at the model below to see the spelling.</p>':''}
+    <p><b>One good translation:</b> ${esc(s.m)}</p>
+    <p class="tiny">The checker looks for the subject, verb, and object. It can miss a good answer said a different way. If you think yours is right, show Mom or Dad.</p></div>
+    <p><button class="primary" id="bnext">${last?'See my bonus score':'Next sentence'}</button></p>`;
+  const n=$('#bnext'); n.onclick=()=>{ bz.i++; if(bz.i>=bz.items.length) bonusDone(); else bonusLabel() }; setTimeout(()=>n.focus(),250);
+}
+function bonusDone(){
+  const pts=bz.lp+bz.tp, max=bz.lm+bz.tm, st=pts>=max*.9?3:pts>=max*.7?2:pts>=max*.5?1:0;
+  const b=bsave(), prev=b.best[bz.lvl]; if(!prev || pts/max>prev.p/prev.m) b.best[bz.lvl]={p:pts,m:max};
+  b.recent[bz.lvl]=bz.items.map(s=>s.l).concat(b.recent[bz.lvl]||[]).slice(0,4); persist();
+  const list=bz.done.map(d=>`<li><span class="lat">${esc(d.l)}</span><br>You wrote: ${esc(d.a)}<br>Model: ${esc(d.m)} <span class="tiny">(${d.got} of ${d.of} parts)</span></li>`).join('');
+  app.innerHTML=`<header><h1>Bonus done!</h1></header><div class="card score"><div class="bigstars" role="img" aria-label="${st} of 3 stars">${starRow(st)}</div>
+    <div class="big">${pts} / ${max}</div><ul class="secs"><li>Labeling (subject, verb, object): <b>${bz.lp}</b> of ${bz.lm}</li><li>Translation parts found: <b>${bz.tp}</b> of ${bz.tm}</li></ul>
+    <p class="tiny">The bonus is just for practice. It never locks or unlocks a level.</p></div>
+    <div class="card"><h3>Your sentence${bz.done.length>1?'s':''}</h3><ul class="secs">${list}</ul></div>
+    <p><button class="primary" id="bagain">Another bonus</button> <button id="bhome">Levels</button></p>`;
+  const lv=bz.lvl; $('#bagain').onclick=()=>bonusStart(lv); $('#bhome').onclick=home;
+  Snd.win(); for(let k=0;k<st;k++) setTimeout(()=>Snd.star(k),450+k*400); window.scrollTo(0,0);
 }
 
 // keep a try from being lost by an accidental swipe-back or refresh
@@ -1076,7 +1251,7 @@ window.addEventListener('beforeunload',e=>{ if(run && run.i>0 && run.i<run.items
   const paint=()=>{ b.innerHTML=Snd.isMuted()?'&#128263;':'&#128266;'; b.setAttribute('aria-label',Snd.isMuted()?'Sound is off. Tap to turn on.':'Sound is on. Tap to turn off.') };
   paint(); b.onclick=()=>{ Snd.toggle(); paint() }; document.body.appendChild(b); })();
 stages();
-window.__LQ={get ITEMS(){return ITEMS},get LEVELS(){return LEVELS},get C(){return C},run:()=>run,save:()=>save,judgeText,selectAttempt,useStage,STAGES,Snd};
+window.__LQ={get ITEMS(){return ITEMS},get LEVELS(){return LEVELS},get C(){return C},run:()=>run,save:()=>save,judgeText,selectAttempt,useStage,STAGES,Snd,BONUS,bonusStart,bonusLabel,bz:()=>bz};
 
 })();
 </script>
