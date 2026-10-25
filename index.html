@@ -1,5 +1,3 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Lily's Latin Quest</title>
 <style>
@@ -75,9 +73,17 @@ details.bank{margin:8px 0 12px;font-size:17px}details.bank summary{cursor:pointe
 .rtag{display:block;font:700 12px -apple-system,BlinkMacSystemFont,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:2px}
 .rv{display:flex;gap:10px;align-items:flex-start;margin:8px 0}.rv .ic{font-weight:800;min-width:22px}.rv.ok .ic{color:var(--good)}.rv.tip .ic{color:var(--warn)}
 .bdots{display:flex;gap:6px;margin:6px 0}.bdots span{width:14px;height:14px;border-radius:50%;background:var(--line)}.bdots span.on{background:var(--accent)}
+.ph{font-size:24px;margin:0 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{border-radius:999px;padding:8px 16px;font-size:18px}.chip .cnt{font-size:14px;color:var(--muted);margin-left:2px}.chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}.chip.on .cnt{color:var(--on-accent);opacity:.85}
+.quick{margin:6px 0 0}.quick .link{font-size:16px;padding:4px 0;min-height:32px}
+.two-up{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}.two-up .ltitle{font-size:18px}
+.ctab th,.ctab td{font-size:17px;vertical-align:middle}.ctab th.rl{background:none;font-weight:400}.ctab th.grpr{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.ctab .lat{font-size:19px}
+.ask{display:inline-block;min-width:44px;text-align:center;border-radius:8px;background:var(--warnbg);color:var(--warn);font-weight:800;padding:2px 8px}
+.cin{width:100%;min-width:96px;font:italic 600 17px Georgia,serif;color:var(--latin);background:var(--card);border:2px solid var(--line);border-radius:8px;padding:8px 6px}.cin.right{border-color:var(--good);background:var(--goodbg)}.cin.wrong{border-color:var(--bad);background:var(--badbg)}.cfix{font-size:16px;margin-top:2px}
+@media (max-width:480px){.ctab{table-layout:fixed}.ctab th,.ctab td{font-size:14px;padding:5px 3px;word-break:break-word}.ctab th.rl{width:23%}.ctab .lat{font-size:16px}.cin{font-size:16px;min-width:0;padding:7px 3px}.ctab .tiny{font-size:12px}}
 </style>
 
-</head><body><div id="app"><noscript>This game needs JavaScript. Open this page in Safari or Chrome.</noscript></div>
+<div id="app"><noscript>This game needs JavaScript. Open this page in Safari or Chrome.</noscript></div>
 <script>
 // ===== CONTENT: Stage 6 words and verb stems. The game engine below does not need to change. =====
 const CONTENT6 = {
@@ -207,6 +213,201 @@ const CONTENT7 = {
     ["spectat","verb","looks at",["watches","look at","watch"],5],["stat","verb","stands",["stand"],5],["turba","noun","crowd",[],5],["urbs","noun","city",[],5],["venit","verb","comes",["come"],5],["optimus","adj","excellent",["best","very good"],5]
   ]
 };
+
+// ===== NEW STAGES GO HERE (Stage 8 and later). Newest first. =====
+// Each stage only needs its word list. The game builds 5 vocabulary levels from it automatically,
+// adds review words from every earlier stage, puts the words into the start-page flashcards,
+// and lists the stage at the top of the start page as the current stage.
+// Word format is the same as Stage 7:
+//   l Latin | k kind (verb, noun, adj, little) | s English meanings (each is its own question) | x other accepted English | h memory hook
+//   verbs can also have: p perfect he/she/it | pl perfect they | pe present English | pa past English
+// Optional: blurb (one line for the start page), guide (HTML for the guide button),
+// grammar: {levels:[{title, sub, spell, quota, teach}], build(api)} to add grammar levels after the vocabulary ones.
+//
+// Template:
+// {id:8, title:'Stage 8', blurb:'Stage 8 vocabulary', vocab:[
+//   {l:"gladius",k:"noun",s:["sword"],x:[],h:"Like gladiator: a man with a sword."},
+//   {l:"pugnat",k:"verb",p:"pugnāvit",pl:"pugnāvērunt",pe:"fights",pa:"fought",s:["fights"],x:["fight","is fighting"],h:"Like pugnacious."}
+// ]},
+const CHAPTERS = [
+  {id:8, title:'Stage 8', blurb:'Accusative plural, the case chart, and superlatives (very ___)',
+   vocab:[
+    {l:"agitat",k:"verb",p:"agitāvit",pl:"agitāvērunt",pe:"chases",pa:"chased",s:["chases","hunts"],x:["chase","hunt","is chasing","is hunting"],h:"Like agitate: stirring things up and chasing them around."},
+    {l:"cōnsūmit",k:"verb",p:"cōnsūmpsit",pl:"cōnsūmpsērunt",pe:"eats",pa:"ate",s:["eats"],x:["eat","consumes","consume","is eating","eats up"],h:"Like consume."},
+    {l:"dūcit",k:"verb",p:"dūxit",pl:"dūxērunt",pe:"leads",pa:"led",s:["leads"],x:["lead","is leading","takes"],h:"Like duke and conductor: someone who leads."},
+    {l:"eum",k:"pronoun",s:["him"],x:["it"],h:"eum has the -m ending, so it is the one something happens to: him."},
+    {l:"facile",k:"little",s:["easily"],x:["easy"],h:"Like facile and facilitate: done easily."},
+    {l:"ferōx",k:"adj",s:["fierce","ferocious"],x:["savage","wild"],h:"ferōx sounds like ferocious."},
+    {l:"gladius",k:"noun",s:["sword"],x:[],h:"Like gladiator: a man with a sword."},
+    {l:"habitat",k:"verb",p:"habitāvit",pl:"habitāvērunt",pe:"lives",pa:"lived",s:["lives"],x:["live","lives in","is living","dwells"],h:"Like habitat and inhabit: where something lives."},
+    {l:"hic",k:"adj",s:["this"],x:["this one"],h:"Point and say 'HEEK, this one!'"},
+    {l:"ignāvus",k:"adj",s:["cowardly","lazy"],x:["coward"],h:"ignāvus: someone who ignores the fight. Cowardly (or lazy)."},
+    {l:"incitat",k:"verb",p:"incitāvit",pl:"incitāvērunt",pe:"urges on",pa:"urged on",s:["urges on","encourages"],x:["urge on","encourage","incites","incite","is urging on","is encouraging"],h:"Like incite: to stir someone up."},
+    {l:"nūntius",k:"noun",s:["messenger"],x:[],h:"Like announce: a messenger brings the news."},
+    {l:"pēs",k:"noun",s:["foot","paw"],x:["feet","paws"],h:"Like pedal and pedestrian."},
+    {l:"porta",k:"noun",s:["gate"],x:["gates"],h:"Like portal: a gateway."},
+    {l:"postulat",k:"verb",p:"postulāvit",pl:"postulāvērunt",pe:"demands",pa:"demanded",s:["demands"],x:["demand","is demanding"],h:"Like postulate: to claim or demand."},
+    {l:"puer",k:"noun",s:["boy"],x:["child"],h:"Like puerile: childish, boyish."},
+    {l:"pugnat",k:"verb",p:"pugnāvit",pl:"pugnāvērunt",pe:"fights",pa:"fought",s:["fights"],x:["fight","is fighting"],h:"Like pugnacious: always ready to fight."},
+    {l:"recumbit",k:"verb",p:"recubuit",pl:"recubuērunt",pe:"lies down",pa:"lay down",s:["lies down","reclines"],x:["lie down","recline","is lying down","is reclining"],h:"Like recumbent and a recliner chair."},
+    {l:"saepe",k:"little",s:["often"],x:["frequently"],h:"Say 'SY-peh'. Often, often, often."},
+    {l:"sanguis",k:"noun",s:["blood"],x:[],h:"Like sanguine. Think 'sang-' as in blood-red."},
+    {l:"silva",k:"noun",s:["woods","forest"],x:["wood","forests"],h:"Like Pennsylvania: 'Penn's woods'."},
+    {l:"spectāculum",k:"noun",s:["show","spectacle"],x:["display"],h:"Like spectacle and spectator."},
+    {l:"statim",k:"little",s:["at once"],x:["immediately","right away","instantly"],h:"Like 'stat!' on a hospital show: right away!"},
+    {l:"tōtus",k:"adj",s:["whole"],x:["entire","all"],h:"Like total: the whole thing."}
+   ],
+   // the noun chart from About the Language I. Each noun: nominative sg, accusative sg, nominative pl, accusative pl, English.
+   // The first noun in each declension is the book's example. The rest are for practice with new nouns.
+   chart:{decls:[
+    {name:'First declension', nouns:[['puella','puellam','puellae','puellās','girl'],['ancilla','ancillam','ancillae','ancillās','slave-girl'],['fēmina','fēminam','fēminae','fēminās','woman'],['agricola','agricolam','agricolae','agricolās','farmer'],['porta','portam','portae','portās','gate'],['silva','silvam','silvae','silvās','wood'],['fābula','fābulam','fābulae','fābulās','story']]},
+    {name:'Second declension', nouns:[['servus','servum','servī','servōs','slave'],['amīcus','amīcum','amīcī','amīcōs','friend'],['dominus','dominum','dominī','dominōs','master'],['nūntius','nūntium','nūntiī','nūntiōs','messenger'],['gladius','gladium','gladiī','gladiōs','sword'],['lībertus','lībertum','lībertī','lībertōs','freedman']]},
+    {name:'Third declension', nouns:[['mercātor','mercātōrem','mercātōrēs','mercātōrēs','merchant'],['leō','leōnem','leōnēs','leōnēs','lion'],['gladiātor','gladiātōrem','gladiātōrēs','gladiātōrēs','gladiator'],['senex','senem','senēs','senēs','old man'],['iuvenis','iuvenem','iuvenēs','iuvenēs','young man'],['centuriō','centuriōnem','centuriōnēs','centuriōnēs','centurion'],['āctor','āctōrem','āctōrēs','āctōrēs','actor']]}
+   ]},
+   guide:`<div class="tense"><b>Cases</b> are the jobs a noun can do. The ending tells you the job.<br><b>Nominative</b> = the doer (the subject). <b>Accusative</b> = the one the action happens to (the direct object).<br><b>Singular</b> = just one. <b>Plural</b> = more than one.</div>
+    <div class="wide"><table class="chart"><tr><th></th><th>First declension</th><th>Second declension</th><th>Third declension</th></tr>
+    <tr><th colspan="4">Singular</th></tr><tr><td><i>nominative</i></td><td class="lat">puella</td><td class="lat">servus</td><td class="lat">mercātor</td></tr><tr><td><i>accusative</i></td><td class="lat">puellam</td><td class="lat">servum</td><td class="lat">mercātōrem</td></tr>
+    <tr><th colspan="4">Plural</th></tr><tr><td><i>nominative</i></td><td class="lat">puellae</td><td class="lat">servī</td><td class="lat">mercātōrēs</td></tr><tr><td><i>accusative</i></td><td class="lat">puellās</td><td class="lat">servōs</td><td class="lat">mercātōrēs</td></tr></table></div>
+    <ul><li>A <b>declension</b> is a family of nouns that share the same endings.</li><li><b>Accusative singular</b> always ends in <b>-m</b>: -am, -um, -em.</li><li><b>Accusative plural</b> ends in <b>-ās, -ōs, -ēs</b>.</li><li>Third declension: nominative and accusative plural look the same (<span class="lat">mercātōrēs</span>). Use the rest of the sentence to tell which job it has.</li></ul>
+    <p><span class="lat">amīcus puellam salūtat.</span> The friend greets the <b>girl</b>.<br><span class="lat">amīcus puellās salūtat.</span> The friend greets the <b>girls</b>.</p>
+    <div class="tense perf"><b class="name">Superlatives</b> mean <b>very ___</b> (or most ___).<br><span class="lat">īrātus</span> angry &rarr; <span class="lat">īrātissimus</span> very angry. <span class="lat">laetus</span> happy &rarr; <span class="lat">laetissimus</span> very happy.<br>A few use <b>-errimus</b>: <span class="lat">pulcher</span> &rarr; <span class="lat">pulcherrimus</span> very beautiful.<br>The ending still matches the noun: <span class="lat">Pompēiānī erant īrātissimī</span>, <span class="lat">māter erat laetissima</span>.</div>`,
+   grammar:{
+    levels:[
+     {title:'Grammar words',sub:'Nominative, accusative, singular, plural, superlative',quota:{'g8-term':10},
+      teach:`<ul><li><b>Nominative</b> = the doer, the subject. <span class="lat">amīcus</span> in <span class="lat">amīcus puellam salūtat</span>.</li><li><b>Accusative</b> = the one the action happens to, the direct object. <span class="lat">puellam</span>.</li><li><b>Singular</b> = one. <b>Plural</b> = more than one.</li><li><b>Declension</b> = a family of nouns with the same endings.</li><li><b>Superlative</b> = very ___ (or most ___): <span class="lat">īrātissimus</span>.</li></ul><p class="tiny">Open the guide above for the full chart.</p>`},
+     {title:'Complete the chart',sub:'Fill in the missing form',spell:'half',quota:{'g8-cellmc':4,'g8-cell':6},
+      teach:`<ul><li>Each question shows the chart with one box marked <b>?</b>. Pick or type the form that goes there.</li><li>Some questions use a new noun next to the book's example. Copy the pattern of the example.</li><li>The ending is what counts, so a wrong ending is wrong. A small slip in the rest of the word earns half a point.</li><li>Macrons are optional.</li><li>Want to fill in the whole chart at once? Use <b>Fill in the chart</b> on the Stage 8 page.</li></ul>`},
+     {title:'One or many? Doer or done-to?',sub:'Name each noun in a sentence',quota:{'g8-obj':4,'g8-subj':3,'g8-num':3},
+      teach:`<ul><li>Find the verb (last). The doer is <b>nominative</b>. The one it happens to is <b>accusative</b>.</li><li>Then ask: one or more than one? <b>-m</b> = one. <b>-ās, -ōs, -ēs</b> = more than one.</li><li>Nominative plural: <b>-ae, -ī, -ēs</b> (<span class="lat">puellae, servī, mercātōrēs</span>). The verb ends in <b>-nt</b> too.</li></ul>`},
+     {title:'What does the ending change?',sub:'Pick the English that matches',quota:{'g8-mean':8,'g8-obj':2},
+      teach:`<p>One letter can change the whole meaning:</p><p><span class="lat">dominus servum vituperābat.</span> The master was cursing the <b>slave</b>.<br><span class="lat">dominus servōs vituperābat.</span> The master was cursing the <b>slaves</b>.</p><ul><li>Watch for <b>one vs. many</b>: -m is one, -ās/-ōs/-ēs is many.</li><li>Watch for <b>who does what</b>: the nominative does it, the accusative has it done to them, no matter the word order.</li></ul>`},
+     {title:'Very ___: superlatives',sub:'-issimus and -errimus',spell:'half',quota:{'g8-sup':4,'g8-supt':3,'g8-supsent':3},
+      teach:`<ul><li>A <b>superlative</b> means <b>very ___</b>. <span class="lat">nōtus</span> famous, <span class="lat">nōtissimus</span> very famous.</li><li>Most add <b>-issimus</b>. A few, like <span class="lat">pulcher</span>, add <b>-errimus</b>: <span class="lat">pulcherrimus</span>.</li><li>The ending changes to match the noun: <span class="lat">laetissima</span> (mother), <span class="lat">īrātissimī</span> (the Pompeians).</li><li>"Most ___" is fine too: most famous.</li></ul>`},
+     {title:'Translate it',sub:'Build sentences, then type them',spell:'half',quota:{'g8-tiles':3,'g8-typed':7},
+      teach:`<ul><li><b>Plan:</b> (1) Find the verb. (2) Find the nominative: who does it? (3) Find the accusative: who or what does it happen to? One or many? (4) Put it into English.</li><li>Look for <b>-issimus</b> words: they mean very ___.</li><li>Small spelling slips earn half a point. Words like <i>the</i> and <i>a</i> do not matter.</li></ul>`}
+    ],
+    build({mc,ty,tl,esc,L,ex,cap,chartTable}){
+     const CASES=['Nominative singular','Accusative singular','Nominative plural','Accusative plural'];
+     const ROW=['nominative singular','accusative singular','nominative plural','accusative plural'];
+     const stripP = s => s.replace(/[.,;!?]/g,'').replace(/\s+/g,' ').trim();
+     const end2 = w => w.slice(-2);
+     // ----- grammar words
+     const T=[
+      ['sg','<b>Singular</b> means...','just one',['just one','more than one','the doer','very ___'],'Singular = one. Plural = more than one.'],
+      ['pl','<b>Plural</b> means...','more than one',['just one','more than one','the one the action happens to','very ___'],'Plural = more than one.'],
+      ['nom','The <b>nominative</b> case is...','the doer (the subject)',['the doer (the subject)','the one the action happens to','a word that means very ___','the verb'],'Nominative = the doer, the subject of the sentence.'],
+      ['acc','The <b>accusative</b> case is...','the one the action happens to (the direct object)',['the doer (the subject)','the one the action happens to (the direct object)','a word that means very ___','the verb'],'Accusative = the one the action happens to: the direct object.'],
+      ['sup','A <b>superlative</b> is a word that means...','very ___ (or most ___)',['very ___ (or most ___)','more than one','the one the action happens to','a little ___'],'Superlatives end in -issimus (or -errimus): īrātissimus = very angry.'],
+      ['decl','A <b>declension</b> is...','a family of nouns that share the same endings',['a family of nouns that share the same endings','a tense of a verb','a word that means very ___','the doer of the action'],'puella, servus, and mercātor each belong to a different declension, so their endings are different.'],
+      ['case','Nominative and accusative are both called...','cases',['cases','tenses','declensions','superlatives'],'A case is the job a noun is doing. The ending shows the case.'],
+      ['wn',`In ${L('amīcus puellam salūtat')}, which word is <b>nominative</b>?`,'amīcus',['amīcus','puellam','salūtat'],'amīcus is the doer: the friend does the greeting.'],
+      ['wa',`In ${L('amīcus puellam salūtat')}, which word is <b>accusative</b>?`,'puellam',['amīcus','puellam','salūtat'],'puellam ends in -m. The girl is the one being greeted.'],
+      ['wnp',`In ${L('puerī leōnēs spectāvērunt')}, which word is <b>nominative plural</b>?`,'puerī',['puerī','leōnēs','spectāvērunt'],'puerī (the boys) are doing the watching. -ī is a nominative plural ending, and the verb ends in -nt.'],
+      ['wap',`In ${L('puerī leōnēs spectāvērunt')}, which word is <b>accusative plural</b>?`,'leōnēs',['puerī','leōnēs','spectāvērunt'],'leōnēs are the ones being watched, and there is more than one.'],
+      ['m','Which letter ends EVERY accusative singular in the chart?','-m',['-m','-s','-ae','-ī'],'puellam, servum, mercātōrem: all end in -m.'],
+      ['ap','What are the accusative PLURAL endings?','-ās, -ōs, -ēs',['-ās, -ōs, -ēs','-am, -um, -em','-ae, -ī, -ēs','-a, -us, -or'],'puellās, servōs, mercātōrēs.'],
+      ['np','What are the nominative PLURAL endings?','-ae, -ī, -ēs',['-ās, -ōs, -ēs','-am, -um, -em','-ae, -ī, -ēs','-a, -us, -or'],'puellae, servī, mercātōrēs.'],
+      ['amb','mercātōrēs can be nominative plural OR accusative plural. How do you tell which?','Look at the rest of the sentence: who is doing it?',['Look at the rest of the sentence: who is doing it?','It is always nominative','It is always accusative','Count the letters'],'In the third declension both plurals look the same, so the sentence decides. If something else is already the doer, mercātōrēs is accusative.']
+     ];
+     T.forEach(([id,q,a,o,why])=>mc({id:'g8:t:'+id, tag:'g8-term', lvls:[6], section:'Grammar words', diff:1, pattern:'grammar words', label:q.replace(/<[^>]+>/g,''), q, answer:a, options:()=>o, why}));
+     // ----- chart cells
+     const decls=CHAPTERS.find(c=>c.id===8).chart.decls;
+     const book=decls.map(d=>d.nouns[0]);
+     const cellWhy=[null,'Accusative singular ends in -m.','Nominative plural: -ae, -ī, or -ēs.','Accusative plural: -ās, -ōs, or -ēs.'];
+     const ASK='<span class="ask">?</span>', DOTS='<span class="tiny">&middot;&middot;&middot;</span>', F=w=>`<span class="lat">${esc(w)}</span>`;
+     const head=(n,d)=>`${esc(d.name)}<br>${F(n[0])} <span class="tiny">(${esc(n[4])})</span>`;
+     decls.forEach((d,c)=>d.nouns.forEach((n,k)=>[1,2,3].forEach(r=>{
+       let tbl;
+       if(k===0) tbl=chartTable(decls.map((dd,j)=>head(book[j],dd)), [0,1,2,3].map(rr=>book.map((b,j)=>j===c&&rr===r?ASK:F(b[rr]))));
+       else tbl=chartTable([`Example<br>${head(book[c],d)}`, `New noun<br>${F(n[0])} <span class="tiny">(${esc(n[4])})</span>${c===2?`<br><span class="tiny">stem: ${esc(n[1].slice(0,-2))}-</span>`:''}`],
+         [0,1,2,3].map(rr=>[F(book[c][rr]), rr===0?F(n[0]):rr===r?ASK:DOTS]));
+       const base={ckey:`cell:${n[0]}:${r}`, label:`${ROW[r]} of ${n[0]}: ${n[r]}`, section:'The chart', pattern:'the chart: '+ROW[r], why:`The ${ROW[r]} of ${n[0]} is ${n[r]}. ${cellWhy[r]}`};
+       mc(Object.assign({}, base, {id:`g8:cm:${n[0]}:${r}`, tag:'g8-cellmc', lvls:[7], diff:1, q:`What goes in the <b>?</b> box (${ROW[r]})?${tbl}`, answer:n[r], options:()=>[...new Set(n.slice(0,4))]}));
+       ty(Object.assign({}, base, {id:`g8:ct:${n[0]}:${r}`, tag:'g8-cell', lvls:[7], form:true, q:`Type the form for the <b>?</b> box (${ROW[r]}):${tbl}<span class="hint">(macrons are optional)</span>`, answers:[n[r]], model:n[r]}));
+     })));
+     // ----- one or many (every chart form)
+     decls.forEach(d=>d.nouns.forEach(n=>[0,1,2,3].forEach(r=>{ if(r===2 && n[2]===n[3]) return;
+       const many=r>=2;
+       mc({id:`g8:num:${n[r]}`, tag:'g8-num', lvls:[8], section:'Singular or plural', diff:1, pattern:'singular or plural', ckey:'num:'+n[r], label:`${n[r]}: ${many?'plural':'singular'}`,
+         q:`Is ${L(n[r])} singular or plural? <span class="hint">(${esc(n[4])})</span>`, answer:many?'Plural (more than one)':'Singular (just one)', options:()=>['Singular (just one)','Plural (more than one)'],
+         why:`${n[r]} is the ${ROW[r]} of ${n[0]}. ${many?'-'+end2(n[r])+' is a plural ending: more than one '+n[4]+'.':'Just one '+n[4]+'.'}`});
+     })));
+     // ----- sentences: each has a singular and a plural object. S/V/O English: [singular, plural] lists of accepted words.
+     const SENT=[
+      {id:'a',S:'amīcus',sp:0,Se:[['the friend'],['the friends']],V:'salūtat',Ve:[['greets','is greeting'],['greet','are greeting']],O:['puellam','puellās'],Oe:[['the girl'],['the girls']]},
+      {id:'b',S:'dominus',sp:0,Se:[['the master'],['the masters']],V:'vituperābat',Ve:[['was cursing','was blaming','was scolding'],['were cursing','were blaming','were scolding']],O:['servum','servōs'],Oe:[['the slave'],['the slaves']]},
+      {id:'c',S:'puerī',sp:1,Se:[['the boy'],['the boys']],V:'spectāvērunt',Ve:[['watched','looked at'],['watched','looked at']],O:['leōnem','leōnēs'],Oe:[['the lion'],['the lions']]},
+      {id:'d',S:'agricola',sp:0,Se:[['the farmer'],['the farmers']],V:'laudāvit',Ve:[['praised'],['praised']],O:['gladiātōrem','gladiātōrēs'],Oe:[['the gladiator'],['the gladiators']]},
+      {id:'e',S:'servus',sp:0,Se:[['the slave'],['the slaves']],V:'interfēcit',Ve:[['killed'],['killed']],O:['agricolam','agricolās'],Oe:[['the farmer'],['the farmers']],g:'interfēcit = killed'},
+      {id:'f',S:'centuriō',sp:0,Se:[['the centurion'],['the centurions']],V:'laudāvit',Ve:[['praised'],['praised']],O:['servum','servōs'],Oe:[['the slave'],['the slaves']]},
+      {id:'g',S:'senex',sp:0,Se:[['the old man'],['the old men']],V:'dūxit',Ve:[['led','took'],['led','took']],O:['āctōrem','āctōrēs'],Oe:[['the actor'],['the actors']],g:'āctor = actor'},
+      {id:'h',S:'amīcus',sp:0,Se:[['the friend'],['the friends']],V:'nārrāvit',Ve:[['told','related'],['told','related']],O:['fābulam','fābulās'],Oe:[['the story','the tale'],['the stories','the tales']]},
+      {id:'i',S:'amīcī',sp:1,Se:[['the friend'],['the friends']],V:'salūtāvērunt',Ve:[['greeted'],['greeted']],O:['ancillam','ancillās'],Oe:[['the slave-girl','the slave girl','the maid'],['the slave-girls','the slave girls','the maids']]},
+      {id:'j',S:'agricolae',sp:1,Se:[['the farmer'],['the farmers']],V:'audīvērunt',Ve:[['heard','listened to'],['heard','listened to']],O:['nūntium','nūntiōs'],Oe:[['the messenger'],['the messengers']]},
+      {id:'k',S:'leō',sp:0,Se:[['the lion'],['the lions']],V:'agitāvit',Ve:[['chased','hunted'],['chased','hunted']],O:['puerum','puerōs'],Oe:[['the boy'],['the boys']]},
+      {id:'l',S:'puellae',sp:1,Se:[['the girl'],['the girls']],V:'cōnspexērunt',Ve:[['caught sight of','saw','noticed','spotted'],['caught sight of','saw','noticed','spotted']],O:['mercātōrem','mercātōrēs'],Oe:[['the merchant'],['the merchants']]}
+     ];
+     const say=(s,sN,oN,swap)=> swap ? `${cap(s.Oe[oN][0])} ${s.Ve[oN][0]} ${s.Se[sN][0]}.` : `${cap(s.Se[sN][0])} ${s.Ve[sN][0]} ${s.Oe[oN][0]}.`;
+     SENT.forEach(s=>[0,1].forEach(oN=>{
+       const sN=s.sp, ol=s.O[oN], lat=`${s.S} ${ol} ${s.V}.`, latq=`<div class="latq">${esc(lat)}</div>`;
+       const model=say(s,sN,oN,false);
+       const objWhy=`${ol} ends in -${end2(ol)}: ${oN?'accusative plural (more than one)':'accusative singular (just one)'}. It is the one the action happens to. ${s.S} is the nominative: the doer.`;
+       mc({id:`g8:obj:${s.id}${oN}`, tag:'g8-obj', lvls:[8,9], section:'Nominative or accusative', diff:2, pattern:'name the noun: case and number', ckey:`obj:${s.id}${oN}`, label:`${ol}: ${CASES[oN?3:1].toLowerCase()}`, why:objWhy,
+         q:`${latq}What is ${L(ol)}?`, answer:CASES[oN?3:1], options:()=>CASES});
+       mc({id:`g8:subj:${s.id}${oN}`, tag:'g8-subj', lvls:[8], section:'Nominative or accusative', diff:2, pattern:'name the noun: case and number', ckey:`subj:${s.id}`, label:`${s.S}: ${CASES[sN?2:0].toLowerCase()}`,
+         why:`${s.S} is the doer, so it is nominative. ${sN?`It is plural: -${end2(s.S)} is a nominative plural ending, and the verb ${s.V} ends in -nt.`:`It is singular, and the verb ${s.V} ends in -t.`}`,
+         q:`${latq}What is ${L(s.S)}?`, answer:CASES[sN?2:0], options:()=>CASES});
+       mc({id:`g8:mean:${s.id}${oN}`, tag:'g8-mean', lvls:[9], section:'What the endings mean', diff:2, pattern:'what the endings mean', ckey:`mean:${s.id}${oN}`, label:`${lat} = ${model}`, why:objWhy,
+         q:`${latq}Which English matches?`, answer:model, options:()=>[model, say(s,sN,1-oN,false), say(s,sN,oN,true), say(s,1-sN,oN,false)]});
+       const answers=ex(s.Se[sN],s.Ve[sN],s.Oe[oN]), tokens=stripP(model).split(' ');
+       const dis=[s.Oe[1-oN][0].split(' ').pop(), s.Se[1-sN][0].split(' ').pop()];
+       const hint=`<div class="hint">Helpful words: ${esc(s.g||'look at the endings')}</div>`;
+       tl({id:`g8:tl:${s.id}${oN}`, tag:'g8-tiles', lvls:[11], section:'Translation', pattern:'translate: build the sentence', ckey:`sent8:${s.id}${oN}`, label:model, why:objWhy,
+         q:`Build the English:${latq}${hint}`, tokens, bank:tokens.concat(dis), answers, model});
+       ty({id:`g8:ty:${s.id}${oN}`, tag:'g8-typed', lvls:[11], section:'Translation', pattern:'translate: type the sentence', ckey:`sent8:${s.id}${oN}`, label:model, why:objWhy, form:false,
+         q:`Translate into English:${latq}${hint}`, answers, model});
+     }));
+     [{l:'puer āctōrēs ad theātrum dūxit.',en:ex(['The boy'],['led','took'],['the actors'],['to the theater','to the theatre']),g:'āctor = actor, ad = to'},
+      {l:'senex āctōrem ad forum dūxit.',en:ex(['The old man'],['led','took'],['the actor'],['to the forum']),g:'āctor = actor, ad = to'}].forEach((s,i)=>
+       ty({id:`g8:tyd:${i}`, tag:'g8-typed', lvls:[11], section:'Translation', pattern:'translate: type the sentence', label:s.en[0], form:false,
+         why:`Find the verb, then the doer (nominative), then the -m or -ēs word it happens to. Model answer: ${s.en[0]}.`,
+         q:`Translate into English:<div class="latq">${esc(s.l)}</div><div class="hint">Helpful words: ${esc(s.g)}</div>`, answers:s.en, model:s.en[0]+'.'}));
+     // ----- superlatives: [plain, superlative, English]
+     const SUP=[['īrātus','īrātissimus','angry'],['nōtus','nōtissimus','famous'],['laetus','laetissimus','happy'],['trīstis','trīstissimus','sad'],['ferōx','ferōcissimus','fierce'],['longus','longissimus','long'],['fortis','fortissimus','brave'],['pulcher','pulcherrimus','beautiful'],['ignāvus','ignāvissimus','cowardly']];
+     SUP.forEach(([b,s,e],i)=>{
+       const oth=SUP.filter(x=>x[1]!==s), how = s.endsWith('errimus')?`${b} uses -errimus, like pulcher.`:`${b} + -issimus = ${s}.`;
+       const why=`${s} means very ${e} (or most ${e}). ${how}`, base={section:'Superlatives', why, label:`${s} = very ${e}`};
+       mc(Object.assign({}, base, {id:`g8:sm:${i}`, tag:'g8-sup', lvls:[10], diff:1, pattern:'superlatives: what it means', ckey:'sup:'+s,
+         q:`What does ${L(s)} mean?`, answer:'very '+e, options:()=>['very '+e, e, 'very '+oth[i%oth.length][2], oth[(i+3)%oth.length][2]]}));
+       mc(Object.assign({}, base, {id:`g8:sw:${i}`, tag:'g8-sup', lvls:[10], diff:2, pattern:'superlatives: pick the Latin', ckey:'supw:'+s,
+         q:`Which word means <b>very ${esc(e)}</b>?`, answer:s, options:()=>[s, b, oth[i%oth.length][1], oth[(i+4)%oth.length][0]]}));
+       ty(Object.assign({}, base, {id:`g8:st:${i}`, tag:'g8-supt', lvls:[10], pattern:'superlatives: type the English', ckey:'sup:'+s, form:false,
+         q:`Type the English for ${L(s)}`, answers:['very '+e,'most '+e,'extremely '+e], model:'very '+e}));
+       ty(Object.assign({}, base, {id:`g8:sl:${i}`, tag:'g8-supt', lvls:[10], pattern:'superlatives: make the superlative', ckey:'supw:'+s, form:true,
+         q:`${L(b)} means <b>${esc(e)}</b>. Type the superlative: <b>very ${esc(e)}</b>. <span class="hint">(use the -us form, macrons optional)</span>`, answers:[s], model:s}));
+     });
+     const SS=[
+      ['Pompēiānī erant īrātissimī.',ex(['The Pompeians','The people of Pompeii'],['were'],['very angry','most angry','extremely angry']),'Pompēiānī = the people of Pompeii'],
+      ['gladiātor est nōtissimus.',ex(['The gladiator'],['is'],['very famous','most famous','extremely famous','very well-known','very well known']),''],
+      ['māter erat laetissima.',ex(['The mother'],['was'],['very happy','most happy','extremely happy']),'māter = mother'],
+      ['mōns Vesuvius est pulcherrimus.',ex(['Mount Vesuvius','The mountain Vesuvius'],['is'],['very beautiful','most beautiful','extremely beautiful']),'mōns = mountain'],
+      ['senex est trīstissimus.',ex(['The old man'],['is'],['very sad','most sad','saddest','extremely sad']),''],
+      ['leō erat ferōcissimus.',ex(['The lion'],['was'],['very fierce','most fierce','fiercest','very ferocious','extremely fierce']),''],
+      ['amīcus fābulam longissimam nārrāvit.',ex(['The friend'],['told','related'],['a very long story','a very long tale','the longest story']),'longus = long'],
+      ['Melissa erat pulcherrima.',ex(['Melissa'],['was'],['very beautiful','most beautiful','extremely beautiful']),'']
+     ];
+     SS.forEach(([l,en,g],i)=>{
+       const model=en[0]+'.', plain=model.replace('very ',''), tense=model.replace(/ (is|was|were) /,(m,v)=>' '+({is:'was',was:'is',were:'are'})[v]+' ');
+       const why=`Look for -issimus or -errimus: very ___. Model answer: ${model}`, latq=`<div class="latq">${esc(l)}</div>`, hint=g?`<div class="hint">Helpful words: ${esc(g)}</div>`:'';
+       mc({id:`g8:ssm:${i}`, tag:'g8-supsent', lvls:[10], section:'Superlatives', diff:2, pattern:'superlatives: in a sentence', ckey:'supsent:'+i, label:model, why,
+         q:`${latq}${hint}Which English matches?`, answer:model, options:()=>[model, plain, tense]});
+       ty({id:`g8:sst:${i}`, tag:'g8-typed', lvls:[11], section:'Translation', pattern:'translate: type the sentence', ckey:'supsent:'+i, label:model, why, form:false,
+         q:`Translate into English:${latq}${hint}`, answers:en, model});
+     });
+    }
+   }
+  }
+];
 
 </script>
 <script>
@@ -714,6 +915,115 @@ function noSubject7(){
   <ul><li>When the second sentence has no subject, <b>look back at the first sentence</b> to find who.</li><li><span class="lat">intrāvit</span> can mean he entered OR she entered. The story tells you which.</li></ul>`;
 }
 
+// ---------- every word from every stage, in one list. Used by the flashcards and by review questions.
+const wordOf = (o,st) => Object.assign({x:[],h:''}, o, {st});
+const ALLWORDS = [].concat(
+  ...CHAPTERS.map(ch=>ch.vocab.map(w=>wordOf(w,ch.id))),
+  CONTENT7.vocab.map(w=>wordOf(w,7)),
+  CONTENT6.vocab.map(([l,k,e,x,h])=>wordOf({l,k,s:[e],x,h},6)),
+  CONTENT7.recall.map(([l,k,e,x,st])=>wordOf({l,k,s:[e],x},st))
+);
+
+// ---------- any stage from a word list: 5 vocabulary levels, plus optional grammar levels.
+// Uses the same question kinds and level plan as Stage 7, Part 1.
+function buildGeneric(ch){
+  const n=ch.id;
+  C = {title:`Lily's Latin Quest: ${ch.title}`, passScore:ch.pass||8, perTry:ch.perTry||10, vocab:ch.vocab};
+  ITEMS=[]; byId={};
+  function add(it){ it.ckey=it.ckey||it.id; byId[it.id]=it; ITEMS.push(it); return it; }
+  const mc = o => add(Object.assign({kind:'mc',section:'grammar',diff:2}, o));
+  const ty = o => add(Object.assign({kind:'type',section:'translation',diff:2}, o));
+  const tl = o => add(Object.assign({kind:'tiles',section:'translation',diff:2}, o));
+  const withAnswers = o => { const base=[...o.s,...(o.x||[])], acc=new Set(base);
+    if(o.k==='verb') base.forEach(v=>{ ['he','she','it','he/she/it'].forEach(p=>acc.add(p+' '+v)); acc.add('to '+v) });
+    return Object.assign({key:strip(o.l), answers:[...acc]}, o); };
+  const V = ch.vocab.map(withAnswers);
+  const R = ALLWORDS.filter(w=>w.st<n).map(withAnswers);
+  const ENG_POOL = ALLWORDS.flatMap(w=>w.s.map(e=>({k:w.k,e}))), LAT_POOL = ALLWORDS.map(w=>({k:w.k,e:w.l}));
+  function opts(correct, kind, pool, exclude, k=3){
+    const ok = p=>!exclude.has(p.e) && p.e!==correct;
+    const same=shuffle(pool.filter(p=>p.k===kind && ok(p))), rest=shuffle(pool.filter(p=>p.k!==kind && ok(p)));
+    const out=[]; for(const p of same.concat(rest)){ if(out.length>=k) break; if(!out.includes(p.e)) out.push(p.e); }
+    return [correct,...out];
+  }
+  function scramble(word){
+    const letters=strip(word).split(''); let sc=letters.slice(), t=0;
+    do{ sc=shuffle(letters,SR); t++ }while(sc.join('')===letters.join('') && t<20);
+    return sc.join(' ');
+  }
+  const multis = V.filter(w=>w.s.length>1), perfs = V.filter(w=>w.p);
+  V.forEach(w=>{
+    const multi=w.s.length>1, exclude=new Set(w.s);
+    const whyW=`${w.l} means ${w.s.map(s=>`"${s}"`).join(' or ')}.${multi?' One Latin word, two English words.':''}${w.h?' Hook: '+w.h:''}`;
+    w.s.forEach((sense,i)=>{
+      mc({id:`v${n}:${w.key}:l2e:${i}`, tag:'v-l2e', lvls:[1], section:'vocab', diff:1, pattern:'vocab: Latin to English', ckey:'vocab:'+w.key, label:`${w.l} (${w.s.join(' / ')})`, why:whyW,
+        q:`What does ${L(w.l)} mean?`, answer:sense, options:()=>opts(sense,w.k,ENG_POOL,exclude)});
+      mc({id:`v${n}:${w.key}:e2l:${i}`, tag:'v-e2l', lvls:[2], section:'vocab', diff:2, pattern:'vocab: English to Latin', ckey:'vocab:'+w.key+':'+i, label:`${sense} = ${w.l}`, why:whyW,
+        q:`Which Latin word means <b>${esc(sense)}</b>?`, answer:w.l, options:()=>opts(w.l,w.k,LAT_POOL,new Set([w.l]))});
+      ty({id:`v${n}:${w.key}:t2l:${i}`, tag:'v-t2l', lvls:[4,5], section:'vocab', pattern:'vocab: type the Latin', ckey:'vocab:'+w.key+':'+i, label:`${sense} = ${w.l}`, why:whyW, form:false,
+        q:`Type the Latin for <b>${esc(sense)}</b> <span class="hint">(macrons are optional)</span>`, answers:[w.l], model:w.l});
+    });
+    ty({id:`v${n}:${w.key}:type`, tag:'v-type', lvls:[3,5], section:'vocab', pattern:'vocab: type the English', ckey:'vocab:'+w.key, label:`${w.l} (${w.s.join(' / ')})`, why:whyW,
+      q:`Type the English for ${L(w.l)}${multi?' <span class="hint">(it has two meanings. Either one is fine.)</span>':''}`, answers:w.answers, model:w.s.join(' or ')});
+    if(strip(w.l).length>=4){
+      ty({id:`v${n}:${w.key}:scr`, tag:'v-scr', lvls:[4], section:'vocab', pattern:'vocab: unscramble the Latin', ckey:'vocab:'+w.key+':0', label:`${w.s[0]} = ${w.l}`, why:whyW, form:false, diff:1,
+        q:`Unscramble the letters to spell the Latin word for <b>${esc(w.s[0])}</b>:<div class="latq">${esc(scramble(w.l))}</div>`, answers:[w.l], model:w.l});
+    }
+    if(multi && multis.length>=4){
+      mc({id:`v${n}:${w.key}:mean`, tag:'v-mean', lvls:[2], section:'vocab', diff:2, pattern:'vocab: two meanings', ckey:'vocab:'+w.key, label:`${w.l} has two meanings`, why:whyW,
+        q:`${L(w.l)} is ONE Latin word with TWO English meanings. Which pair is right?`, answer:w.s.join(' or '),
+        options:()=>{ const others=shuffle(multis.filter(x=>x!==w)); const o=others.slice(0,2).map(x=>x.s.join(' or ')); o.push(w.s[0]+' or '+others[2].s[1]); return [w.s.join(' or '),...o]; }});
+    }
+    if(w.p && perfs.length>=3 && strip(w.p)!==strip(w.l)){
+      mc({id:`v${n}:${w.key}:pair`, tag:'v-pair', lvls:[2], section:'vocab', diff:2, pattern:'vocab: the perfect form on the checklist', ckey:'pair:'+w.key, label:`${w.l}: ${w.p}`, why:`${w.l} (${w.pe}) goes with ${w.p} (${w.pa}).`,
+        q:`${L(w.l)} means <b>${esc(w.pe)}</b>. Which word is its <b>perfect tense</b> (the past action, he/she/it <b>${esc(w.pa)}</b>)?`, answer:w.p,
+        options:()=>{ const oth=shuffle(perfs.filter(x=>x!==w)); return [w.p,w.pl||oth[2]&&oth[2].p||w.l,oth[0].p,oth[1].p]; }});
+      ty({id:`v${n}:${w.key}:pairt`, tag:'v-pairt', lvls:[5], section:'vocab', pattern:'vocab: type the perfect form', ckey:'pair:'+w.key, label:`${w.l}: ${w.p}`, why:`${w.l} (${w.pe}) goes with ${w.p} (${w.pa}).`, form:false,
+        q:`Type the <b>perfect tense</b> of ${L(w.l)} (the past action: he/she/it <b>${esc(w.pa)}</b>) <span class="hint">(macrons are optional)</span>`, answers:[w.p], model:w.p});
+      ty({id:`v${n}:${w.key}:pairm`, tag:'v-pairm', lvls:[5], section:'vocab', pattern:'vocab: what the perfect form means', ckey:'pair:'+w.key, label:`${w.p}: ${w.pa}`, why:`${w.p} is the perfect tense of ${w.l}. It means ${w.pa}.`, form:false,
+        q:`${L(w.p)} is the <b>perfect tense</b> of ${L(w.l)}. What does ${L(w.p)} mean in English?`, answers:[w.pa,'he '+w.pa,'she '+w.pa,'it '+w.pa], model:'he/she/it '+w.pa});
+    }
+  });
+  // review words from every earlier stage
+  R.forEach(r=>{
+    const e=r.s[0], why=`${r.l} means "${r.s.join('" or "')}". (Stage ${r.st} word)`;
+    const base={ckey:'recall:'+r.key, label:`${r.l} (${e}) from Stage ${r.st}`, why};
+    const tagH=`<span class="two">Review, Stage ${r.st}</span><br>`;
+    mc(Object.assign({}, base, {id:`r${n}:${r.key}:l2e`, tag:'r-l2e', lvls:[1], section:'vocab', diff:1, pattern:'recall: Latin to English',
+      q:`${tagH}What does ${L(r.l)} mean?`, answer:e, options:()=>opts(e,r.k,ENG_POOL,new Set([...r.s,...r.x]))}));
+    mc(Object.assign({}, base, {id:`r${n}:${r.key}:e2l`, tag:'r-e2l', lvls:[2], section:'vocab', diff:2, pattern:'recall: English to Latin',
+      q:`${tagH}Which Latin word means <b>${esc(e)}</b>?`, answer:r.l, options:()=>opts(r.l,r.k,LAT_POOL,new Set([r.l]))}));
+    ty(Object.assign({}, base, {id:`r${n}:${r.key}:type`, tag:'r-type', lvls:[3,5], section:'vocab', pattern:'recall: type the English', form:false,
+      q:`${tagH}Type the English for ${L(r.l)}`, answers:r.answers, model:e}));
+    ty(Object.assign({}, base, {id:`r${n}:${r.key}:t2l`, tag:'r-t2l', lvls:[4,5], section:'vocab', pattern:'recall: type the Latin', form:false,
+      q:`${tagH}Type the Latin for <b>${esc(e)}</b> <span class="hint">(macrons are optional)</span>`, answers:[r.l], model:r.l}));
+  });
+  const G = ch.grammar;
+  if(G && G.build) G.build({mc,ty,tl,V,L,esc,ex,cap,strip,shuffle,pick,chartTable});
+  // a tag with no questions gives its share to the first tag that has some
+  const fit = q => { const has=t=>ITEMS.some(it=>it.tag===t), out={}; let spare=0;
+    Object.keys(q).forEach(t=>{ if(has(t)) out[t]=q[t]; else spare+=q[t] });
+    const first=Object.keys(out)[0]; if(first) out[first]+=spare; return out; };
+  const hooks = V.some(w=>w.h);
+  const vtable = ()=>`<div class="wide"><table class="chart"><tr><th>Latin</th><th>English</th>${hooks?'<th>Hook</th>':''}</tr>${V.map(w=>`<tr><td class="lat">${esc(w.l)}${w.p?`<br><span class="tiny">${esc(w.p)}</span>`:''}</td><td>${esc(w.s.join(' or '))}${w.s.length>1?'<span class="two">2 meanings</span>':''}</td>${hooks?`<td>${esc(w.h||'')}</td>`:''}</tr>`).join('')}</table></div>`;
+  const revNote = R.length ? '<p class="tiny">About 2 of the 10 questions are review words from earlier stages.</p>' : '';
+  const grp = G ? 'Part 1: Vocabulary' : undefined;
+  LEVELS = [
+    {id:1,group:grp,title:'Meet the words',sub:`${ch.title} words: pick the English meaning`,spell:'none',quota:fit({'v-l2e':8,'r-l2e':2}),
+      teach:()=>`<p>These are the ${V.length} ${esc(ch.title)} words. Read each one out loud.${perfs.length?' Verbs show a second word under the Latin: the <b>perfect tense</b> (he/she/it did it).':''}</p>${vtable()}${revNote}`},
+    {id:2,group:grp,title:'Say it in Latin',sub:'English to Latin, one meaning at a time',spell:'none',quota:fit({'v-e2l':6,'v-mean':1,'v-pair':1,'r-e2l':2}),
+      teach:()=>`<p>Now go the other direction: you see the English and pick the Latin.</p>${multis.length?`<p>Some Latin words have two English meanings. Each meaning is its own question:</p><ul>${multis.map(w=>`<li><span class="lat">${esc(w.l)}</span> = ${esc(w.s.join(' AND '))}</li>`).join('')}</ul>`:''}`},
+    {id:3,group:grp,title:'Type the English',sub:'Your first typing. Close spelling still counts',spell:'lenient',quota:fit({'v-type':8,'r-type':2}),
+      teach:()=>`<ul><li>You see the Latin word and <b>type the English</b>.</li><li>Words with two meanings: either one is right.</li><li><b>Spelling rule:</b> one small slip still earns the point, and you type the right spelling once to lock it in.</li><li>Macrons are optional in your typing.</li></ul>`},
+    {id:4,group:grp,title:'Spell the Latin',sub:'Unscramble it, then type it from memory',spell:'half',quota:fit({'v-scr':3,'v-t2l':5,'r-t2l':2}),
+      teach:()=>`<ul><li>First you unscramble letters, then you <b>type the Latin</b> for an English word.</li><li><b>Spelling rule:</b> exact spelling = 1 point. One small slip = half a point, and you type the right spelling once.</li><li>Macrons are optional.</li></ul>`},
+    {id:5,group:grp,title:'Vocabulary test mirror',sub:'Like a real quiz: exact spelling for full credit',spell:'exact',quota:fit({'v-type':3,'v-t2l':3,'v-pairt':1,'v-pairm':1,'r-type':1,'r-t2l':1}),
+      teach:()=>`<ul><li>A mix of English to Latin and Latin to English${perfs.length?', plus the perfect tense of the verbs':''}.</li><li><b>Spelling rule:</b> it has to be spelled right for the point. A near miss shows the spelling, you type it once, and it does not count.</li><li>Macrons are optional.</li>${G?'<li>Clear this level and the grammar levels open.</li>':''}</ul>`}
+  ].concat(G ? G.levels.map((l,i)=>Object.assign({group:'Part 2: Grammar and sentences',spell:'none'}, l, {id:6+i, teach: typeof l.teach==='function' ? l.teach : ()=>l.teach||''})) : []);
+  bankHTML = ()=>'';
+  tenseGuideHTML = ()=> ch.guide || vtable();
+}
+
 // ---------- sound (made with the browser, no files). Muted with the speaker button.
 const Snd=(()=>{
   // Sounds are built as tiny WAV files in memory and played through ordinary audio elements.
@@ -767,15 +1077,30 @@ const Snd=(()=>{
   return api;
 })();
 
-// ---------- stages. To add Stage 8 later: write CONTENT8 and build8(), then add one entry here (newest first).
+// ---------- stages. To add Stage 8 later, add it to CHAPTERS at the top. Nothing here needs to change.
+// Stages 2 to 5 are review stages built from the Stage 7 recall list, with every level open.
+const EARLY = [5,4,3,2].map(st=>({id:st, title:'Stage '+st, review:true, blurb:'Vocabulary review',
+  vocab:ALLWORDS.filter(w=>w.st===st).map(({st,...w})=>w)}));
+function genStage(ch){
+  const title=ch.title||('Stage '+ch.id), perTry=ch.perTry||10, pass=ch.pass||8, levels=5+(ch.grammar?ch.grammar.levels.length:0);
+  ch.title=title;
+  return {id:ch.id, title, blurb:ch.blurb||`${title} vocabulary`, key:`lily-latin-stage${ch.id}-v1`, build:()=>buildGeneric(ch), perTry, pass, levels, allOpen:!!ch.review, chart:ch.chart,
+    intro: ch.review
+      ? `A vocabulary review of the ${ch.vocab.length} ${title} words. All ${levels} levels are open, so start anywhere. Each try is ${perTry} questions, and ${pass} right earns a pass and stars.`
+      : `${levels} levels. Each try is ${perTry} questions. Get <b>${pass} right</b> to pass and open the next level. Earn up to 3 stars on every level.`,
+    guideTitle: ch.guide?'Guide':'Word list', guideLabel: ch.guide?`${title} guide`:`${title} word list`};
+}
 const STAGES = [
-  {id:7,flash:true,title:'Stage 7',blurb:'Vocabulary first, then the perfect tense, missing subjects, and translating sentences',key:'lily-latin-stage7-v1',build:build7,perTry:10,pass:8,levels:9,isNew:true,
+  ...CHAPTERS.map(genStage),
+  {id:7,title:'Stage 7',blurb:'Vocabulary first, then the perfect tense, missing subjects, and translating sentences',key:'lily-latin-stage7-v1',build:build7,perTry:10,pass:8,levels:9,
    intro:'Nine levels. Levels 1 to 5 are <b>vocabulary</b> and levels 6 to 9 are <b>grammar and sentences</b>. Each try is 10 questions. Get <b>8 right (80%)</b> to pass and open the next level. Earn up to 3 stars on every level.',
    guideTitle:'Perfect tense and missing subjects', guideLabel:'Perfect tense and missing subjects (read this if it feels mixed up)'},
   {id:6,title:'Stage 6',blurb:'Imperfect, past-perfect, and present verbs',key:'lily-latin-stage6-v1',build:build6,perTry:20,pass:18,levels:6,
    intro:'Six levels. Each try is about 10 to 15 minutes, 20 questions. Get <b>18 of 20</b> to unlock the next level. You start by <b>recognizing</b> words and finish by <b>writing them yourself</b>, spelled right. Earn up to 3 stars on every level.',
-   guideTitle:'Tense guide', guideLabel:'Tense guide: imperfect, past-perfect, present (read this first if it feels mixed up)'}
-];
+   guideTitle:'Tense guide', guideLabel:'Tense guide: imperfect, past-perfect, present (read this first if it feels mixed up)'},
+  ...EARLY.map(genStage)
+].sort((a,b)=>b.id-a.id);
+const CURRENT = STAGES[0];
 const starsFor=(score,n,pass)=> score>=n?3 : (score>=n-1 && score>=pass)?2 : score>=pass?1 : 0;
 const starRow=k=>'&#9733;'.repeat(k)+(k<3?`<span class="no">${'&#9733;'.repeat(3-k)}</span>`:'');
 function peekStars(d){ try{ const s=JSON.parse(localStorage.getItem(d.key)||'null'); if(!s||!s.best) return 0; return Object.keys(s.best).reduce((a,k)=>a+starsFor(s.best[k],d.perTry,d.pass),0) }catch(e){ return 0 } }
@@ -809,6 +1134,8 @@ function selectAttempt(lvlId){
     let n=0; for(const it of order){ if(n>=need) break; if(take(it,true)) n++; }
     for(const it of order){ if(n>=need) break; if(take(it,false)) n++; }
   });
+  // short word lists: top up so a try always has the full number of questions
+  if(chosen.length<C.perTry){ const rest=shuffle(lvlItems); for(const it of rest){ if(chosen.length>=C.perTry) break; take(it,true) } for(const it of rest){ if(chosen.length>=C.perTry) break; take(it,false) } }
   let list = shuffle(chosen);
   const fi = list.findIndex(it=>it.diff===1); if(fi>0){ const [e]=list.splice(fi,1); list.unshift(e) }
   return list.slice(0,C.perTry);
@@ -827,18 +1154,23 @@ function fmt(x){return Number.isInteger(x)?String(x):x.toFixed(1)}
 function useStage(d){ S=d; KEY=d.key; d.build(); load(); home(); }
 function stages(){
   run=null; S=null;
-  const cards=STAGES.map(d=>{ const got=peekStars(d), max=d.levels*3;
-    return `<button class="card level" data-st="${d.id}"><div class="lnum">${esc(d.title)}${d.isNew?'<span class="newb">NEW</span>':''}</div><div class="ltitle">${esc(d.blurb)}</div><div class="lbest">&#9733; ${got} of ${max} stars</div></button>`}).join('');
-  app.innerHTML=`<header><h1>Lily's Latin Quest</h1><p class="sub">Pick a stage. Your stars and progress are saved for each stage on this device. New stages get added to this same page.</p></header><div class="levels">${cards}</div>
-    <details class="parent"><summary>Parent corner</summary><p class="tiny">Sound: the speaker button in the top right turns it on and off. If an iPhone makes no sound, check the ring/silent switch and the volume.</p></details>`;
+  const card=d=>{ const got=peekStars(d), max=d.levels*3;
+    return `<button class="card level" data-st="${d.id}"><div class="lnum">${esc(d.title)}${d===CURRENT?'<span class="newb">NOW STUDYING</span>':''}</div><div class="ltitle">${esc(d.blurb)}</div><div class="lbest">&#9733; ${got} of ${max} stars</div></button>`};
+  const main=STAGES.filter(d=>!d.allOpen), early=STAGES.filter(d=>d.allOpen);
+  app.innerHTML=`<header><h1>Lily's Latin Quest</h1><p class="sub">Review words with flashcards, or pick a stage to study. Stars and progress are saved on this device.</p></header>
+    <div class="card" id="fpanel"></div>
+    <div class="grp">Study a stage</div><div class="levels">${main.map(card).join('')}</div>
+    ${early.length?`<div class="grp">Earlier stages: vocabulary review</div><div class="levels two-up">${early.map(card).join('')}</div>`:''}
+    <details class="parent"><summary>Parent corner</summary><p class="tiny">New stages appear at the top of this page when they are added. If Lily already has the page open, refresh it to see the newest stage. Stars, flashcard progress, and review words carry over.</p><p class="tiny">Sound: the speaker button in the top right turns it on and off. If an iPhone makes no sound, check the ring/silent switch and the volume.</p></details>`;
   app.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>useStage(STAGES.find(x=>x.id===+b.dataset.st)));
+  fpanel($('#fpanel'));
   window.scrollTo(0,0);
 }
 function home(){
   run=null;
   let prevGroup=null;
   const cards = LEVELS.map(l=>{
-    const open = l.id<=save.unlocked || save.parent;
+    const open = l.id<=save.unlocked || save.parent || S.allOpen;
     const best = save.best[l.id];
     const head = (l.group && l.group!==prevGroup)? `<div class="grp">${esc(l.group)}</div>` : ''; prevGroup=l.group||prevGroup;
     return head+`<button class="card level ${open?'':'locked'}" data-lvl="${l.id}" ${open?'':'disabled'}>
@@ -846,74 +1178,101 @@ function home(){
       <div class="lsub">${esc(l.sub)}</div><span class="badge">${esc(SPELL[l.spell])}</span>${best!=null?`<div class="lstars" aria-label="${starsFor(best,C.perTry,C.passScore)} of 3 stars">${starRow(starsFor(best,C.perTry,C.passScore))}</div><div class="lbest">Best: ${fmt(best)} / ${C.perTry}${best>=C.passScore?' &#10003;':''}</div>`:''}${save.bonus&&save.bonus.best[l.id]?`<div class="tiny">&#11088; Bonus best: ${save.bonus.best[l.id].p} / ${save.bonus.best[l.id].m}</div>`:''}</button>`}).join('');
   const carry = Object.keys(save.carry);
   app.innerHTML = `<header><button class="link" id="allst">&larr; All stages</button><h1>${esc(C.title)}</h1><p class="sub">${S.intro}</p></header>
-    ${S.flash?'<button class="guidebtn card fcbtn" id="fcb">&#127183; Flashcards: practice the words</button>':''}<button class="guidebtn card" id="tg">&#128214; ${esc(S.guideLabel)}</button>
+    <button class="guidebtn card fcbtn" id="fcb">&#127183; Flashcards: ${esc(S.title)} words</button>${S.chart?'<button class="guidebtn card" id="cdb">&#9999;&#65039; Fill in the chart: nominative, accusative, singular, plural</button>':''}<button class="guidebtn card" id="tg">&#128214; ${esc(S.guideLabel)}</button>
     <div class="levels">${cards}</div>
     <p class="note">${carry.length?`<b>${carry.length}</b> word${carry.length>1?'s':''} to review. They come back in your next tries until you get each one right twice.`:'No words waiting for review. Nice.'}</p>
     <details class="parent"><summary>Parent corner</summary>
-      <p><button id="unl">${save.parent?'Re-lock levels':'Unlock all levels'}</button> <button id="rst">Reset this stage</button> <button id="lst">Show words to review</button> <button id="blog">Show bonus translations</button></p><div id="plist"></div>
+      <p><button id="unl">${save.parent?'Re-lock levels':'Unlock all levels'}</button> <button id="rst">Reset this stage</button> <button id="lst">Show words to review</button> <button id="blog">Show bonus translations</button> <button id="skl">Skill check</button></p><div id="plist"></div>
       <p class="tiny"><b>Bonus translations:</b> the checker looks for the subject, verb, and object separately and gives tips, so it is forgiving but not perfect. Use "Show bonus translations" to read what she wrote and talk through any tips together.</p>
       <p class="tiny"><b>Keep her in the game on a phone:</b> iPhone: Settings, Accessibility, Guided Access (turn on, set a passcode). Open this page, triple-press the side button, tap Start. Android: Settings, Security, App pinning (name varies), then pin the browser from the recent apps view. For a cleaner full screen on iPhone: Share, Add to Home Screen, then open it from the icon before starting Guided Access.</p>
       <p class="tiny">Progress is saved in this browser on this device only. Sound: use the speaker button at the top right. On iPhone, check the ring/silent switch too.</p></details>`;
   app.querySelectorAll('.level:not(.locked)').forEach(b=>b.onclick=()=>teach(+b.dataset.lvl));
-  $('#allst').onclick=stages; $('#tg').onclick=guide; if($('#fcb')) $('#fcb').onclick=flash;
+  $('#allst').onclick=stages; $('#tg').onclick=guide; $('#fcb').onclick=()=>flashStart([S.id],home,S.title); if($('#cdb')) $('#cdb').onclick=()=>chartDrill('book');
   $('#unl').onclick=()=>{save.parent=!save.parent;persist();home()};
   $('#rst').onclick=()=>ask('Reset all progress and review words for this stage?','Reset',()=>{resetAll();home()});
+  $('#skl').onclick=()=>{ $('#plist').innerHTML=skillHTML() };
   $('#blog').onclick=()=>{ const lg=(save.bonus&&save.bonus.log)||[]; $('#plist').innerHTML = lg.length? '<ul>'+lg.map(e=>`<li>${esc(e.d)}, Level ${e.lvl}: <span class="lat">${esc(e.l)}</span><br>She wrote: <b>${esc(e.a)}</b><br>Model: ${esc(e.m)} (${e.got} of ${e.of} parts)${e.tips&&e.tips.length?`<br>Tips shown: ${e.tips.map(esc).join(' ')}`:''}</li>`).join('')+'</ul>':'<p>No bonus translations yet.</p>' };
   $('#lst').onclick=()=>{ const keys=Object.keys(save.carry); $('#plist').innerHTML = keys.length? '<ul>'+keys.map(k=>{const it=ITEMS.find(x=>x.ckey===k);return `<li>${esc(it?it.label:k)} (needs ${save.carry[k]} more right)</li>`}).join('')+'</ul>':'<p>None.</p>' };
   window.scrollTo(0,0);
 }
-// ---------- flashcards (Stage 7 words). Cards move up a box each time Lily knows them.
-function cardsFor(scope,dir){
-  const out=[];
-  const add=(l,k,senses,extra,hook,grp)=>{
-    const verb=extra&&extra.p?`<div class="fcx">${esc(extra.pe)} &middot; perfect: <span class="lat">${esc(extra.p)}</span> (${esc(extra.pa)})</div>`:'';
-    if(dir==='le') out.push({id:'le:'+l,front:`<span class="lat">${esc(l)}</span>`,tag:k==='verb'?'verb':k,
-      back:`<div class="fcb">${senses.map(esc).join(' <span class="or">or</span> ')}</div>${l==='umbra'?'<div class="fcx">Ghost and shadow are two different English words for the same Latin word.</div>':''}${verb}${hook?`<div class="fcx">${esc(hook)}</div>`:''}`});
-    else senses.forEach(s=>out.push({id:'el:'+l+':'+s,front:esc(s),tag:'English word',
-      back:`<div class="fcb lat">${esc(l)}</div>${extra&&extra.p?`<div class="fcx">perfect: <span class="lat">${esc(extra.p)}</span></div>`:''}${senses.length>1?`<div class="fcx">${esc(l)} also means ${senses.filter(x=>x!==s).map(esc).join(', ')}.</div>`:''}${hook?`<div class="fcx">${esc(hook)}</div>`:''}`}));
-  };
-  if(scope!=='old') C.vocab.forEach(v=>add(v.l,v.k,v.s,v,v.h));
-  if(scope!=='new') C.recall.forEach(r=>add(r[0],r[1],[r[2]],null,''));
+// ---------- flashcards for any mix of stages. Cards move up a box each time Lily knows them.
+// Saved under their own key, so they work from the start page and from inside any stage.
+const FKEY='lily-latin-flash-v1';
+const KIND={verb:'verb',noun:'noun',adj:'adjective',little:'little word',pronoun:'pronoun'};
+let fsave=null;
+function fload(){
+  fsave={box:{},opts:{stages:[CURRENT.id],dir:'le'},top:CURRENT.id};
+  try{
+    const s=JSON.parse(localStorage.getItem(FKEY)||'null');
+    if(s) fsave=Object.assign(fsave,s);
+    else { const old=JSON.parse(localStorage.getItem('lily-latin-stage7-v1')||'null'); if(old&&old.fc&&old.fc.box) fsave.box=Object.assign({},old.fc.box) }
+  }catch(e){}
+  // a newly added stage joins the review mix on its own
+  if(CURRENT.id>(fsave.top||0)){ if(!fsave.opts.stages.includes(CURRENT.id)) fsave.opts.stages.push(CURRENT.id); fsave.top=CURRENT.id }
+  fsave.opts.stages=fsave.opts.stages.filter(id=>STAGES.some(d=>d.id===id));
+  fpersist();
+}
+function fpersist(){ try{ localStorage.setItem(FKEY,JSON.stringify(fsave)) }catch(e){} }
+function cardsFor(ids,dir){
+  const out=[], seen=new Set(), want=new Set(ids);
+  ALLWORDS.filter(w=>want.has(w.st)).forEach(w=>{
+    const tag=`Stage ${w.st} · ${KIND[w.k]||w.k}`, hook=w.h?`<div class="fcx">${esc(w.h)}</div>`:'';
+    if(dir==='le'){
+      const id='le:'+w.l; if(seen.has(id)) return; seen.add(id);
+      out.push({id,front:`<span class="lat">${esc(w.l)}</span>`,tag,
+        back:`<div class="fcb">${w.s.map(esc).join(' <span class="or">or</span> ')}</div>${w.s.length>1?'<div class="fcx">Two different English words for the same Latin word.</div>':''}${w.p?`<div class="fcx">${esc(w.pe)} &middot; perfect: <span class="lat">${esc(w.p)}</span> (${esc(w.pa)})</div>`:''}${hook}`});
+    } else w.s.forEach(s=>{
+      const id='el:'+w.l+':'+s; if(seen.has(id)) return; seen.add(id);
+      out.push({id,front:esc(s),tag:`Stage ${w.st} · English word`,
+        back:`<div class="fcb lat">${esc(w.l)}</div>${w.p?`<div class="fcx">perfect: <span class="lat">${esc(w.p)}</span></div>`:''}${w.s.length>1?`<div class="fcx">${esc(w.l)} also means ${w.s.filter(x=>x!==s).map(esc).join(', ')}.</div>`:''}${hook}`});
+    });
+  });
   return out;
 }
 let fc=null;
-function fcSave(){ return (save.fc=save.fc||{box:{},opts:{scope:'new',dir:'le'}}) }
-function flash(){
-  const f=fcSave(), o=f.opts;
-  const deck=cardsFor(o.scope,o.dir), mast=deck.filter(c=>(f.box[c.id]||0)>=3).length;
-  const seg=(name,val,label)=>`<button class="seg ${o[name]===val?'on':''}" data-o="${name}" data-v="${val}">${label}</button>`;
-  app.innerHTML=`<header><button class="link" id="back">&larr; ${esc(S.title)}</button><h1>Flashcards</h1><p class="sub">Flip the card, then tell the truth: did you know it? Cards you miss come back sooner.</p></header>
-   <div class="card"><div class="grp" style="margin-top:0">Words</div><div class="segs">${seg('scope','new','This stage')}${seg('scope','old','Earlier stages')}${seg('scope','all','Everything')}</div>
-   <div class="grp">Show me</div><div class="segs">${seg('dir','le','Latin, I say English')}${seg('dir','el','English, I say Latin')}</div>
-   <p class="note"><b>${mast}</b> of <b>${deck.length}</b> cards mastered in this setting.</p></div>
-   <p><button class="primary" id="fgo">Start 10 cards</button></p>`;
-  app.querySelectorAll('.seg').forEach(b=>b.onclick=()=>{ o[b.dataset.o]=b.dataset.v; persist(); flash() });
-  $('#back').onclick=home; $('#fgo').onclick=()=>flashStart(deck); window.scrollTo(0,0);
+// the start-page panel: pick stages and direction, then start
+function fpanel(el){
+  const o=fsave.opts, deck=cardsFor(o.stages,o.dir), mast=deck.filter(c=>(fsave.box[c.id]||0)>=3).length;
+  const count=id=>ALLWORDS.filter(w=>w.st===id).length;
+  const chip=d=>`<button type="button" class="chip ${o.stages.includes(d.id)?'on':''}" data-fs="${d.id}" aria-pressed="${o.stages.includes(d.id)}">${esc(d.title)} <span class="cnt">${count(d.id)}</span></button>`;
+  const seg=(val,label)=>`<button type="button" class="seg ${o.dir===val?'on':''}" data-fd="${val}">${label}</button>`;
+  el.innerHTML=`<h2 class="ph">&#127183; Flashcard review</h2><p class="tiny" style="margin-top:0">Flip the card, then tell the truth: did you know it? Cards you miss come back sooner.</p>
+    <div class="grp" style="margin-top:8px">Which stages?</div><div class="chips">${STAGES.map(chip).join('')}</div>
+    <p class="tiny quick"><button type="button" class="link" id="fcur">Just ${esc(CURRENT.title)}</button> &middot; <button type="button" class="link" id="fall">All stages</button></p>
+    <div class="grp">Show me</div><div class="segs">${seg('le','Latin, I say English')}${seg('el','English, I say Latin')}</div>
+    <p class="note">${deck.length?`<b>${mast}</b> of <b>${deck.length}</b> cards mastered in this mix.`:'Pick at least one stage.'}</p>
+    <button class="primary" id="fgo" ${deck.length?'':'disabled'}>Start ${Math.min(10,deck.length)||10} cards</button>`;
+  const redo=()=>{ fpersist(); fpanel(el) };
+  el.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>{ const id=+b.dataset.fs, i=o.stages.indexOf(id); if(i>=0) o.stages.splice(i,1); else o.stages.push(id); redo() });
+  el.querySelectorAll('[data-fd]').forEach(b=>b.onclick=()=>{ o.dir=b.dataset.fd; redo() });
+  $('#fcur',el).onclick=()=>{ o.stages=[CURRENT.id]; redo() };
+  $('#fall',el).onclick=()=>{ o.stages=STAGES.map(d=>d.id); redo() };
+  $('#fgo',el).onclick=()=>flashStart(o.stages.slice(),stages,'the start page');
 }
-function flashStart(deck){
-  const f=fcSave();
-  const sorted=shuffle(deck).sort((a,b)=>(f.box[a.id]||0)-(f.box[b.id]||0)).slice(0,10);
-  fc={q:shuffle(sorted),n:sorted.length,marks:[],seen:{},flipped:false};
+function flashStart(ids,back,backLabel){
+  const deck=cardsFor(ids,fsave.opts.dir);
+  const sorted=shuffle(deck).sort((a,b)=>(fsave.box[a.id]||0)-(fsave.box[b.id]||0)).slice(0,10);
+  fc={ids,back,backLabel,q:shuffle(sorted),n:sorted.length,marks:[],seen:{},flipped:false};
   flashCard();
 }
 function fcStars(){ let h=''; for(let k=0;k<fc.n;k++) h+=`<span class="st ${fc.marks[k]||''}" aria-hidden="true">&#9733;</span>`; return h }
 function flashCard(){
   if(!fc.q.length) return flashDone();
   const c=fc.q[0];
-  app.innerHTML=`<header><button class="link" id="back">&larr; Flashcards</button></header><div class="stars" id="fst">${fcStars()}</div>
+  app.innerHTML=`<header><button class="link" id="back">&larr; Back to ${esc(fc.backLabel)}</button></header><div class="stars" id="fst">${fcStars()}</div>
    <div class="fcard ${fc.flipped?'flip':''}" id="fcd" role="button" tabindex="0"><div class="fctag">${esc(c.tag)}</div><div class="fcf">${c.front}</div>
    ${fc.flipped?`<div class="fcback">${c.back}</div>`:'<div class="fchint">Tap to flip</div>'}</div>
    ${fc.flipped?`<div class="fcbtns"><button id="fno">Still learning</button><button class="primary" id="fyes">I knew it</button></div>`:`<p><button class="primary" id="fflip">Flip the card</button></p>`}
    <p class="tiny">${fc.q.length} left in this round</p>`;
   const flip=()=>{ fc.flipped=true; flashCard() };
-  $('#back').onclick=flash;
+  $('#back').onclick=fc.back;
   if(!fc.flipped){ $('#fcd').onclick=flip; $('#fflip').onclick=flip; $('#fcd').onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();flip()} } }
   else{
-    const rate=ok=>{ const f=fcSave(); const c=fc.q.shift(); fc.flipped=false;
+    const rate=ok=>{ const f=fsave; const c=fc.q.shift(); fc.flipped=false;
       if(!(c.id in fc.seen)){ fc.seen[c.id]=ok; fc.marks.push(ok?'on':'miss') }
       f.box[c.id]=ok?Math.min(3,(f.box[c.id]||0)+1):0;
       if(ok) Snd.ok(Math.max(1,fc.marks.filter(m=>m==='on').length)); else{ Snd.soft(); fc.q.push(c) }
-      persist(); flashCard() };
+      fpersist(); flashCard() };
     $('#fyes').onclick=()=>rate(true); $('#fno').onclick=()=>rate(false);
   }
   window.scrollTo(0,0);
@@ -921,9 +1280,58 @@ function flashCard(){
 function flashDone(){
   const got=fc.marks.filter(m=>m==='on').length, n=fc.n, st=got>=n*.9?3:got>=n*.7?2:got>=n*.5?1:0;
   app.innerHTML=`<header><h1>Round done</h1></header><div class="card"><div class="bigstars">${starRow(st)}</div><p>You knew <b>${got}</b> of <b>${n}</b> on the first flip. The others got another look and are moving closer.</p></div>
-   <p><button class="primary" id="fagain">Another 10</button> <button id="fset">Flashcard settings</button> <button id="fhome">Back to ${esc(S.title)}</button></p>`;
-  $('#fagain').onclick=()=>{ const o=fcSave().opts; flashStart(cardsFor(o.scope,o.dir)) }; $('#fset').onclick=flash; $('#fhome').onclick=home;
+   <p><button class="primary" id="fagain">Another 10</button> <button id="fhome">Back to ${esc(fc.backLabel)}</button></p>`;
+  $('#fagain').onclick=()=>flashStart(fc.ids,fc.back,fc.backLabel); $('#fhome').onclick=fc.back;
   Snd.win(); for(let k=0;k<st;k++) setTimeout(()=>Snd.star(k),450+k*400); window.scrollTo(0,0);
+}
+
+// ---------- skill check for the parent corner: running totals per skill for this stage
+const SECNAME={vocab:'Vocabulary',grammar:'Grammar',translation:'Translation'};
+function addSkill(k,r,n){ const sk=save.skills=save.skills||{}; const a=sk[k]=sk[k]||{r:0,n:0}; a.r+=r; a.n+=n; }
+function skillHTML(){
+  const sk=save.skills||{}, keys=Object.keys(sk);
+  if(!keys.length) return '<p>No answers yet. The skill check fills in as she plays the levels.</p>';
+  const verdict=a=> a.n<6 ? 'not enough answers yet' : a.r/a.n>=.85 ? 'solid' : a.r/a.n>=.65 ? 'getting there' : 'needs practice';
+  return `<table class="chart"><tr><th>Skill</th><th>Right</th><th>So far</th></tr>${keys.map(k=>{ const a=sk[k]; return `<tr><td>${esc(SECNAME[k]||k)}</td><td>${fmt(a.r)} of ${a.n} (${Math.round(a.r/a.n*100)}%)</td><td>${verdict(a)}</td></tr>` }).join('')}</table>
+    <p class="tiny">Totals from every level try in this stage, including early ones, so they rise as she improves. The level score screen shows the same skills for each single try.</p>`;
+}
+
+// ---------- the case chart. heads: column headings. grid[row][col]: cell HTML. Rows: nom sg, acc sg, nom pl, acc pl.
+function chartTable(heads, grid){
+  const lab=['nominative','accusative','nominative','accusative'], span=heads.length+1;
+  const row=r=>`<tr><th class="rl"><i>${lab[r]}</i></th>${grid[r].map(x=>`<td>${x}</td>`).join('')}</tr>`;
+  return `<div class="wide"><table class="chart ctab"><tr><th></th>${heads.map(h=>`<th>${h}</th>`).join('')}</tr><tr><th colspan="${span}" class="grpr">Singular</th></tr>${row(0)}${row(1)}<tr><th colspan="${span}" class="grpr">Plural</th></tr>${row(2)}${row(3)}</table></div>`;
+}
+// fill in the whole chart: the nominative singular is given, Lily types the other 9 boxes
+let cdr=null;
+function chartDrill(mode){
+  const decls=S.chart.decls;
+  cdr={mode, nouns:decls.map(d=> mode==='new' ? pick(d.nouns.slice(1)) : d.nouns[0])};
+  const heads=cdr.nouns.map((n,c)=>`${esc(decls[c].name)}<br><span class="lat">${esc(n[0])}</span> <span class="tiny">(${esc(n[4])})</span>${c===2&&mode==='new'?`<br><span class="tiny">stem: ${esc(n[1].slice(0,-2))}-</span>`:''}`);
+  const grid=[0,1,2,3].map(r=>cdr.nouns.map((n,c)=> r===0 ? `<span class="lat">${esc(n[0])}</span>` :
+    `<input class="cin" data-r="${r}" data-c="${c}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="${['','accusative singular','nominative plural','accusative plural'][r]} of ${esc(n[0])}"><div class="cfix"></div>`));
+  app.innerHTML=`<header><button class="link" id="back">&larr; ${esc(S.title)}</button><h1>Fill in the chart</h1>
+    <p class="sub">${mode==='new'?'New nouns, same patterns. Use the endings you know from the book chart.':'This is the chart from your book. The top row is filled in. Type the other boxes.'} Macrons are optional.</p></header>
+    <div class="card"><div class="mac" id="cmac"><span>Tap to add:</span>${['ā','ē','ī','ō','ū'].map(c=>`<button type="button" data-c="${c}">${c}</button>`).join('')}</div>${chartTable(heads,grid)}</div>
+    <div id="cres"></div><p><button class="primary" id="ccheck">Check my chart</button></p>`;
+  const ins=[...app.querySelectorAll('.cin')]; let last=ins[0];
+  ins.forEach((i,k)=>{ i.onfocus=()=>{ last=i }; i.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); const nx=ins[k+1]; if(nx) nx.focus(); else chartCheck() } } });
+  app.querySelectorAll('#cmac button').forEach(b=>{ b.addEventListener('mousedown',e=>e.preventDefault()); b.onclick=()=>{ if(!last||last.disabled) return; const s0=last.selectionStart??last.value.length, e0=last.selectionEnd??s0; last.value=last.value.slice(0,s0)+b.dataset.c+last.value.slice(e0); last.focus(); try{ last.setSelectionRange(s0+1,s0+1) }catch(x){} } });
+  $('#back').onclick=home; $('#ccheck').onclick=chartCheck; window.scrollTo(0,0);
+}
+function chartCheck(){
+  const ins=[...app.querySelectorAll('.cin')]; if(ins[0].disabled) return;
+  const miss={1:0,2:0,3:0}; let got=0;
+  ins.forEach(i=>{ const r=+i.dataset.r, want=cdr.nouns[+i.dataset.c][r], ok=i.value.trim()!=='' && strip(i.value.trim())===strip(want);
+    i.disabled=true; i.classList.add(ok?'right':'wrong'); if(ok) got++; else { miss[r]++; i.nextElementSibling.innerHTML=`<span class="lat">${esc(want)}</span>` } });
+  const n=ins.length, st=got===n?3:got>=n-1?2:got>=n-3?1:0;
+  addSkill('The chart',got,n); const cb=save.chartBest=save.chartBest||{}; cb[cdr.mode]=Math.max(cb[cdr.mode]||0,got); persist();
+  const tips=[miss[1]?'<li><b>Accusative singular</b> always ends in <b>-m</b>: -am, -um, -em.</li>':'', miss[2]?'<li><b>Nominative plural</b> (more than one doer): -ae, -ī, -ēs.</li>':'', miss[3]?'<li><b>Accusative plural</b> (more than one, receiving the action): -ās, -ōs, -ēs.</li>':''].join('');
+  $('#cres').innerHTML=`<div class="card score ${got===n?'pass':''}"><div class="bigstars">${starRow(st)}</div><div class="big">${got} / ${n}</div>${tips?`<ul>${tips}</ul>`:'<p>Every box right!</p>'}</div>`;
+  $('#ccheck').outerHTML=`<span><button class="primary" id="cnew">Try new nouns</button> <button id="cbook">Book chart again</button> <button id="chome">${esc(S.title)}</button></span>`;
+  $('#cnew').onclick=()=>chartDrill('new'); $('#cbook').onclick=()=>chartDrill('book'); $('#chome').onclick=home;
+  if(got===n) Snd.win(); else Snd.soft(); for(let k=0;k<st;k++) setTimeout(()=>Snd.star(k),450+k*400);
+  $('#cres').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function ask(msg,yes,fn){
@@ -1057,10 +1465,10 @@ function finish(){
   save.best[run.lvl]=Math.max(save.best[run.lvl]||0,score);
   if(pass && run.lvl>=save.unlocked && run.lvl<LEVELS.length) save.unlocked=run.lvl+1;
   save.history.push({lvl:run.lvl,score,date:new Date().toISOString().slice(0,10)});
+  Object.keys(run.sec).forEach(k=>addSkill(k,run.sec[k].r,run.sec[k].n));
   save.recent[run.lvl]=(save.recent[run.lvl]||[]).concat([run.items.map(x=>x.id)]).slice(-2);
   persist();
-  const secName={vocab:'Vocabulary',grammar:'Grammar',translation:'Translation'};
-  const secs = Object.keys(run.sec).map(k=>`<li>${secName[k]||k}: <b>${fmt(run.sec[k].r)}</b> of ${run.sec[k].n}</li>`).join('');
+  const secs = Object.keys(run.sec).map(k=>`<li>${SECNAME[k]||k}: <b>${fmt(run.sec[k].r)}</b> of ${run.sec[k].n}</li>`).join('');
   const pct=Math.round(score/n*100);
   const last = run.lvl===LEVELS.length;
   const msg = pass ? (last?`Last level cleared! ${fmt(score)} of ${n}. Keep practicing to earn 3 stars on every level.`:`Level ${run.lvl} cleared! Level ${run.lvl+1} is open.`) : `${fmt(score)} of ${n}. You need ${C.passScore} to move on. Next try is a fresh mix with your missed words mixed in.`;
@@ -1250,9 +1658,11 @@ window.addEventListener('beforeunload',e=>{ if(run && run.i>0 && run.i<run.items
 (function(){ const b=document.createElement('button'); b.className='snd'; b.id='snd'; b.type='button';
   const paint=()=>{ b.innerHTML=Snd.isMuted()?'&#128263;':'&#128266;'; b.setAttribute('aria-label',Snd.isMuted()?'Sound is off. Tap to turn on.':'Sound is on. Tap to turn off.') };
   paint(); b.onclick=()=>{ Snd.toggle(); paint() }; document.body.appendChild(b); })();
+fload();
 stages();
-window.__LQ={get ITEMS(){return ITEMS},get LEVELS(){return LEVELS},get C(){return C},run:()=>run,save:()=>save,judgeText,selectAttempt,useStage,STAGES,Snd,BONUS,bonusStart,bonusLabel,bz:()=>bz};
+window.__LQ={ALLWORDS,fsave:()=>fsave,cardsFor,get ITEMS(){return ITEMS},get LEVELS(){return LEVELS},get C(){return C},run:()=>run,save:()=>save,judgeText,selectAttempt,useStage,STAGES,Snd,BONUS,bonusStart,bonusLabel,bz:()=>bz};
 
 })();
 </script>
+
 </body></html>
