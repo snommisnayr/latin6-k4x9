@@ -81,6 +81,12 @@ details.bank{margin:8px 0 12px;font-size:17px}details.bank summary{cursor:pointe
 .ask{display:inline-block;min-width:44px;text-align:center;border-radius:8px;background:var(--warnbg);color:var(--warn);font-weight:800;padding:2px 8px}
 .cin{width:100%;min-width:96px;font:italic 600 17px Georgia,serif;color:var(--latin);background:var(--card);border:2px solid var(--line);border-radius:8px;padding:8px 6px}.cin.right{border-color:var(--good);background:var(--goodbg)}.cin.wrong{border-color:var(--bad);background:var(--badbg)}.cfix{font-size:16px;margin-top:2px}
 @media (max-width:480px){.ctab{table-layout:fixed}.ctab th,.ctab td{font-size:14px;padding:5px 3px;word-break:break-word}.ctab th.rl{width:23%}.ctab .lat{font-size:16px}.cin{font-size:16px;min-width:0;padding:7px 3px}.ctab .tiny{font-size:12px}}
+
+.chg{background:var(--warnbg);color:var(--warn);border-bottom:3px solid var(--c-warn);padding:0 4px;border-radius:4px;font-style:inherit;font-weight:700}.chgkey{font-size:13px;color:var(--muted)}
+.gl{display:block;font:600 14px -apple-system,BlinkMacSystemFont,sans-serif;font-style:normal;color:var(--ink);margin-top:2px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}.cmp p{margin:4px 0;font-size:19px}
+@media (max-width:520px){.cmp{grid-template-columns:1fr}}
+.tpcard{border-left:6px solid var(--accent)}
 </style>
 
 <div id="app"><noscript>This game needs JavaScript. Open this page in Safari or Chrome.</noscript></div>
@@ -1159,11 +1165,13 @@ function stages(){
   const main=STAGES.filter(d=>!d.allOpen), early=STAGES.filter(d=>d.allOpen);
   app.innerHTML=`<header><h1>Lily's Latin Quest</h1><p class="sub">Review words with flashcards, or pick a stage to study. Stars and progress are saved on this device.</p></header>
     <div class="card" id="fpanel"></div>
+    <button class="card level tpcard" id="tp7"><div class="lnum">Stage 7<span class="newb">TEST PREP</span></div><div class="ltitle">Test prep: take sentences apart, then translate</div><div class="lbest">2 practice sessions</div></button>
     <div class="grp">Study a stage</div><div class="levels">${main.map(card).join('')}</div>
     ${early.length?`<div class="grp">Earlier stages: vocabulary review</div><div class="levels two-up">${early.map(card).join('')}</div>`:''}
     <details class="parent"><summary>Parent corner</summary><p class="tiny">New stages appear at the top of this page when they are added. If Lily already has the page open, refresh it to see the newest stage. Stars, flashcard progress, and review words carry over.</p><p class="tiny">Sound: the speaker button in the top right turns it on and off. If an iPhone makes no sound, check the ring/silent switch and the volume.</p></details>`;
   app.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>useStage(STAGES.find(x=>x.id===+b.dataset.st)));
   fpanel($('#fpanel'));
+  if($('#tp7')) $('#tp7').onclick=tpHome;
   window.scrollTo(0,0);
 }
 function home(){
@@ -1652,6 +1660,598 @@ function bonusDone(){
   Snd.win(); for(let k=0;k<st;k++) setTimeout(()=>Snd.star(k),450+k*400); window.scrollTo(0,0);
 }
 
+// ===================== Stage 7 Test Prep: data =====================
+const TPKEY='lily-latin-tp7-v1';
+const wk=w=>strip(w).replace(/[^a-z]/g,'');
+// Word meanings. kind: v verb, n noun, a adjective, p little word, nm name.
+const TPW={};
+function W(keys,kind,show,ok){ const ks=keys.split(' '); const e={id:ks[0],kind,show,ok:ok?ok.split('|'):[]}; ks.forEach(k=>TPW[k]=e) }
+W('caecilio caecilius felix decens decentem clementem grumio','nm','a name','');
+W('multi','a','many','many|much|a lot of|lots of');
+W('amici','n','friends','friends|friend');
+W('amicus','n','friend','friend|friends');
+W('cum','p','with','with');
+W('cenabant cenaverunt','v','dine','dine|dined|dines|dining|eat dinner|ate dinner|eats dinner|eating dinner|have dinner|had dinner|has dinner|having dinner|eat|ate|eats|eating|have a meal|had a meal|have supper|had supper');
+W('quoque','p','also','also|too|as well');
+W('aderat adest','v','be here','present|here|there|be here|be present|is here|was here|is present|was present|is there|was there|attend|attends|attended|attending|arrive|arrived|show up|showed up');
+W('omnes','a','all','all|everyone|everybody|every|all of them|the whole');
+W('coquum','n','cook','cook|chef');
+W('laudaverunt laudavit','v','praise','praise|praised|praises|praising|compliment|complimented|compliments|complimenting|applaud|applauded');
+W('quod','p','because','because|since');
+W('cena','n','dinner','dinner|meal|supper|food|feast');
+W('erat','v','was','was|is|were|be|are|been');
+W('est','v','is','is|was|be|are|exist|exists');
+W('optima','a','very good','very good|best|excellent|great|wonderful|really good|very nice|fantastic|the best|delicious|superb|good');
+W('postquam','p','after','after|after that|when');
+W('clamavit','v','shout','shout|shouted|shouts|shouting|yell|yelled|yells|yelling|cry out|cried out|cries out|call out|called out|calls out|scream|screamed');
+W('ubi','p','where','where');
+W('non','p','not','not');
+W('tum','p','then','then|next|at that moment|and then');
+W('e ex','p','out of','out of|from|out|away from');
+W('villa villam','n','house','house|villa|home|country house|mansion');
+W('misit','v','send','send|sent|sends|sending|dispatch|dispatched');
+W('servus','n','slave','slave|servant');
+W('servi','n','slaves','slaves|servants|slave');
+W('per','p','through','through|along|across|throughout|via|over');
+W('urbem urbe','n','city','city|town');
+W('quaesivit','v','search for','search for|searched for|searches for|searching for|search|searched|searches|look for|looked for|looks for|looking for|seek|sought|seeks|seeking|hunt for|hunted for|look|looked');
+W('discessit discedebat','v','leave','leave|left|leaves|leaving|go away|went away|goes away|going away|depart|departed|departs|departing|go|went|goes|going|exit|exited');
+W('poculum','n','cup','cup|goblet|mug|glass|drink|cup of wine');
+W('hausit','v','drain','drain|drained|drains|draining|drink|drank|drinks|drinking|drink up|drank up|gulp|gulped|empty|emptied|finish|finished|swallow|swallowed');
+W('libertus','n','freedman','freedman|freed slave|freed man|freedmen|ex slave|former slave|freed');
+W('liberti','n','freedmen','freedmen|freed slaves|freed men|freedman');
+W('fabulam','n','story','story|tale|play|stories|legend');
+W('mirabilem','a','strange','strange|amazing|bizarre|wonderful|marvelous|odd|weird|remarkable|incredible|unusual|mysterious|surprising|astonishing');
+W('narravit','v','tell','tell|told|tells|telling|relate|related|relates|narrate|narrated|recount|recounted|tell a story|told a story');
+W('olim','p','once','once|long ago|one day|once upon a time|formerly|in the past|a long time ago');
+W('meus','a','my','my|mine');
+W('nox','n','night','night|the night|darkness');
+W('sed','p','but','but|however|yet');
+W('luna','n','moon','moon');
+W('plena','a','full','full');
+W('lucebat','v','shine','shine|shone|shines|shining|was shining|glow|glowed|glows|glowing|gleam|gleamed|be bright|was bright|light up|lit up|beam|beamed');
+W('viam','n','road','road|way|street|path|route|highway');
+W('festinabat festinavit','v','hurry','hurry|hurried|hurries|hurrying|rush|rushed|rushes|rushing|hasten|hastened|hastens|hastening|hustle|hustled|race|raced|run|ran|runs|running|speed|sped');
+W('silva','n','forest','forest|wood|woods|jungle|grove');
+W('et','p','and','and');
+W('subito','p','suddenly','suddenly|all of a sudden|at once|immediately|unexpectedly');
+W('centurionem','n','centurion','centurion|army officer|officer|roman officer|soldier|captain');
+W('conspexit','v','catch sight of','catch sight of|caught sight of|catches sight of|catching sight of|catch sight|caught sight|see|saw|sees|seeing|spot|spotted|spots|spotting|notice|noticed|notices|noticing|glimpse|glimpsed|observe|observed');
+W('heri','p','yesterday','yesterday');
+W('fur furem','n','thief','thief|robber|burglar|crook|thieves');
+W('ad','p','to','to|toward|towards|at|up to');
+W('ambulavit','v','walk','walk|walked|walks|walking|go|went|goes|stroll|strolled|strolls|march|marched');
+W('tacite','p','quietly','quietly|silently|softly|secretly|stealthily|in silence|without a sound|quiet|silent');
+W('intravit','v','enter','enter|entered|enters|entering|go into|went into|goes into|go in|went in|come into|came into|get into|got into');
+W('valde','p','very much','very|very much|greatly|really|extremely|so|so much|a lot|truly|completely');
+W('perterritus','a','terrified','terrified|frightened|scared|afraid|very scared|very frightened|petrified|panicked|alarmed|horrified');
+
+// root (infinitive) forms: the verb with no who or when attached
+const TPROOT={};
+function R(keys,inf,show){ keys.split(' ').forEach(k=>TPROOT[k]={inf:inf,show:show}) }
+R('cenabant cenaverunt','cēnāre','dine');
+R('aderat adest','adesse','be here');
+R('laudaverunt laudavit','laudāre','praise');
+R('erat est','esse','be');
+R('clamavit','clāmāre','shout');
+R('misit','mittere','send');
+R('quaesivit','quaerere','search for');
+R('discessit discedebat','discēdere','leave');
+R('hausit','haurīre','drain');
+R('narravit','narrāre','tell');
+R('lucebat','lūcēre','shine');
+R('festinabat festinavit','festīnāre','hurry');
+R('conspexit','cōnspicere','catch sight of');
+R('ambulavit','ambulāre','walk');
+R('intravit','intrāre','enter');
+
+// one clause at a time. w tokens; v/s/o = index of verb/subject/object (-1 none); vn/sn/on = s or p; tn = pres/imp/perf
+const TU1=[
+{w:['multī','amīcī','cum','Caeciliō','cēnābant'],v:4,s:1,o:-1,vn:'p',tn:'imp',sn:'p',en:'Many friends were dining with Caecilius.',
+ S:['friends','many friends'],Sx:['friend'],V:['were dining','were eating dinner','were having dinner','were eating','were having supper'],Vx:['dined','ate dinner','had dinner','ate','dines','eats','is dining','was dining'],
+ sw:'amīcī ends in -ī, the ending for more than one. The one-person form would end in -us.',
+ no:'Caeciliō comes right after the little word cum, so it is part of a phrase. It is not the thing being acted on.',
+ wi:{lat:'multī amīcī cum Caeciliō cēnāvērunt.',kind:'tense',vw:'cēnāvērunt',tn:'perf',en:'Many friends dined with Caecilius.',S:['friends','many friends'],V:['dined','ate dinner','had dinner','ate','finished dinner'],Vx:['were dining','dine','eat','dining'],why:'cēnābant became cēnāvērunt. The -ba- (it was going on) was swapped for -vē- (it finished), so now it is "dined."'}},
+{w:['Fēlīx','quoque','aderat'],v:2,s:0,o:-1,vn:'s',tn:'imp',sn:'s',en:'Felix was also there.',
+ S:['felix'],V:['was there','was present','was here','was also there','was also present','was also here','was attending'],Vx:['is here','is there','is present','is also here','is also there','is also present','attends','came'],
+ no:'aderat means "was here," so nothing receives the action. There is no direct object.',
+ wi:{lat:'Fēlīx quoque adest.',kind:'tense',vw:'adest',tn:'pres',en:'Felix is also here.',S:['felix'],V:['is here','is there','is present','is also here','is also there','is also present'],Vx:['was here','was there','was present','was also here','was also there'],why:'aderat (was here) became adest (is here). Adsum is a form of "to be," so it is irregular: it has no -ba-. Its imperfect uses -era- (aderat), and adest has no past marker, so it is happening now.'}},
+{w:['omnēs','amīcī','coquum','laudāvērunt'],v:3,s:1,o:2,vn:'p',tn:'perf',sn:'p',on:'s',en:'All the friends praised the cook,',
+ S:['friends'],Sx:['friend'],V:['praised','complimented'],Vx:['were praising','praise','praises','is praising','are praising','praising'],O:['cook','chef'],
+ sw:'amīcī ends in -ī (more than one), and laudāvērunt ends in -ērunt, "they."',
+ ow:'coquum ends in -um, the -m object form, and it is the ending for one.',
+ wi:{lat:'amīcus coquum laudāvit.',kind:'num',vw:'laudāvit',tn:'perf',en:'The friend praised the cook.',S:['friend'],Sx:['friends'],V:['praised','complimented'],Vx:['praise','praises'],O:['cook','chef'],why:'amīcī became amīcus and laudāvērunt became laudāvit. Both went from many to one, so the doer changed from "they" to "he or she."'}},
+{w:['quod','cēna','erat','optima'],v:2,s:1,o:-1,vn:'s',tn:'imp',sn:'s',en:'because the dinner was very good.',
+ S:['dinner','meal','supper'],V:['was'],Vx:['is'],
+ sw:'cēna ends in -a, the plain form for one.',
+ no:'erat is a "was" verb. It does not act on anything. The other describing word just describes the subject.',
+ wi:{lat:'quod cēna est optima.',kind:'tense',vw:'est',tn:'pres',en:'because the dinner is very good.',S:['dinner','meal','supper'],V:['is'],Vx:['was'],why:'erat (was) became est (is). The past turned into the present.'}},
+{w:['postquam','omnēs','cēnāvērunt'],v:2,s:1,o:-1,vn:'p',tn:'perf',sn:'p',en:'After everyone had dined,',
+ S:['everyone','everybody','all','they all'],V:['dined','had dinner','ate dinner','finished dinner','ate','finished eating','had eaten'],Vx:['were dining','dine','dines','eat','eats','was dining','eating'],
+ sw:'omnēs ends in -ēs, which shows more than one. cēnāvērunt ends in -ērunt, "they."',
+ no:'Nobody is receiving the action here. They just dined.',
+ wi:{lat:'postquam omnēs cēnant,',kind:'tense',vw:'cēnant',tn:'pres',en:'After everyone eats dinner,',S:['everyone','everybody','all'],V:['eats','eat','dines','dine','has dinner','have dinner','is eating','are eating','are dining'],Vx:['dined','ate','had dinner','had eaten'],why:'cēnāvērunt (-vērunt, finished) became cēnant (just -nt). With no tense marker it is present: "they eat dinner."'}},
+{w:['Caecilius','clāmāvit'],v:1,s:0,o:-1,vn:'s',tn:'perf',sn:'s',en:'Caecilius shouted,',
+ S:['caecilius'],V:['shouted','yelled','cried out','called out'],Vx:['was shouting','shouts','shout','was yelling','yells'],
+ no:'Nothing receives the shouting here, so there is no direct object.',
+ wi:{lat:'Caecilius clāmābat,',kind:'tense',vw:'clāmābat',tn:'imp',en:'Caecilius was shouting,',S:['caecilius'],V:['was shouting','was yelling','was calling out','was crying out'],Vx:['shouted','shouts','yelled'],why:'clāmāvit became clāmābat. The -vi- (finished) was swapped for -ba- (it was going on): "was shouting."'}},
+{w:['ubi','est','Decēns'],v:1,s:2,o:-1,vn:'s',tn:'pres',sn:'s',en:'"Where is Decens?',
+ S:['decens'],V:['is'],Vx:['was'],
+ no:'est is an "is" verb, so nothing receives the action.',
+ wi:{lat:'ubi erat Decēns?',kind:'tense',vw:'erat',tn:'imp',en:'Where was Decens?',S:['decens'],V:['was'],Vx:['is'],why:'est (is) became erat (was). The present turned into the past.'}},
+{w:['Decēns','nōn','adest'],v:2,s:0,o:-1,vn:'s',tn:'pres',sn:'s',en:'Decens is not here."',
+ S:['decens'],V:['is not here','is not present','is not there','is not attending','is absent',"isn't here","isn't present","isn't there"],Vx:['was not here','was not there','was not present',"wasn't here"],
+ no:'adest means "is here," so nothing receives the action.',
+ wi:{lat:'servī nōn adsunt.',kind:'num',vw:'adsunt',tn:'pres',en:'The slaves are not here.',S:['slaves','servants'],Sx:['slave','servant'],V:['are not here','are not present','are not there','are absent',"aren't here","aren't present","aren't there"],Vx:['is not here','is not present',"isn't here"],why:'Decēns became servī (many slaves) and adest became adsunt. The -nt means they, so the verb is plural.'}},
+{w:['tum','Caecilius','Clēmentem','ē','vīllā','mīsit'],v:5,s:1,o:2,vn:'s',tn:'perf',sn:'s',on:'s',en:'Then Caecilius sent Clemens out of the house.',
+ S:['caecilius'],V:['sent'],Vx:['sends','send','was sending'],O:['clemens'],
+ ow:'Clēmentem ends in -m, the object form, and it is the ending for one person.',
+ wi:{lat:'tum Caecilius Clēmentem ē vīllā mittit.',kind:'tense',vw:'mittit',tn:'pres',en:'Then Caecilius sends Clemens out of the house.',S:['caecilius'],V:['sends','is sending'],Vx:['sent','was sending'],O:['clemens'],why:'mīsit (sent, finished) became mittit (sends). mittit is the present form of the same verb.'}},
+{w:['servus','Decentem','per','urbem','quaesīvit'],v:4,s:0,o:1,vn:'s',tn:'perf',sn:'s',on:'s',en:'The slave searched for Decens through the city.',
+ S:['slave','servant'],Sx:['slaves','servants'],V:['searched for','looked for','sought','searched','looked'],Vx:['searches for','searches','looks for','was searching for','was searching','was looking for','looks'],O:['decens'],
+ sw:'servus ends in -us, the plain form for one.',
+ ow:'Decentem ends in -m: it is the object, the one being acted on. (urbem also ends in -m, but it comes after per, a little word that tells where, so it is not the object.)',
+ wi:{lat:'servī Decentem per urbem quaesīvērunt.',kind:'num',vw:'quaesīvērunt',tn:'perf',en:'The slaves searched for Decens through the city.',S:['slaves','servants'],Sx:['slave','servant'],V:['searched for','looked for','sought','searched','looked'],Vx:['searches for','searches'],O:['decens'],why:'servus became servī (one to many) and quaesīvit became quaesīvērunt (-ērunt means they).'}},
+{w:['postquam','servus','ē','vīllā','discessit'],v:4,s:1,o:-1,vn:'s',tn:'perf',sn:'s',en:'After the slave left the house,',
+ S:['slave','servant'],Sx:['slaves'],V:['left','went away','departed','went out'],Vx:['leaves','leave','was leaving','goes away','departs'],
+ sw:'servus ends in -us, the plain form for one.',
+ no:'ē vīllā is a phrase that starts with ē, a little word, so vīllā is not a direct object.',
+ wi:{lat:'postquam servus ē vīllā discēdit,',kind:'tense',vw:'discēdit',tn:'pres',en:'After the slave leaves the house,',S:['slave','servant'],V:['leaves','departs','goes away','goes out','is leaving'],Vx:['left','departed','went away'],why:'discessit (left) became discēdit (leaves). The perfect turned into the present.'}},
+{w:['Fēlīx','pōculum','hausit'],v:2,s:0,o:1,vn:'s',tn:'perf',sn:'s',on:'s',en:'Felix drained the cup.',
+ S:['felix'],V:['drained','drank','drank up','emptied','gulped down','finished'],Vx:['drains','drain','drinks','drink','was draining','was drinking'],O:['cup','goblet','mug'],
+ ow:'pōculum ends in -um, the -m object form, and it is the ending for one.',
+ wi:{lat:'Fēlīx pōculum haurit.',kind:'tense',vw:'haurit',tn:'pres',en:'Felix drains the cup.',S:['felix'],V:['drains','drinks','drinks up','is draining','is drinking','empties','gulps down'],Vx:['drained','drank'],O:['cup','goblet','mug'],why:'hausit (drained) became haurit (drains). Same verb, but now it is present.'}},
+{w:['tum','lībertus','fābulam','mīrābilem','narrāvit'],v:4,s:1,o:2,vn:'s',tn:'perf',sn:'s',on:'s',en:'Then the freedman told a strange story:',
+ S:['freedman','freed slave','freed man','ex slave'],Sx:['freedmen'],V:['told','related','narrated','recounted'],Vx:['tells','tell','was telling','relates'],O:['story','tale'],
+ sw:'lībertus ends in -us, the plain form for one.',
+ ow:'fābulam ends in -m: it is the object, the thing that was told. mīrābilem also ends in -m because it describes fābulam.',
+ wi:{lat:'tum lībertī fābulam mīrābilem narrāvērunt:',kind:'num',vw:'narrāvērunt',tn:'perf',en:'Then the freedmen told a strange story:',S:['freedmen','freed slaves','freed men'],Sx:['freedman','freed slave'],V:['told','related'],Vx:['tells','tell'],O:['story','tale'],why:'lībertus became lībertī (many) and narrāvit became narrāvērunt (-ērunt means they).'}},
+{w:['ōlim','amīcus','meus','ex','urbe','discēdēbat'],v:5,s:1,o:-1,vn:'s',tn:'imp',sn:'s',en:'"Once my friend was leaving the city.',
+ S:['friend'],Sx:['friends'],V:['was leaving','was going away','was departing'],Vx:['left','leaves','departed','goes away','went away'],
+ sw:'amīcus ends in -us, the plain form for one. meus agrees with it.',
+ no:'ex urbe is a phrase that starts with ex, a little word, so urbe is not a direct object.',
+ wi:{lat:'ōlim amīcus meus ex urbe discessit.',kind:'tense',vw:'discessit',tn:'perf',en:'Once my friend left the city.',S:['friend'],V:['left','departed','went away'],Vx:['was leaving','leaves'],why:'discēdēbat (was leaving) became discessit (left). The -ba- (it was going on) turned into an irregular perfect that finished.'}},
+{w:['nox','erat'],v:1,s:0,o:-1,vn:'s',tn:'imp',sn:'s',en:'It was night,',
+ S:['night','it'],V:['was'],Vx:['is'],
+ no:'erat is a "was" verb, so nothing receives the action.',
+ wi:{lat:'nox est,',kind:'tense',vw:'est',tn:'pres',en:'It is night,',S:['night','it'],V:['is'],Vx:['was'],why:'erat (was) became est (is).'}},
+{w:['sed','lūna','plēna','lūcēbat'],v:3,s:1,o:-1,vn:'s',tn:'imp',sn:'s',en:'but the full moon was shining.',
+ S:['moon','full moon'],V:['was shining','was glowing'],Vx:['shone','shines','shine','glowed','is shining'],
+ sw:'lūna ends in -a, the plain form for one. plēna describes it.',
+ no:'Nothing receives the shining, so there is no direct object.',
+ wi:{lat:'sed lūna plēna lūcet.',kind:'tense',vw:'lūcet',tn:'pres',en:'but the full moon shines.',S:['moon','full moon'],V:['shines','is shining','glows','is glowing'],Vx:['was shining','shone','glowed'],why:'lūcēbat (was shining) became lūcet (shines). The -ba- is gone, so it is happening now.'}},
+{w:['amīcus','per','viam','festīnābat'],v:3,s:0,o:-1,vn:'s',tn:'imp',sn:'s',en:'My friend was hurrying along the road,',
+ S:['friend'],Sx:['friends'],V:['was hurrying','was rushing','was hastening'],Vx:['hurried','hurries','rushed','rushes','were hurrying'],
+ sw:'amīcus ends in -us, the plain form for one.',
+ no:'viam ends in -m, but it comes after per, a little word that tells where, so it is not a direct object.',
+ wi:{lat:'amīcī per viam festīnābant,',kind:'num',vw:'festīnābant',tn:'imp',en:'The friends were hurrying along the road,',S:['friends'],Sx:['friend'],V:['were hurrying','were rushing','were hastening'],Vx:['was hurrying','hurried'],why:'amīcus became amīcī and festīnābat became festīnābant. One doer turned into many.'}},
+{w:['ubi','silva','erat'],v:2,s:1,o:-1,vn:'s',tn:'imp',sn:'s',en:'where there was a forest,',
+ S:['forest','wood','woods'],V:['was','there was'],Vx:['is','there is'],
+ sw:'silva ends in -a, the plain form for one.',
+ no:'erat is a "was" verb, so nothing receives the action.',
+ wi:{lat:'ubi silva est,',kind:'tense',vw:'est',tn:'pres',en:'where there is a forest,',S:['forest','wood','woods'],V:['is','there is'],Vx:['was','there was'],why:'erat (was) became est (is).'}},
+{w:['et','subitō','centuriōnem','cōnspēxit'],v:3,s:-1,o:2,vn:'s',tn:'perf',sn:null,on:'s',en:'and suddenly he caught sight of a centurion."',
+ S:null,V:['caught sight of','saw','spotted','noticed','caught sight'],Vx:['catches sight of','sees','spots','notices','was catching sight of','was seeing'],O:['centurion'],
+ imp:'There is no subject word. The -t on cōnspēxit means he, she, or it, and the story is still about the friend.',
+ ow:'centuriōnem ends in -em, the object form for this kind of word, and it is the ending for one.',
+ wi:{lat:'et subitō centuriōnem cōnspicit.',kind:'tense',vw:'cōnspicit',tn:'pres',en:'and suddenly he catches sight of a centurion.',S:null,V:['catches sight of','sees','spots','notices'],Vx:['caught sight of','saw','spotted','noticed'],O:['centurion'],why:'cōnspēxit (caught sight of) became cōnspicit (catches sight of). The perfect turned into the present.'}}
+];
+
+const TU2=[
+{w:['heri','fūr','ad','vīllam','ambulāvit'],v:4,s:1,o:-1,vn:'s',tn:'perf',sn:'s',en:'Yesterday a thief walked to the house.',
+ S:['thief','robber','burglar'],V:['walked','went','strolled'],Vx:['walks','was walking','walk','goes'],
+ sw:'fūr is the plain form for one.',
+ no:'vīllam ends in -m, but it comes after ad, a little word that tells where, so it is not a direct object.',
+ wi:{lat:'hodiē fūr ad vīllam ambulat.',kind:'tense',vw:'ambulat',tn:'pres',en:'Today a thief walks to the house.',S:['thief','robber','burglar'],V:['walks','is walking','goes','is going'],Vx:['walked','went','was walking'],why:'heri (yesterday) became hodiē (today), and ambulāvit (walked) became ambulat (walks). Both point to now.'}},
+{w:['nox','erat'],v:1,s:0,o:-1,vn:'s',tn:'imp',sn:'s',en:'It was night,',
+ S:['night','it'],V:['was'],Vx:['is'],
+ no:'erat is a "was" verb, so nothing receives the action.',
+ wi:{lat:'nox est,',kind:'tense',vw:'est',tn:'pres',en:'It is night,',S:['night','it'],V:['is'],Vx:['was'],why:'erat (was) became est (is).'}},
+{w:['et','fūr','tacitē','vīllam','intrāvit'],v:4,s:1,o:3,vn:'s',tn:'perf',sn:'s',on:'s',en:'and the thief quietly entered the house.',
+ S:['thief','robber','burglar'],V:['entered','went into','came into','crept into','snuck into','sneaked into','went in'],Vx:['enters','was entering','goes into'],O:['house','villa','home'],
+ sw:'fūr is the plain form for one.',
+ ow:'This time vīllam IS the object: there is no ad, and the action needs something to act on. Compare ad vīllam in the first sentence.',
+ wi:{lat:'et fūr tacitē vīllam intrat.',kind:'tense',vw:'intrat',tn:'pres',en:'and the thief quietly enters the house.',S:['thief','robber','burglar'],V:['enters','is entering','goes into','is going into','creeps into','sneaks into'],Vx:['entered','went into'],O:['house','villa','home'],why:'intrāvit (entered) became intrat (enters). The -vi- (finished) is gone, so it is present.'}},
+{w:['Grumiō','valdē','perterritus','erat'],v:3,s:0,o:-1,vn:'s',tn:'imp',sn:'s',en:'Grumio was very terrified.',
+ S:['grumio'],V:['was'],Vx:['is'],
+ no:'erat links Grumiō to perterritus, which describes him. Nothing receives an action.',
+ wi:{lat:'Grumiō valdē perterritus est.',kind:'tense',vw:'est',tn:'pres',en:'Grumio is very terrified.',S:['grumio'],V:['is'],Vx:['was'],why:'erat (was) became est (is).'}},
+{w:['Grumiō','fūrem','cōnspēxit'],v:2,s:0,o:1,vn:'s',tn:'perf',sn:'s',on:'s',en:'Grumio caught sight of the thief.',
+ S:['grumio'],V:['caught sight of','saw','spotted','noticed'],Vx:['catches sight of','sees','spots','notices'],O:['thief','robber','burglar'],
+ ow:'fūrem ends in -em: for fūr, the object form adds -em (like urbs becomes urbem), and it is the ending for one.',
+ wi:{lat:'Grumiō fūrem cōnspicit.',kind:'tense',vw:'cōnspicit',tn:'pres',en:'Grumio catches sight of the thief.',S:['grumio'],V:['catches sight of','sees','spots','notices'],Vx:['caught sight of','saw','spotted','noticed'],O:['thief','robber','burglar'],why:'cōnspēxit (caught sight of) became cōnspicit (catches sight of).'}},
+{w:['Grumiō','clāmāvit'],v:1,s:0,o:-1,vn:'s',tn:'perf',sn:'s',en:'Grumio shouted,',
+ S:['grumio'],V:['shouted','yelled','cried out','called out'],Vx:['was shouting','shouts','yells'],
+ no:'Nothing receives the shouting here, so there is no direct object.',
+ wi:{lat:'Grumiō clāmābat,',kind:'tense',vw:'clāmābat',tn:'imp',en:'Grumio was shouting,',S:['grumio'],V:['was shouting','was yelling','was calling out'],Vx:['shouted','shouts','yelled'],why:'clāmāvit became clāmābat. The -vi- (finished) was swapped for -ba- (it was going on).'}},
+{w:['et','fūr','ē','vīllā','festīnāvit'],v:4,s:1,o:-1,vn:'s',tn:'perf',sn:'s',en:'and the thief hurried out of the house.',
+ S:['thief','robber','burglar'],V:['hurried','rushed','hastened','ran'],Vx:['hurries','was hurrying','rushes'],
+ sw:'fūr is the plain form for one.',
+ no:'ē vīllā is a phrase that starts with ē, a little word, so vīllā is not a direct object.',
+ wi:{lat:'et fūr ē vīllā festīnābat.',kind:'tense',vw:'festīnābat',tn:'imp',en:'and the thief was hurrying out of the house.',S:['thief','robber','burglar'],V:['was hurrying','was rushing','was hastening'],Vx:['hurried','rushed','hurries'],why:'festīnāvit (hurried) became festīnābat (was hurrying). The -vi- turned into -ba-.'}},
+{w:['postquam','fūr','discessit'],v:2,s:1,o:-1,vn:'s',tn:'perf',sn:'s',en:'After the thief left,',
+ S:['thief','robber','burglar'],V:['left','went away','departed'],Vx:['leaves','leave','was leaving','goes away'],
+ sw:'fūr is the plain form for one.',
+ no:'Nothing receives the leaving, so there is no direct object.',
+ wi:{lat:'postquam fūr discēdit,',kind:'tense',vw:'discēdit',tn:'pres',en:'After the thief leaves,',S:['thief','robber','burglar'],V:['leaves','departs','goes away','is leaving'],Vx:['left','departed','went away'],why:'discessit (left) became discēdit (leaves). The perfect turned into the present.'}},
+{w:['Caecilius','coquum','laudāvit'],v:2,s:0,o:1,vn:'s',tn:'perf',sn:'s',on:'s',en:'Caecilius praised the cook.',
+ S:['caecilius'],V:['praised','complimented'],Vx:['praises','praise','is praising'],O:['cook','chef'],
+ ow:'coquum ends in -um, the -m object form, and it is the ending for one.',
+ wi:{lat:'servī coquum laudāvērunt.',kind:'num',vw:'laudāvērunt',tn:'perf',en:'The slaves praised the cook.',S:['slaves','servants'],Sx:['slave','servant'],V:['praised','complimented'],Vx:['praise','praises'],O:['cook','chef'],why:'Caecilius became servī (many) and laudāvit became laudāvērunt (-ērunt means they).'}}
+];
+
+const SORT1=[
+['vituperābant','imp','vituperābant has -bā-, so it was going on: they were scolding.'],
+['terruit','perf','terruit is an irregular perfect (like fēcit): he frightened. The present is terret.'],
+['amābās','imp','-bā- again, so it was going on: you were loving.'],
+['dūxit','perf','dūxit has an x inside: an irregular perfect, he led. The present is dūcit.'],
+['faciunt','pres','faciunt has no tense marker, just -nt: they make. The perfect would be fēcērunt.'],
+['audit','pres','audit is the present: he hears. The perfect would be audīvit.'],
+['dūcēbat','imp','-bā-: he was leading.'],
+['labōrāvērunt','perf','-vērunt marks a finished action: they worked.'],
+['capit','pres','capit is the present: he takes. The perfect is cēpit.'],
+['audiēbās','imp','-ēbā- contains -ba-: you were hearing.'],
+['spectās','pres','spectās has no marker, just -s: you watch.'],
+['intrāvit','perf','-vit marks a finished action: he entered.'],
+['laudō','pres','laudō is the present: I praise.'],
+['lacrimābat','imp','-bā-: he was crying.'],
+['fēcērunt','perf','fēcērunt is the irregular perfect of facit: they made.']
+];
+const SORT2=[
+['ambulābat','imp','-bā-: he was walking.'],
+['clāmāvit','perf','-vit marks a finished action: he shouted.'],
+['cōnspicit','pres','cōnspicit is the present: he catches sight of. The perfect is cōnspēxit.'],
+['festīnābant','imp','-bā-: they were hurrying.'],
+['mīsit','perf','mīsit is the irregular perfect of mittit: he sent.'],
+['rogat','pres','rogat is the present: he asks. The perfect is rogāvit.'],
+['narrāvērunt','perf','-vērunt marks a finished action: they told.'],
+['necābat','imp','-bā-: he was killing.'],
+['fēcit','perf','fēcit is the irregular perfect of facit: he made.'],
+['terret','pres','terret is the present: he frightens. The perfect is terruit.'],
+['parābat','imp','-bā-: he was preparing.'],
+['intellēxit','perf','intellēxit is the irregular perfect of intellegit: he understood.']
+];
+const TPS={
+ 1:{title:"Mrs. Kimble's passage",sub:'The dinner party from the study guide, one clause at a time, then the whole story side by side.',units:TU1,sort:SORT1},
+ 2:{title:'A new story: the thief',sub:'The same steps with a new passage, so you can try it again with fresh words.',units:TU2,sort:SORT2}
+};
+
+// ===================== Stage 7 Test Prep: logic =====================
+let tps=null, tpr=null;
+function tpLoad(){ tps={s:{},log:[],fast:false,best:{}}; try{ const x=localStorage.getItem(TPKEY); if(x) tps=Object.assign(tps,JSON.parse(x)) }catch(e){} }
+function tpSave(){ try{ localStorage.setItem(TPKEY,JSON.stringify(tps)) }catch(e){} }
+function tpTick(){ if(!tpr) return; const n=Date.now(); tpr.st.elapsed=(tpr.st.elapsed||0)+Math.min(n-tpr.t0,120000); tpr.t0=n }
+
+// ---------- checking a typed meaning
+const TFILL=new Set(['he','she','it','they','you','we','i','to','did','do','does','been','being','am','will']);
+function tstem(w){ while(w.length>3){ const n=w.replace(/(ing|ed|es|s|d|e)$/,''); if(n===w||n.length<3) break; w=n } return w }
+function ttoks(x){ const t=norm(x).split(' ').filter(Boolean); const f=t.filter(z=>!TFILL.has(z)); return f.length?f:t }
+function tpJudge(input,e){
+  const T=ttoks(input).map(tstem); if(!T.length) return 'wrong'; let best='wrong';
+  for(const a of e.ok){ const A=ttoks(a).map(tstem); if(!A.length) continue;
+    for(let i=0;i+A.length<=T.length;i++){ if(A.every((x,j)=>T[i+j]===x)) return 'exact' }
+    if(A.length===1&&T.length===1&&A[0].length>=4&&osa(T[0],A[0])<=1) best='close';
+  }
+  return best;
+}
+// strict check for a verb as it appears: tense and number must match, so no stem matching
+const TPRON=new Set(['he','she','it','they','we','you','i','also']);
+function tpJudgeVerb(input,list){
+  const T=norm(input).split(' ').filter(z=>z&&!TPRON.has(z)); if(!T.length) return 'wrong'; let best='wrong';
+  for(const a of list){ const A=norm(a).split(' ').filter(z=>z&&!TPRON.has(z)); if(!A.length) continue;
+    for(let i=0;i+A.length<=T.length;i++){ if(A.every((x,j)=>T[i+j]===x)) return 'exact' }
+    if(A.length===1&&T.length===1&&A[0].length>=5&&osa(T[0],A[0])<=1&&T[0].slice(-2)===A[0].slice(-2)&&!(T[0].length===A[0].length&&[...T[0]].some((c,i)=>c!==A[0][i]&&/[aeiou]/.test(c)&&/[aeiou]/.test(A[0][i])))) best='close';
+  }
+  return best;
+}
+function tpDistract(e){
+  const used=new Set(e.ok.flatMap(a=>ttoks(a).map(tstem))); const seen=new Set([e.show]);
+  const all=Object.values(TPW).filter((x,i,arr)=>x.kind!=='nm'&&arr.indexOf(x)===i);
+  const pool=shuffle(all.filter(x=>x.kind===e.kind)).concat(shuffle(all.filter(x=>x.kind!==e.kind)));
+  const out=[];
+  for(const x of pool){ if(out.length>=3) break; if(seen.has(x.show)) continue; if(ttoks(x.show).map(tstem).some(t=>used.has(t))) continue; seen.add(x.show); out.push(x.show) }
+  return out;
+}
+
+// ---------- screens
+const tpYes=(msg)=>`<div class="fb good"><b>${msg}</b></div>`;
+function tpHeader(label){ tpTick(); const m=Math.floor(tpr.st.elapsed/60000);
+  return `<header><button class="link" id="tpb">&larr; Pause and save</button><div class="meta">${label} &middot; ${m} min${m>=15?'. 15 minutes is a great stretch. Pause for a break any time, or keep going.':''}</div></header>`; }
+function tpPaint(html){
+  app.innerHTML=html;
+  const b=$('#tpb'); if(b) b.onclick=()=>ask('Save your place and leave? You can pick up where you stopped.','Save and leave',()=>{ tpTick(); tpSave(); tpHome() });
+  window.scrollTo(0,0);
+}
+function tpUnitLabel(){ return `Session ${tpr.sid} &middot; Sentence ${tpr.st.ui+1} of ${tpr.d.units.length}` }
+function tpKnown(w){ const e=TPW[wk(w)]; if(!e) return true; if(e.kind==='nm') return true; return !!tpr.st.known[e.id] }
+function tpGloss(w,k){ const c=tpr.cur; if(!c||!c.shown[k]) return ''; if(k===tpr.u.v&&c.vfull) return c.vfull; const e=TPW[wk(w)]; if(!e) return ''; if(e.kind==='nm') return 'name'; return tpr.st.known[e.id]||'' }
+function tpTiles(live){
+  const u=tpr.u, c=tpr.cur;
+  return `<div class="bsent">${u.w.map((x,k)=>{ const g=tpGloss(x,k);
+    return `<button type="button" class="tile btile ${c.tags[k]||''}" data-k="${k}" ${live?'':'disabled'}>${esc(x)}${c.tags[k]?`<span class="rtag">${ROLE[c.tags[k]]}</span>`:''}${g?`<span class="gl">${esc(g)}</span>`:''}</button>`}).join('')}</div>`;
+}
+function tpUnitPage(inner,live){
+  const n=tpr.d.units.length;
+  tpPaint(`${tpHeader(tpUnitLabel())}${bar(tpr.st.ui,n)}<div class="card"><div class="meta">Read it in Latin</div>${tpTiles(live)}</div>${inner}`);
+}
+function tpCmp(a,m){ return `<div class="cmp"><div><div class="rlabel">You wrote</div><p>${esc(a)}</p></div><div><div class="rlabel">A good translation</div><p>${esc(m)}</p></div></div>`; }
+function tpTally(k,ok,n){ const st=tpr.st; st[k+'p']+=ok; st[k+'m']+=(n==null?1:n); }
+
+// ---------- home
+function tpCard(sid){
+  const d=TPS[sid], st=tps.s[sid], total=d.units.length; let status='Not started', btn='Start';
+  if(st){ if(st.phase==='done'){ status=`Done &middot; ${st.stars||0} of 3 stars`; btn='Play again' } else { status='In progress: '+((st.phase==='sortIntro'||st.phase==='sort')?'tense sorting':st.phase==='compare'?'the whole story':`sentence ${Math.min(st.ui+1,total)} of ${total}`); btn='Resume' } }
+  const best=tps.best[sid]!=null?`<div class="lstars">${starRow(tps.best[sid])}</div>`:'';
+  return `<div class="card"><div class="lnum">Session ${sid}</div><div class="ltitle">${esc(d.title)}</div><div class="lsub">${esc(d.sub)}</div>${best}<div class="lbest">${status}${st&&st.elapsed?` &middot; ${Math.max(1,Math.round(st.elapsed/60000))} min so far`:''}</div>
+    <p><button class="primary" data-sid="${sid}" data-act="go">${btn}</button> ${st&&st.phase!=='done'?`<button data-sid="${sid}" data-act="fresh">Start over</button>`:''}</p></div>`;
+}
+function tpHome(){
+  tpLoad(); tpr=null; run=null;
+  app.innerHTML=`<header><button class="link" id="allst">&larr; All stages</button><h1>Stage 7 Test Prep</h1>
+    <p class="sub">Two practice sessions for the Stage 7 test. Each one starts with sorting verbs by tense. Then you take a story apart one piece at a time, translate each piece, and finish by reading the whole story. You can pause and save any time.</p></header>
+    ${tpCard(1)}${tpCard(2)}
+    <details class="parent"><summary>Parent corner</summary>
+      <p><label><input type="checkbox" id="tpfast" ${tps.fast?'checked':''}> Faster mode: the "other words" step (little words like cum, quod, per) shows the meanings instead of quizzing each one. Verb, subject, and object steps stay the same.</label></p>
+      <p><button id="tpmiss">Show words to revisit</button> <button id="tptr">Show what she wrote</button> <button id="tprst">Reset test prep</button></p><div id="tplist"></div>
+      <p class="tiny">Scoring: a word typed right on the first try is 1 point. Picking it from four choices is half a point. Seeing the answer and typing it in is 0, but she keeps it in view from then on. Nothing here locks or unlocks anything. Progress is saved in this browser on this device.</p>
+      <p class="tiny">Two words in the study guide passage are not on its vocabulary bank: via (road) and silva (forest). They appear in sentence 11, so they are quizzed like any other word. If she has not met them, that is worth a quick chat.</p></details>`;
+  $('#allst').onclick=stages;
+  app.querySelectorAll('[data-sid]').forEach(b=>b.onclick=()=>tpGo(+b.dataset.sid,b.dataset.act==='fresh'));
+  $('#tpfast').onchange=e=>{ tps.fast=e.target.checked; tpSave() };
+  $('#tpmiss').onclick=()=>{ const l=tps.log; $('#tplist').innerHTML=l.length?'<ul>'+l.slice(0,40).map(x=>`<li>${esc(x.d)}, Session ${x.sid}: <span class="lat">${esc(x.w)}</span> = ${esc(x.show)} (${x.pts===.5?'needed the choices':'needed to see it'})</li>`).join('')+'</ul>':'<p>None yet.</p>' };
+  $('#tptr').onclick=()=>{ let h=''; [1,2].forEach(sid=>{ const st=tps.s[sid]; if(!st||!st.trans.length) return; h+=`<h4>Session ${sid}</h4><ul>`+st.trans.map(t=>t?`<li><span class="lat">${esc(t.l)}</span><br>She wrote: <b>${esc(t.a||'')}</b><br>Model: ${esc(t.m)}${t.wa?`<br>Changed: <span class="lat">${esc(t.wl)}</span><br>She wrote: <b>${esc(t.wa)}</b><br>Model: ${esc(t.wm)}`:''}</li>`:'').join('')+'</ul>' }); $('#tplist').innerHTML=h||'<p>Nothing yet.</p>' };
+  $('#tprst').onclick=()=>ask('Erase all Test Prep progress, scores, and the word log?','Reset',()=>{ tps={s:{},log:[],fast:tps.fast,best:{}}; tpSave(); tpHome() });
+  window.scrollTo(0,0);
+}
+function tpGo(sid,fresh){
+  tpLoad(); const d=TPS[sid]; let st=tps.s[sid];
+  if(!st||fresh||st.phase==='done') st=tps.s[sid]={phase:'sortIntro',si:0,ui:0,known:{},mp:0,mm:0,lp:0,lm:0,tp:0,tm:0,qp:0,qm:0,sp:0,sm:0,trans:[],elapsed:0,story:''};
+  tpr={sid,d,st,t0:Date.now(),cur:null,u:null}; tpSave();
+  if(st.phase==='sortIntro') tpSortIntro(); else if(st.phase==='sort') tpSortQ(); else if(st.phase==='units') tpUnitStart(); else if(st.phase==='compare') tpCompare(); else tpDone();
+}
+
+// ---------- tense sorting warm-up
+function tpSortIntro(){
+  tpPaint(`${tpHeader('Session '+tpr.sid+' &middot; Warm-up')}<div class="card teach"><h3>First, sort the verbs by tense</h3>
+    <p>Mrs. Kimble's test has a sorting part, so we start there. Look at the middle and end of the verb.</p>
+    <div class="tense imp"><b class="name">Imperfect</b>: has <b>-ba-</b> in the middle (-bā-, -ēbā-). "was ___ing" or "were ___ing." It was going on.</div>
+    <div class="tense perf"><b class="name">Perfect</b>: has <b>-vi-</b> or <b>-vēru-</b> (laudāvit, laudāvērunt), or changes inside (fēcit, dūxit, mīsit). "___ed." It finished.</div>
+    <div class="tense"><b class="name">Present</b>: no tense marker, just a person ending (-ō, -s, -t, -nt). "___s" or "is ___ing."</div>
+    <p class="tiny">Your Stage 6 class guide called the perfect tense "past-perfect." Mrs. Kimble's test calls it "perfect." It is the same tense.</p>
+    <p><button class="primary" id="go">Start sorting (${tpr.d.sort.length} verbs)</button></p></div>`);
+  $('#go').onclick=()=>{ tpr.st.phase='sort'; tpr.st.si=0; tpr.st.sp=0; tpr.st.sm=0; tpr.st.sortMiss=[]; tpSave(); tpSortQ() };
+}
+const TNAME={pres:'Present',imp:'Imperfect',perf:'Perfect'};
+function tpSortQ(fb){
+  const st=tpr.st, list=tpr.d.sort, n=list.length;
+  if(st.si>=n) return tpSortDone();
+  const it=list[st.si]; let done=false;
+  const draw=(res)=>{
+    tpPaint(`${tpHeader('Session '+tpr.sid+' &middot; Warm-up &middot; Verb '+(st.si+1)+' of '+n)}${bar(st.si,n)}
+      <div class="card q"><div class="qtext">Which tense is this verb?</div><div class="latq">${esc(it[0])}</div>
+      ${['pres','imp','perf'].map(t=>`<button type="button" class="opt ${res?(t===it[1]?'right':(t===res.pick?'wrong':'')):''}" data-t="${t}" ${res?'disabled':''}>${TNAME[t]}</button>`).join('')}
+      ${res?`<div class="fb ${res.ok?'good':'bad'}"><b>${res.ok?'Yes!':'Not quite.'}</b><div class="why">${esc(it[2])}</div></div><p><button class="primary" id="nx">${st.si+1>=n?'See my sorting score':'Next verb'}</button></p>`:''}</div>`);
+    if(!res) app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(done) return; done=true; const ok=b.dataset.t===it[1]; st.sm++; if(ok){ st.sp++; Snd.ok(1) } else { Snd.bad(); (st.sortMiss=st.sortMiss||[]).push(it) } draw({ok,pick:b.dataset.t}) });
+    else { const nx=$('#nx'); nx.onclick=()=>{ st.si++; tpSave(); tpSortQ() }; setTimeout(()=>nx.focus(),250) }
+  };
+  draw(null);
+}
+function tpSortDone(){
+  const st=tpr.st, n=tpr.d.sort.length, miss=st.sortMiss||[];
+  tpPaint(`${tpHeader('Session '+tpr.sid+' &middot; Warm-up done')}<div class="card score"><div class="big">${st.sp} / ${n}</div><p>${miss.length?'Look at these once more:':'Every verb sorted right. Now the sentences.'}</p>
+    ${miss.length?'<ul class="secs">'+miss.map(m=>`<li><span class="lat">${esc(m[0])}</span>: ${TNAME[m[1]]}. ${esc(m[2])}</li>`).join('')+'</ul>':''}
+    <p><button class="primary" id="go">Start the sentences</button></p></div>`);
+  if(st.sp===n) Snd.win();
+  $('#go').onclick=()=>{ st.phase='units'; st.ui=0; tpSave(); tpUnitStart() };
+}
+
+// ---------- one clause at a time
+function tpUnitStart(){
+  const st=tpr.st, u=tpr.d.units[st.ui]; if(!u) return tpCompare();
+  tpr.u=u; tpr.st.rk=tpr.st.rk||{}; const q=[{t:'tap',r:'V'},{t:'mean',root:1},{t:'who'},{t:'tense'},{t:'vfull'},{t:'tap',r:'S'}];
+  if(u.s>=0) q.push({t:'num',r:'S'},{t:'mean',i:u.s});
+  q.push({t:'tap',r:'O'}); if(u.o>=0) q.push({t:'num',r:'O'},{t:'mean',i:u.o});
+  const others=u.w.map((x,i)=>i).filter(i=>i!==u.v&&i!==u.s&&i!==u.o);
+  if(tps.fast) q.push({t:'gloss',idx:others}); else others.forEach(i=>q.push({t:'mean',i}));
+  q.push({t:'type'},{t:'wi'},{t:'wit'});
+  tpr.cur={q,qi:0,tags:{},shown:{}}; tpStep();
+}
+function tpStep(){
+  const c=tpr.cur, s=c.q[c.qi++]; if(!s) return tpUnitDone();
+  ({tap:tpTap,mean:tpMean,num:tpNum,who:tpWho,vfull:tpVFull,tense:tpTense,gloss:tpGlossStep,type:tpType,wi:tpWI,wit:tpWIType})[s.t](s);
+}
+function tpUnitDone(){
+  const st=tpr.st; st.ui++; tpSave();
+  if(st.ui>=tpr.d.units.length){ st.phase='compare'; tpSave(); tpCompare() } else tpUnitStart();
+}
+function tpNextBtn(label,fn){ const n=$('#nx'); n.onclick=fn; setTimeout(()=>n.focus(),250) }
+
+// tap the verb / subject / object
+function tpTap(s){
+  const u=tpr.u,c=tpr.cur,role=s.r; let done=false, fb='';
+  const ri=role==='V'?u.v:role==='S'?u.s:u.o;
+  const prompt=role==='V'?'<b>Tap the VERB</b>, the action word. It is the action word.'
+    :role==='S'?'<b>Tap the SUBJECT</b>, the one doing the action. If there is no subject word, say so.'
+    :'<b>Tap the DIRECT OBJECT</b>, the one the action happens to. If there is none, say so.';
+  const none=role==='S'?'No subject word (the verb ending tells who)':role==='O'?'No direct object':null;
+  const vw=u.w[u.v], vpl=u.vn==='p';
+  const why=ok=>role==='V'?`${vw} is the verb, the action word.`
+    :role==='S'?(u.s>=0?`${u.w[u.s]} is the subject, the doer.`:(u.imp||'There is no subject word. The verb ending tells who.'))
+    :(u.o>=0?`${u.w[u.o]} is the direct object, the one the action happens to.`:(u.no||'Nothing receives the action, so there is no direct object.'));
+  const draw=()=>{
+    tpUnitPage(`<div class="card q"><div class="qtext">${prompt}</div>${none&&!done?`<button type="button" class="opt" id="tpnone">${none}</button>`:''}${fb}${done?`<p><button class="primary" id="nx">Next</button></p>`:''}</div>`,!done);
+    if(!done){ app.querySelectorAll('.btile:not([disabled])').forEach(b=>b.onclick=()=>pick(+b.dataset.k)); if($('#tpnone')) $('#tpnone').onclick=()=>pick(-1) }
+    else tpNextBtn('Next',tpStep);
+  };
+  const pick=k=>{ if(done) return; done=true; const ok=k===ri; tpTally('l',ok?1:0); if(ok) Snd.ok(1); else Snd.bad(); if(ri>=0) c.tags[ri]=role;
+    fb=`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Yes!':'Not quite.'}</b><div class="why">${esc(why(ok))}</div></div>`; tpSave(); draw() };
+  draw();
+}
+
+// meaning: type a guess, then pick from four (half point), then see it and type it in
+function tpMean(s){
+  const u=tpr.u,c=tpr.cur; let w,e,R=null;
+  if(s.root){ R=TPROOT[wk(u.w[u.v])]; const b=TPW[wk(u.w[u.v])]; if(!R||!b||tpr.st.rk[R.inf]) return tpStep(); w=R.inf; e={id:'r:'+R.inf,kind:'v',show:R.show,ok:b.ok} }
+  else { w=u.w[s.i]; e=TPW[wk(w)]; if(!e||tpKnown(w)){ c.shown[s.i]=true; return tpStep() } }
+  let stage=0,tries=0,pts=0,opts=null,msg='';
+  const note=R?' This is the "to ___" form: the verb with no who or when yet.':'';
+  const sh=R?'to '+e.show:e.show;
+  const learn=(p)=>{ pts=p; if(R) tpr.st.rk[R.inf]=1; else { tpr.st.known[e.id]=e.show; c.shown[s.i]=true } tpr.st.mp+=p; tpr.st.mm+=1;
+    if(p<1){ tps.log.unshift({d:new Date().toISOString().slice(0,10),sid:tpr.sid,w:w,show:sh,pts:p}); tps.log=tps.log.slice(0,80) } tpSave(); };
+  const draw=()=>{
+    let body;
+    if(stage===3) body=`<div class="fb ${pts===1?'good':pts>0?'close':'bad'}"><b>${pts===1?'Yes!':pts>0?'Good pick.':'Now you have it.'} <span class="lat">${esc(w)}</span> means ${esc(sh)}.</b></div><p><button class="primary" id="nx">Next</button></p>`;
+    else if(stage===0) body=`<div class="qtext">What does <span class="lat">${esc(w)}</span> mean?<div class="hint">Type your best guess.${note}</div></div><div id="bx"></div>`;
+    else if(stage===1) body=`<div class="qtext">Not quite. Pick the best meaning for <span class="lat">${esc(w)}</span>. <span class="hint">(half a point)</span></div>${opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}">${esc(o)}</button>`).join('')}`;
+    else body=`<div class="fb bad"><b><span class="lat">${esc(w)}</span> means: ${esc(sh)}.</b></div><div class="qtext">Type it in so it sticks.</div><div id="bx"></div>${msg}`;
+    tpUnitPage(`<div class="card q">${body}</div>`,false);
+    if(stage===0||stage===2){ const inp=typedInput($('#bx'),(inp,bx)=>{ bx.dataset.done=1; inp.disabled=true; const r=tpJudge(inp.value,e);
+        if(stage===0){ if(r!=='wrong'){ Snd.ok(2); learn(1); stage=3 } else { Snd.close(); opts=shuffle([e.show].concat(tpDistract(e))); stage=1 } }
+        else { tries++; if(r!=='wrong'||tries>=2){ Snd.ok(1); learn(0); stage=3 } else { msg='<div class="fb close">Look at it once more, then type it.</div>' } }
+        draw() },'Check'); setTimeout(()=>{try{inp.focus()}catch(x){}},50); }
+    else if(stage===1) app.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{ if(opts[+b.dataset.i]===e.show){ Snd.ok(1); learn(.5); stage=3 } else { Snd.bad(); stage=2 } draw() });
+    else tpNextBtn('Next',tpStep);
+  };
+  draw();
+}
+function tpNum(s){
+  const u=tpr.u,r=s.r; const w=u.w[r==='V'?u.v:r==='S'?u.s:u.o]; const ans=r==='V'?u.vn:r==='S'?u.sn:u.on; let done=false,fb='';
+  const q=r==='V'?`The verb <span class="lat">${esc(w)}</span>: is one person doing it, or more than one?`:r==='S'?`The subject <span class="lat">${esc(w)}</span>: is it one, or more than one?`:`The direct object <span class="lat">${esc(w)}</span>: is it one, or more than one?`;
+  const why=r==='V'?(u.vn==='p'?`${w} ends in ${/runt$/.test(strip(w))?'-ērunt':'-nt'}, so it is "they": more than one.`:`${w} ends in -t, so it is one doer: he, she, or it.`)
+    :r==='S'?(u.sw||`${w} is one person.`):(u.ow||`${w} is one.`);
+  const draw=()=>{
+    tpUnitPage(`<div class="card q"><div class="qtext">${q}</div>${['s','p'].map(t=>`<button type="button" class="opt ${done?(t===ans?'right':(t===done?'wrong':'')):''}" data-n="${t}" ${done?'disabled':''}>${t==='s'?'One (singular)':'More than one (plural)'}</button>`).join('')}${fb}${done?'<p><button class="primary" id="nx">Next</button></p>':''}</div>`,false);
+    if(!done) app.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{ const ok=b.dataset.n===ans; done=b.dataset.n; tpTally('l',ok?1:0); if(ok) Snd.ok(1); else Snd.bad(); fb=`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Yes!':'Not quite.'}</b><div class="why">${esc(why)}</div></div>`; draw() });
+    else tpNextBtn('Next',tpStep);
+  };
+  draw();
+}
+
+// who is doing it (he, she, it, they ...): the ending, asked about, never given away
+function tpWho(){
+  const u=tpr.u,w=u.w[u.v],ans=u.vn==='p'?'they':'he'; let done=false,fb='';
+  const opts=[['he','he, she, or it (one)'],['they','they (more than one)'],['i','I (one) or we (more than one)'],['you','you (one or more)']];
+  const why=u.vn==='p'?`${w} ends in ${/runt$/.test(strip(w))?'-ērunt':'-nt'}, so it is "they": more than one.`:`${w} ends in -t, so it is one doer: he, she, or it.`;
+  const draw=()=>{
+    tpUnitPage(`<div class="card q"><div class="qtext">Now the verb as it appears in the sentence: <span class="lat">${esc(w)}</span>. Who is doing the action?</div>${opts.map(o=>`<button type="button" class="opt ${done?(o[0]===ans?'right':(o[0]===done?'wrong':'')):''}" data-n="${o[0]}" ${done?'disabled':''}>${o[1]}</button>`).join('')}${fb}${done?'<p><button class="primary" id="nx">Next</button></p>':''}</div>`,false);
+    if(!done) app.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{ const ok=b.dataset.n===ans; done=b.dataset.n; tpTally('l',ok?1:0); if(ok) Snd.ok(1); else Snd.bad(); fb=`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Yes!':'Not quite.'}</b><div class="why">${esc(why)}</div></div>`; draw() });
+    else tpNextBtn('Next',tpStep);
+  };
+  draw();
+}
+// put root + who + when together: the verb as it appears, translated
+function tpVFull(){
+  const u=tpr.u,c=tpr.cur,w=u.w[u.v],e={ok:u.V,show:u.V[0]},x={ok:u.Vx||[]}; let tries=0,done=0,msg='';
+  const tl={pres:'present',imp:'imperfect',perf:'perfect'}[u.tn];
+  const draw=()=>{
+    const body=done?`<div class="fb ${done===1?'good':'close'}"><b>${done===1?'Yes!':'Now you have it.'} <span class="lat">${esc(w)}</span> here means "${esc(u.V[0])}".</b></div><p><button class="primary" id="nx">Next</button></p>`
+      :`<div class="qtext">Put it together. What does <span class="lat">${esc(w)}</span> mean as it appears here?<div class="hint">Use the root meaning, who is doing it, and when (${tl}).</div></div><div id="bx"></div>${msg}`;
+    tpUnitPage(`<div class="card q">${body}</div>`,false);
+    if(!done){ const inp=typedInput($('#bx'),(inp,bx)=>{ bx.dataset.done=1; inp.disabled=true; const r=tpJudgeVerb(inp.value,u.V); tries++;
+        if(r!=='wrong'){ Snd.ok(2); tpTally('l',tries===1?1:0); done=1 }
+        else if(tries>=2){ Snd.bad(); tpTally('l',0); done=2 }
+        else { Snd.close(); msg=tpJudgeVerb(inp.value,u.Vx||[])!=='wrong'?`<div class="fb close">Right verb, but check who is doing it and when (${tl}). Try once more.</div>`:`<div class="fb close">Not quite. Look at the root meaning, who, and when. Try once more.</div>` }
+        if(done){ c.vfull=u.V[0]; c.shown[u.v]=true; tpSave() } draw() },'Check'); setTimeout(()=>{try{inp.focus()}catch(z){}},50); }
+    else tpNextBtn('Next',tpStep);
+  };
+  draw();
+}
+function tpTense(){
+  const u=tpr.u,w=u.w[u.v],sw=strip(w); let done=false,fb='';
+  const why=u.tn==='imp'?(/^(erat|aderat)$/.test(sw)?`${w} is a form of "to be" meaning "was." It is the imperfect, so it was going on.`:`${w} has -ba- (or -bā-, -ēbā-) in the middle. That marks the imperfect: was or were ___ing, an action that was going on.`)
+    :u.tn==='perf'?(/vit$|verunt$/.test(sw)?`${w} has -vi- (-vit or -vērunt): a finished action, "___ed." This is the perfect.`:`${w} is an irregular perfect: the verb changes inside (like English send and sent). It is a finished action.`)
+    :`${w} has no tense marker, just a person ending, so it is happening now: the present.`;
+  const labels={pres:'Present (happening now)',imp:'Imperfect (was or were ___ing, going on)',perf:'Perfect (___ed, finished)'};
+  const draw=()=>{
+    tpUnitPage(`<div class="card q"><div class="qtext">When is it happening? What tense is <span class="lat">${esc(w)}</span>?</div>${['pres','imp','perf'].map(t=>`<button type="button" class="opt ${done?(t===u.tn?'right':(t===done?'wrong':'')):''}" data-t="${t}" ${done?'disabled':''}>${labels[t]}</button>`).join('')}${fb}${done?'<p><button class="primary" id="nx">Next</button></p>':''}</div>`,false);
+    if(!done) app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ const ok=b.dataset.t===u.tn; done=b.dataset.t; tpTally('l',ok?1:0); if(ok) Snd.ok(1); else Snd.bad(); fb=`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Yes!':'Not quite.'}</b><div class="why">${esc(why)}</div></div>`; draw() });
+    else tpNextBtn('Next',tpStep);
+  };
+  draw();
+}
+// faster mode: show the remaining words with meanings
+function tpGlossStep(s){
+  const u=tpr.u; const rows=s.idx.filter(i=>!tpKnown(u.w[i]));
+  rows.forEach(i=>{ const e=TPW[wk(u.w[i])]; if(e) tpr.st.known[e.id]=e.show });
+  s.idx.forEach(i=>tpr.cur.shown[i]=true);
+  if(!rows.length) return tpStep();
+  tpUnitPage(`<div class="card q"><div class="qtext">The other words in this sentence:</div><ul class="secs">${rows.map(i=>`<li><span class="lat">${esc(u.w[i])}</span> = ${esc(TPW[wk(u.w[i])].show)}</li>`).join('')}</ul><p><button class="primary" id="nx">Got it</button></p></div>`,false);
+  tpNextBtn('Got it',tpStep);
+}
+
+// review a typed translation by parts (subject, verb, object)
+function tpReview(text,src,ctx){
+  const T=btoks(text), good=p=>p.st==='ok'||p.st==='spell'; const rows=[]; let got=0,of=0,spell=0;
+  const add=(name,p,tip)=>{ of++; const ok=good(p); if(ok){ got++; if(p.st==='spell') spell++ } rows.push(`<div class="rv ${ok?'ok':'tip'}"><span class="ic">${ok?'&#10003;':'!'}</span><span><b>${name}:</b> ${ok?'found it.':esc(tip)}</span></div>`) };
+  if(src.S&&src.S.length){ const p=bpart(T,src.S,src.Sx); add('Subject',p,p.st==='slip'?`Check how many are doing it. Try "${src.S[0]}".`:`Who is doing it? ${ctx.sw?ctx.sw+' means ':'Try '}"${src.S[0]}".`) }
+  const pv=bpart(T,src.V,src.Vx);
+  const vt={pres:`${ctx.vw} has no tense marker, so it is happening now. Try a present form like "${src.V[0]}".`,imp:(/^(erat|aderat)$/.test(strip(ctx.vw))?`${ctx.vw} is the imperfect of "to be", so it was going on: use was or were, like "${src.V[0]}".`:`${ctx.vw} has -ba-, so it was going on: use was or were ___ing, like "${src.V[0]}".`),perf:`${ctx.vw} is a finished action, so use the past, like "${src.V[0]}".`}[ctx.tn];
+  add('Verb',pv,pv.st==='slip'?vt:`I could not find the verb. ${ctx.vw} means "${src.V[0]}".`);
+  if(src.O&&src.O.length){ const p=bpart(T,src.O,src.Ox); add('Object',p,p.st==='slip'?`Check how many. Try "${src.O[0]}".`:`What does it happen to? ${ctx.ow?ctx.ow+' means ':'Try '}"${src.O[0]}".`) }
+  return {rows:rows.join(''),got,of,spell};
+}
+function tpType(){
+  const u=tpr.u; let done=false;
+  tpUnitPage(`<div class="card q"><div class="qtext">Now put the whole thing into English.<div class="hint">Start with who, then what they did, then what it happened to. The meanings you found are under the words.</div></div><div id="bx"></div></div><div id="rv"></div>`,false);
+  const inp=typedInput($('#bx'),(inp,bx)=>{ bx.dataset.done=1; inp.disabled=true;
+    const r=tpReview(inp.value,u,{sw:u.s>=0?u.w[u.s]:null,vw:u.w[u.v],ow:u.o>=0?u.w[u.o]:null,tn:u.tn});
+    tpTally('t',r.got,r.of); tpr.st.trans[tpr.st.ui]={l:u.w.join(' '),a:inp.value,m:u.en}; if(r.got===r.of) Snd.ok(3); else Snd.close(); tpSave();
+    $('#rv').innerHTML=`<div class="card"><h3>${r.got===r.of?'Great translation!':'Check-up'}</h3>${r.rows}${r.spell?'<p class="tiny">Close spelling counts here.</p>':''}${tpCmp(inp.value,u.en)}<p class="tiny">The checker looks for the subject, verb, and object. It can miss a good answer said a different way. If you think yours is right, show Mom or Dad.</p><p><button class="primary" id="nx">Next: what if one thing changed?</button></p></div>`;
+    tpNextBtn('Next',tpStep); window.scrollTo(0,document.body.scrollHeight) },'Check my translation');
+  setTimeout(()=>{try{inp.focus()}catch(x){}},50);
+}
+const WIOPT={tense:'When it happens (the tense)',num:'How many are doing it (one or more than one)',obj:'What the action happens to (the object)',subj:'Who is doing it (a different subject)'};
+const tpCh=x=>x.replace(/[.,;:!?"“”]/g,'');
+function tpDiff(a,b){ const A=a.split(' '),B=b.split(' ');
+  const ha=A.map((x,i)=>B.length===A.length?(tpCh(x)!==tpCh(B[i])):!B.map(tpCh).includes(tpCh(x)));
+  const hb=B.map((x,i)=>A.length===B.length?(tpCh(x)!==tpCh(A[i])):!A.map(tpCh).includes(tpCh(x)));
+  const f=(T,h)=>T.map((x,i)=>h[i]?`<mark class="chg">${esc(x)}</mark>`:esc(x)).join(' ');
+  return [f(A,ha),f(B,hb)]; }
+function tpWI(){
+  const u=tpr.u,wi=u.wi; let done=false,fb='';
+  const order=shuffle(['tense','num','obj','subj']);
+  const draw=()=>{
+    tpUnitPage(`<div class="card q"><div class="qtext">Now one thing changed. Here is the new sentence:</div><div class="latq">${tpDiff(u.w.join(' '),wi.lat)[1]}</div><div class="hint">Before: <span class="lat">${tpDiff(u.w.join(' '),wi.lat)[0]}</span> <span class="chgkey">(the colored word is the one that changed)</span></div>
+      <div class="qtext">What changed?</div>${order.map(k=>`<button type="button" class="opt ${done?(k===wi.kind?'right':(k===done?'wrong':'')):''}" data-k="${k}" ${done?'disabled':''}>${WIOPT[k]}</button>`).join('')}${fb}${done?'<p><button class="primary" id="nx">Translate the new sentence</button></p>':''}</div>`,false);
+    if(!done) app.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const ok=b.dataset.k===wi.kind; done=b.dataset.k; tpTally('q',ok?1:0); if(ok) Snd.ok(1); else Snd.bad(); fb=`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Yes!':'Not quite.'}</b><div class="why">${esc(wi.why)}</div></div>`; draw() });
+    else tpNextBtn('Next',tpStep);
+  };
+  draw();
+}
+function tpWIType(){
+  const u=tpr.u,wi=u.wi;
+  tpUnitPage(`<div class="card q"><div class="qtext">Translate the new sentence.</div><div class="latq">${tpDiff(u.w.join(' '),wi.lat)[1]}</div><div id="bx"></div></div><div id="rv"></div>`,false);
+  const inp=typedInput($('#bx'),(inp,bx)=>{ bx.dataset.done=1; inp.disabled=true;
+    const r=tpReview(inp.value,wi,{sw:null,vw:wi.vw,ow:null,tn:wi.tn});
+    tpTally('t',r.got,r.of); const t=tpr.st.trans[tpr.st.ui]||(tpr.st.trans[tpr.st.ui]={l:u.w.join(' '),a:'',m:u.en}); t.wl=wi.lat; t.wa=inp.value; t.wm=wi.en; if(r.got===r.of) Snd.ok(3); else Snd.close(); tpSave();
+    const last=tpr.st.ui+1>=tpr.d.units.length;
+    $('#rv').innerHTML=`<div class="card"><h3>${r.got===r.of?'Nice!':'Check-up'}</h3>${r.rows}${tpCmp(inp.value,wi.en)}<div class="why">${esc(wi.why)}</div><p><button class="primary" id="nx">${last?'See the whole story':'Next sentence'}</button></p></div>`;
+    tpNextBtn('Next',tpStep); window.scrollTo(0,document.body.scrollHeight) },'Check my translation');
+  setTimeout(()=>{try{inp.focus()}catch(x){}},50);
+}
+
+// ---------- the whole story, side by side
+function tpCompare(){
+  const st=tpr.st,d=tpr.d; const mine=d.units.map((u,i)=>(st.trans[i]&&st.trans[i].a)||'').filter(Boolean).join(' '); const model=d.units.map(u=>u.en).join(' ');
+  tpPaint(`${tpHeader('Session '+tpr.sid+' &middot; The whole story')}<div class="card"><h3>Did you tell the same story?</h3><p class="hint">Read your version, then the model. Look for the big events: who did what, and in what order.</p>${tpCmp(mine||'(nothing typed)',model)}
+    <details class="bank"><summary>Show the Latin</summary><p class="lat">${esc(d.units.map(u=>u.w.join(' ')).join(' '))}</p></details></div>
+    <div class="card"><div class="qtext">How close was your story?</div><div class="segs"><button class="seg" data-s="same">Same story</button><button class="seg" data-s="mostly">Mostly the same</button><button class="seg" data-s="diff">Some parts different</button></div></div>`);
+  app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ st.story=b.dataset.s; tpSave(); tpDone() });
+}
+function tpDone(){
+  const st=tpr.st; tpr.st.phase='done'; tpTick();
+  const pts=st.mp+st.lp+st.tp+st.qp+st.sp, max=Math.max(1,st.mm+st.lm+st.tm+st.qm+st.sm); const r=pts/max, stars=r>=.9?3:r>=.7?2:r>=.5?1:0; st.stars=stars; tps.best[tpr.sid]=Math.max(tps.best[tpr.sid]||0,stars); tpSave();
+  const mins=Math.max(1,Math.round(st.elapsed/60000));
+  const miss=tps.log.filter(x=>x.sid===tpr.sid&&x.d===new Date().toISOString().slice(0,10)).filter((x,i,a)=>a.findIndex(y=>y.w===x.w)===i).slice(0,20);
+  tpPaint(`${tpHeader('Session '+tpr.sid+' &middot; Done')}<div class="card score"><div class="bigstars" role="img" aria-label="${stars} of 3 stars">${starRow(stars)}</div><div class="big">${Math.round(r*100)}%</div>
+    <ul class="secs"><li>Tense sorting: <b>${st.sp}</b> of ${st.sm}</li><li>Word meanings: <b>${fmt(st.mp)}</b> of ${st.mm}</li><li>Verb, subject, object, number, tense steps: <b>${st.lp}</b> of ${st.lm}</li><li>What changed: <b>${st.qp}</b> of ${st.qm}</li><li>Translation parts found: <b>${st.tp}</b> of ${st.tm}</li></ul>
+    <p class="tiny">About ${mins} minute${mins===1?'':'s'}.</p></div>
+    ${miss.length?`<div class="card"><h3>Words to look at once more</h3><p>${miss.map(x=>`<span class="lat">${esc(x.w)}</span> (${esc(x.show)})`).join(', ')}</p></div>`:''}
+    <p><button class="primary" id="tph">Back to Test Prep</button> ${tpr.sid===1?'<button id="tp2">Go to Session 2</button>':''} <button id="tpa">All stages</button></p>`);
+  Snd.win(); for(let k=0;k<stars;k++) setTimeout(()=>Snd.star(k),450+k*400);
+  $('#tph').onclick=tpHome; $('#tpa').onclick=stages; if($('#tp2')) $('#tp2').onclick=()=>tpGo(2,false);
+}
+
 // keep a try from being lost by an accidental swipe-back or refresh
 window.addEventListener('beforeunload',e=>{ if(run && run.i>0 && run.i<run.items.length){ e.preventDefault(); e.returnValue=''; } });
 ['touchend','pointerup','click','keydown'].forEach(ev=>document.addEventListener(ev,()=>Snd.unlock(),{passive:true}));
@@ -1660,7 +2260,7 @@ window.addEventListener('beforeunload',e=>{ if(run && run.i>0 && run.i<run.items
   paint(); b.onclick=()=>{ Snd.toggle(); paint() }; document.body.appendChild(b); })();
 fload();
 stages();
-window.__LQ={ALLWORDS,fsave:()=>fsave,cardsFor,get ITEMS(){return ITEMS},get LEVELS(){return LEVELS},get C(){return C},run:()=>run,save:()=>save,judgeText,selectAttempt,useStage,STAGES,Snd,BONUS,bonusStart,bonusLabel,bz:()=>bz};
+window.__LQ={tp:{go:tpGo,home:tpHome,TPS,TPW,TPROOT,tpDiff,tpJudge,tpJudgeVerb,tpDistract,tpReview,tps:()=>tps,tpr:()=>tpr},ALLWORDS,fsave:()=>fsave,cardsFor,get ITEMS(){return ITEMS},get LEVELS(){return LEVELS},get C(){return C},run:()=>run,save:()=>save,judgeText,selectAttempt,useStage,STAGES,Snd,BONUS,bonusStart,bonusLabel,bz:()=>bz};
 
 })();
 </script>
