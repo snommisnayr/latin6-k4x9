@@ -51,6 +51,7 @@ details.bank{margin:8px 0 12px;font-size:17px}details.bank summary{cursor:pointe
 .bigstars span.pop{display:inline-block;animation:pop .6s ease-out}
 .grp{margin:18px 0 4px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
 .newb{display:inline-block;background:var(--accent);color:var(--on-accent);border-radius:999px;font-size:12px;font-weight:700;padding:2px 10px;margin-left:8px;vertical-align:middle}
+.newb.fut{background:var(--soft);color:var(--muted)}
 .tslot{min-height:58px;border:2px dashed var(--line);border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;background:var(--card)}
 .tbank{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .tile{padding:10px 16px;min-height:48px;font-size:22px;border-radius:10px;background:var(--card)}
@@ -1106,7 +1107,7 @@ const STAGES = [
    guideTitle:'Tense guide', guideLabel:'Tense guide: imperfect, past-perfect, present (read this first if it feels mixed up)'},
   ...EARLY.map(genStage)
 ].sort((a,b)=>b.id-a.id);
-const CURRENT = STAGES[0];
+const CURRENT = STAGES.find(d=>d.id===7)||STAGES[0];  // the stage she is studying now. Stages above it are marked FUTURE.
 const starsFor=(score,n,pass)=> score>=n?3 : (score>=n-1 && score>=pass)?2 : score>=pass?1 : 0;
 const starRow=k=>'&#9733;'.repeat(k)+(k<3?`<span class="no">${'&#9733;'.repeat(3-k)}</span>`:'');
 function peekStars(d){ try{ const s=JSON.parse(localStorage.getItem(d.key)||'null'); if(!s||!s.best) return 0; return Object.keys(s.best).reduce((a,k)=>a+starsFor(s.best[k],d.perTry,d.pass),0) }catch(e){ return 0 } }
@@ -1161,7 +1162,7 @@ function useStage(d){ S=d; KEY=d.key; d.build(); load(); home(); }
 function stages(){
   run=null; S=null;
   const card=d=>{ const got=peekStars(d), max=d.levels*3;
-    return `<button class="card level" data-st="${d.id}"><div class="lnum">${esc(d.title)}${d===CURRENT?'<span class="newb">NOW STUDYING</span>':''}</div><div class="ltitle">${esc(d.blurb)}</div><div class="lbest">&#9733; ${got} of ${max} stars</div></button>`};
+    return `<button class="card level" data-st="${d.id}"><div class="lnum">${esc(d.title)}${d===CURRENT?'<span class="newb">NOW STUDYING</span>':d.id>CURRENT.id?'<span class="newb fut">FUTURE</span>':''}</div><div class="ltitle">${esc(d.blurb)}</div><div class="lbest">&#9733; ${got} of ${max} stars</div></button>`};
   const main=STAGES.filter(d=>!d.allOpen), early=STAGES.filter(d=>d.allOpen);
   app.innerHTML=`<header><h1>Lily's Latin Quest</h1><p class="sub">Review words with flashcards, or pick a stage to study. Stars and progress are saved on this device.</p></header>
     <div class="card" id="fpanel"></div>
@@ -1217,6 +1218,7 @@ function fload(){
   }catch(e){}
   // a newly added stage joins the review mix on its own
   if(CURRENT.id>(fsave.top||0)){ if(!fsave.opts.stages.includes(CURRENT.id)) fsave.opts.stages.push(CURRENT.id); fsave.top=CURRENT.id }
+  if(!fsave.v2){ fsave.v2=1; fsave.opts.stages=fsave.opts.stages.filter(id=>id<=CURRENT.id); if(!fsave.opts.stages.length) fsave.opts.stages=[CURRENT.id]; fsave.top=Math.max(fsave.top||0,CURRENT.id) }
   fsave.opts.stages=fsave.opts.stages.filter(id=>STAGES.some(d=>d.id===id));
   fpersist();
 }
@@ -1242,7 +1244,7 @@ let fc=null;
 function fpanel(el){
   const o=fsave.opts, deck=cardsFor(o.stages,o.dir), mast=deck.filter(c=>(fsave.box[c.id]||0)>=3).length;
   const count=id=>ALLWORDS.filter(w=>w.st===id).length;
-  const chip=d=>`<button type="button" class="chip ${o.stages.includes(d.id)?'on':''}" data-fs="${d.id}" aria-pressed="${o.stages.includes(d.id)}">${esc(d.title)} <span class="cnt">${count(d.id)}</span></button>`;
+  const chip=d=>`<button type="button" class="chip ${o.stages.includes(d.id)?'on':''}" data-fs="${d.id}" aria-pressed="${o.stages.includes(d.id)}">${esc(d.title)}${d.id>CURRENT.id?' (future)':''} <span class="cnt">${count(d.id)}</span></button>`;
   const seg=(val,label)=>`<button type="button" class="seg ${o.dir===val?'on':''}" data-fd="${val}">${label}</button>`;
   el.innerHTML=`<h2 class="ph">&#127183; Flashcard review</h2><p class="tiny" style="margin-top:0">Flip the card, then tell the truth: did you know it? Cards you miss come back sooner.</p>
     <div class="grp" style="margin-top:8px">Which stages?</div><div class="chips">${STAGES.map(chip).join('')}</div>
